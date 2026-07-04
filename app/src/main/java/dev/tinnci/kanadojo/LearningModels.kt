@@ -702,7 +702,7 @@ fun shouldShowPracticeActionRationale(action: ReviewCompletionAction, stats: Les
 
 fun practiceActionRoleLabelFor(action: ReviewCompletionAction, optional: Boolean = false): String =
     when {
-        optional -> "Optional"
+        optional -> "Optional repeat"
         action == ReviewCompletionAction.RepeatQueue -> "Repeat first"
         else -> "Primary"
     }

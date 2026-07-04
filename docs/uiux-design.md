@@ -226,9 +226,10 @@ Implemented:
 - Added compact action-group labels for primary versus optional actions.
 - Added compact action-group role tone for primary versus optional actions.
 - Added tested compact action-group role copy for repeat-required actions.
+- Added tested compact action-group role copy for optional clean repeats.
 
 ## Next Polish Pass
 
 Implement next:
 
-- Add compact action-group role copy for optional clean repeats.
+- Add compact action-role chip text overflow protection.

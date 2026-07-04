@@ -1298,7 +1298,7 @@ class KanaCurriculumTest {
     @Test
     fun practiceActionRoleLabelsExplainPrimaryOptionalAndRepeatFirst() {
         assertEquals("Primary", practiceActionRoleLabelFor(ReviewCompletionAction.ReturnToPath))
-        assertEquals("Optional", practiceActionRoleLabelFor(ReviewCompletionAction.ReturnToPath, optional = true))
+        assertEquals("Optional repeat", practiceActionRoleLabelFor(ReviewCompletionAction.ReturnToPath, optional = true))
         assertEquals("Repeat first", practiceActionRoleLabelFor(ReviewCompletionAction.RepeatQueue))
     }
 

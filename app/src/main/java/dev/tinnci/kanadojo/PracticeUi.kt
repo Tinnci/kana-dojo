@@ -474,7 +474,7 @@ private fun PracticeActionRoleChip(label: String) {
 private fun practiceActionRoleColor(label: String): Color =
     when (label) {
         "Primary" -> Color(0xFFE2EEF8)
-        "Optional" -> MaterialTheme.colorScheme.surface.copy(alpha = 0.68f)
+        "Optional repeat" -> MaterialTheme.colorScheme.surface.copy(alpha = 0.68f)
         "Repeat first" -> Color(0xFFFFDFD6)
         else -> MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.78f)
     }
