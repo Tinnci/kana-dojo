@@ -112,6 +112,8 @@ private fun KanaDojoApp() {
                         script = selectedScript,
                         mastery = mastery,
                         mistakeIds = mistakes,
+                        reviewDueEpochDays = reviewDueEpochDays,
+                        currentEpochDay = currentEpochDay(),
                         onSpeak = speakKana,
                         reduceMotion = reduceMotion,
                         onOpenPractice = { currentTab = ScreenTab.Mistakes },

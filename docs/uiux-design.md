@@ -152,9 +152,10 @@ Implemented:
 - Added tested progress policy so mastered kana demote only after repeated misses while weaker kana still repair quickly.
 - Persisted simple review due dates for future calendar-based spaced review.
 - Surfaced due spaced-review counts in practice and included due recall-ready kana in weak review.
+- Added due-review priority to the path hero and daily focus metrics so the first screen separates due recall from repair work.
 
 ## Next Polish Pass
 
 Implement next:
 
-- Add due-review detail to the path hero once the daily review copy is settled.
+- Preview the actual due kana in the path hero or daily focus panel before opening practice.

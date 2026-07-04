@@ -57,6 +57,8 @@ fun LessonPathScreen(
     script: Script,
     mastery: Map<String, Int>,
     mistakeIds: List<String>,
+    reviewDueEpochDays: Map<String, Long>,
+    currentEpochDay: Long,
     onSpeak: (String) -> Unit,
     reduceMotion: Boolean,
     onOpenPractice: () -> Unit,
@@ -76,6 +78,10 @@ fun LessonPathScreen(
     val masterySnapshot = mastery.toMap()
     val reviewCount = remember(scriptItems, mistakeSnapshot, masterySnapshot) {
         reviewCountFor(scriptItems, mistakeSnapshot, masterySnapshot)
+    }
+    val dueSnapshot = reviewDueEpochDays.toMap()
+    val dueReviewCount = remember(scriptItems, dueSnapshot, currentEpochDay, masterySnapshot) {
+        dueReviewCountFor(scriptItems, dueSnapshot, currentEpochDay, masterySnapshot)
     }
 
     if (activeLesson != null) {
@@ -107,7 +113,8 @@ fun LessonPathScreen(
                 nextLesson = nextLesson,
                 nextLessonMastery = lessonAverageMastery(nextLesson, mastery),
                 snapshot = snapshot,
-                reviewCount = reviewCount
+                reviewCount = reviewCount,
+                dueReviewCount = dueReviewCount
             )
         }
         item {
@@ -116,6 +123,7 @@ fun LessonPathScreen(
                 averageMastery = lessonAverageMastery(nextLesson, mastery),
                 snapshot = snapshot,
                 reviewCount = reviewCount,
+                dueReviewCount = dueReviewCount,
                 onStart = { activeLesson = nextLesson },
                 onReview = onOpenPractice
             )
@@ -212,9 +220,12 @@ private fun DailyFocusPanel(
     averageMastery: Float,
     snapshot: ProgressSnapshot,
     reviewCount: Int,
+    dueReviewCount: Int,
     onStart: () -> Unit,
     onReview: () -> Unit
 ) {
+    val hasDueReview = dueReviewCount > 0
+    val reviewButtonLabel = if (hasDueReview) "Review due" else "Repair"
     Surface(
         shape = RoundedCornerShape(22.dp),
         color = MaterialTheme.colorScheme.tertiaryContainer,
@@ -246,9 +257,9 @@ private fun DailyFocusPanel(
                 }
             }
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
-                FocusMetric("Review", reviewCount, Modifier.weight(1f))
+                FocusMetric("Due", dueReviewCount, Modifier.weight(1f))
+                FocusMetric("Repair", reviewCount, Modifier.weight(1f))
                 FocusMetric("Fluent", snapshot.fluent, Modifier.weight(1f))
-                FocusMetric("Left", (snapshot.total - snapshot.fluent).coerceAtLeast(0), Modifier.weight(1f))
             }
             Row(horizontalArrangement = Arrangement.spacedBy(10.dp), modifier = Modifier.fillMaxWidth()) {
                 Button(onClick = onStart, shape = RoundedCornerShape(18.dp), modifier = Modifier.weight(1f)) {
@@ -256,10 +267,15 @@ private fun DailyFocusPanel(
                     Spacer(Modifier.width(8.dp))
                     Text("Start")
                 }
-                FilledTonalButton(onClick = onReview, enabled = reviewCount > 0, shape = RoundedCornerShape(18.dp), modifier = Modifier.weight(1f)) {
+                FilledTonalButton(
+                    onClick = onReview,
+                    enabled = dueReviewCount > 0 || reviewCount > 0,
+                    shape = RoundedCornerShape(18.dp),
+                    modifier = Modifier.weight(1f)
+                ) {
                     Icon(Icons.Outlined.Replay, contentDescription = null)
                     Spacer(Modifier.width(8.dp))
-                    Text("Review")
+                    Text(reviewButtonLabel)
                 }
             }
         }
@@ -304,14 +320,26 @@ private fun PathHeroPanel(
     nextLesson: KanaLesson,
     nextLessonMastery: Float,
     snapshot: ProgressSnapshot,
-    reviewCount: Int
+    reviewCount: Int,
+    dueReviewCount: Int
 ) {
     val overall by animateFloatAsState(targetValue = snapshot.overall, label = "pathHeroOverall")
     val lessonProgress by animateFloatAsState(targetValue = (nextLessonMastery / 5f).coerceIn(0f, 1f), label = "pathHeroLesson")
+    val hasDueReview = dueReviewCount > 0
+    val hasRepairReview = reviewCount > 0
     val heroColor by animateColorAsState(
-        targetValue = if (reviewCount > 0) Color(0xFFFFF1BC) else MaterialTheme.colorScheme.primaryContainer,
+        targetValue = when {
+            hasDueReview -> Color(0xFFFFF1BC)
+            hasRepairReview -> MaterialTheme.colorScheme.tertiaryContainer
+            else -> MaterialTheme.colorScheme.primaryContainer
+        },
         label = "pathHeroColor"
     )
+    val priorityLabel = when {
+        hasDueReview -> "$dueReviewCount due today"
+        hasRepairReview -> "$reviewCount to repair"
+        else -> "Next lesson ready"
+    }
     Surface(
         shape = RoundedCornerShape(24.dp),
         tonalElevation = 4.dp,
@@ -338,16 +366,16 @@ private fun PathHeroPanel(
                     Text("${script.label} path", style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Bold)
                     Text(nextLesson.title, style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Black)
                     Text(
-                        "Next: ${nextLesson.items.joinToString(" ") { it.kana }}",
+                        "$priorityLabel - ${nextLesson.items.joinToString(" ") { it.kana }}",
                         style = MaterialTheme.typography.bodyMedium
                     )
                 }
             }
             LinearProgressIndicator(progress = { overall }, modifier = Modifier.fillMaxWidth())
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
+                HeroMetric("Due", dueReviewCount.toString(), Modifier.weight(1f))
                 HeroMetric("Lesson", "${(lessonProgress * 100).toInt()}%", Modifier.weight(1f))
                 HeroMetric("Fluent", "${snapshot.fluent}/${snapshot.total}", Modifier.weight(1f))
-                HeroMetric("Review", reviewCount.toString(), Modifier.weight(1f))
             }
         }
     }
