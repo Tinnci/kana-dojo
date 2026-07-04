@@ -588,6 +588,11 @@ fun practiceCompletionNextStepFor(mode: PracticeMode, stats: LessonSessionStats)
             message = "Return to the path and let reading or sound recall test the same kana."
         )
 
+        mode == PracticeMode.Contrast -> PracticeCompletionNextStep(
+            title = "Lookalikes separated",
+            message = "Move to mixed review next so the same shapes appear without contrast framing."
+        )
+
         mode == PracticeMode.Sound -> PracticeCompletionNextStep(
             title = "Sound recall is clear",
             message = "Mix this with reading practice next so kana stay linked to sound, not romaji."

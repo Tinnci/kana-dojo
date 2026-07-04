@@ -1134,6 +1134,17 @@ class KanaCurriculumTest {
     }
 
     @Test
+    fun practiceCompletionNextStepExplainsCleanContrastQueues() {
+        val nextStep = practiceCompletionNextStepFor(
+            mode = PracticeMode.Contrast,
+            stats = LessonSessionStats(correct = 6, missed = 0)
+        )
+
+        assertEquals("Lookalikes separated", nextStep.title)
+        assertTrue(nextStep.message.contains("mixed review"))
+    }
+
+    @Test
     fun reviewSessionOutcomesSeparateCleanRepairedAndShakyKana() {
         val outcomes = reviewSessionOutcomesFor(
             correctCounts = mapOf(
