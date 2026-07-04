@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -404,13 +405,21 @@ private fun PracticeCompletionActionGroup(
                 .padding(8.dp)
         ) {
             PracticeActionRoleChip(practiceActionRoleLabelFor(ReviewCompletionAction.ReturnToPath))
-            Button(onClick = onReturnToPath, shape = RoundedCornerShape(18.dp), modifier = Modifier.fillMaxWidth()) {
+            Button(
+                onClick = onReturnToPath,
+                shape = RoundedCornerShape(18.dp),
+                modifier = Modifier.practiceCompletionActionButtonTouchTarget()
+            ) {
                 Icon(Icons.Outlined.School, contentDescription = null, modifier = Modifier.size(20.dp))
                 Spacer(Modifier.width(6.dp))
                 PracticeActionButtonLabel(practiceReturnActionLabelFor(compact = true))
             }
             PracticeActionRoleChip(practiceActionRoleLabelFor(ReviewCompletionAction.ReturnToPath, optional = true))
-            FilledTonalButton(onClick = onRepeat, shape = RoundedCornerShape(18.dp), modifier = Modifier.fillMaxWidth()) {
+            FilledTonalButton(
+                onClick = onRepeat,
+                shape = RoundedCornerShape(18.dp),
+                modifier = Modifier.practiceCompletionActionButtonTouchTarget()
+            ) {
                 Icon(Icons.Outlined.Replay, contentDescription = null, modifier = Modifier.size(20.dp))
                 Spacer(Modifier.width(6.dp))
                 PracticeActionButtonLabel(compactRepeatActionLabel)
@@ -451,7 +460,7 @@ private fun PracticeRepeatRequiredActionGroup(
                     containerColor = MaterialTheme.colorScheme.error,
                     contentColor = MaterialTheme.colorScheme.onError
                 ),
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.practiceCompletionActionButtonTouchTarget()
             ) {
                 Icon(Icons.Outlined.Replay, contentDescription = null, modifier = Modifier.size(20.dp))
                 Spacer(Modifier.width(6.dp))
@@ -460,6 +469,9 @@ private fun PracticeRepeatRequiredActionGroup(
         }
     }
 }
+
+private fun Modifier.practiceCompletionActionButtonTouchTarget(): Modifier =
+    fillMaxWidth().heightIn(min = 48.dp)
 
 @Composable
 private fun PracticeActionButtonLabel(label: String) {
