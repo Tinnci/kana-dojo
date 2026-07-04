@@ -196,9 +196,10 @@ Implemented:
 - Added tested practice completion next-step copy for clean speed-focused queues.
 - Added tested practice completion next-step copy for clean cross-script queues.
 - Added tested practice completion next-step copy for clean mixed-review queues.
+- Added mode-aware visual tone to the practice completion next-step panel.
 
 ## Next Polish Pass
 
 Implement next:
 
-- Add mode-aware visual tone to the practice completion next-step panel.
+- Add a compact mode chip to the practice completion next-step panel.

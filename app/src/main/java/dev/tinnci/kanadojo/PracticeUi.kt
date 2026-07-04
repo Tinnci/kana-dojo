@@ -321,7 +321,7 @@ private fun PracticeCompletionPanel(
             if (shakyItems.isNotEmpty()) {
                 CompletionKanaGroup("Still shaky", shakyItems.take(8))
             }
-            PracticeCompletionNextStepPanel(nextStep)
+            PracticeCompletionNextStepPanel(mode = mode, nextStep = nextStep, repeatRequired = !stable)
             if (stable) {
                 Button(onClick = onReturnToPath, shape = RoundedCornerShape(18.dp), modifier = Modifier.fillMaxWidth()) {
                     Icon(Icons.Outlined.School, contentDescription = null)
@@ -345,10 +345,23 @@ private fun PracticeCompletionPanel(
 }
 
 @Composable
-private fun PracticeCompletionNextStepPanel(nextStep: PracticeCompletionNextStep) {
+private fun PracticeCompletionNextStepPanel(
+    mode: PracticeMode,
+    nextStep: PracticeCompletionNextStep,
+    repeatRequired: Boolean
+) {
+    val targetContainerColor = if (repeatRequired) {
+        MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.76f)
+    } else {
+        practiceModeColor(mode).copy(alpha = 0.76f)
+    }
+    val targetIconColor = if (repeatRequired) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary
+    val containerColor by animateColorAsState(targetValue = targetContainerColor, label = "practiceCompletionNextStepTone")
+    val iconColor by animateColorAsState(targetValue = targetIconColor, label = "practiceCompletionNextStepIconTone")
+
     Surface(
         shape = RoundedCornerShape(16.dp),
-        color = MaterialTheme.colorScheme.surface.copy(alpha = 0.74f),
+        color = containerColor,
         modifier = Modifier.fillMaxWidth()
     ) {
         Row(
@@ -356,7 +369,19 @@ private fun PracticeCompletionNextStepPanel(nextStep: PracticeCompletionNextStep
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(10.dp)
         ) {
-            Icon(Icons.Outlined.CheckCircle, contentDescription = null, modifier = Modifier.size(18.dp))
+            Box(
+                modifier = Modifier
+                    .size(30.dp)
+                    .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.72f), CircleShape),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    Icons.Outlined.CheckCircle,
+                    contentDescription = null,
+                    tint = iconColor,
+                    modifier = Modifier.size(18.dp)
+                )
+            }
             Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
                 Text(nextStep.title, style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Black)
                 Text(nextStep.message, style = MaterialTheme.typography.bodySmall)
