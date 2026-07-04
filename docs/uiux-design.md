@@ -179,9 +179,10 @@ Implemented:
 - Added tested compact path feedback after completed lessons change the next recommended action.
 - Added tested outcome-aware path action tones so next-lesson, due-review, and repair feedback read distinctly.
 - Added tested compact locked-lesson copy that names the previous recall gate without adding path card height.
+- Added tested path-stage progress copy so filtered lesson groups show stage fluency in the existing journey header.
 
 ## Next Polish Pass
 
 Implement next:
 
-- Add compact path-stage progress copy so filtered lesson groups communicate how much of that stage is done.
+- Add a compact path-stage empty state when a filter hides every actionable lesson.

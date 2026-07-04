@@ -79,6 +79,10 @@ data class LessonLockCopy(
     val message: String
 )
 
+data class StageProgressCopy(
+    val message: String
+)
+
 enum class PathFeedbackAction {
     StartLesson,
     OpenPractice

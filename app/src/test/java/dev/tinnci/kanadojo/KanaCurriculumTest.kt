@@ -118,6 +118,34 @@ class KanaCurriculumTest {
     }
 
     @Test
+    fun pathStageProgressCopySummarizesWholePathWhenUnfiltered() {
+        val lessons = lessonsFor(Script.Hiragana)
+
+        val copy = pathStageProgressCopyFor(
+            selectedStage = null,
+            lessons = lessons,
+            mastery = emptyMap()
+        )
+
+        assertEquals("0/21 fluent", copy.message)
+    }
+
+    @Test
+    fun pathStageProgressCopySummarizesSelectedStageFluency() {
+        val lessons = lessonsFor(Script.Hiragana)
+        val anchor = lessons.first { it.stage == LearningStage.Anchor }
+        val mastery = anchor.items.associate { it.id to 4 }
+
+        val copy = pathStageProgressCopyFor(
+            selectedStage = LearningStage.Anchor,
+            lessons = lessons,
+            mastery = mastery
+        )
+
+        assertEquals("Anchor 1/1 fluent", copy.message)
+    }
+
+    @Test
     fun nextPathLessonReturnsFirstUnfinishedUnlockedLesson() {
         val lessons = lessonsFor(Script.Hiragana)
         val lessonOneFluent = lessons[0].items.associate { it.id to 4 }

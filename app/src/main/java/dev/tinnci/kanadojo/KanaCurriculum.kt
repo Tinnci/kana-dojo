@@ -366,6 +366,17 @@ fun lessonLockCopyFor(lesson: KanaLesson, lessons: List<KanaLesson>, mastery: Ma
     return LessonLockCopy(message = "Need ${previous.title} recall 2")
 }
 
+fun pathStageProgressCopyFor(
+    selectedStage: LearningStage?,
+    lessons: List<KanaLesson>,
+    mastery: Map<String, Int>
+): StageProgressCopy {
+    val stageLessons = selectedStage?.let { stage -> lessons.filter { it.stage == stage } } ?: lessons
+    val fluentCount = stageLessons.count { lessonAverageMastery(it, mastery) >= 4f }
+    val prefix = selectedStage?.label?.let { "$it " }.orEmpty()
+    return StageProgressCopy(message = "$prefix$fluentCount/${stageLessons.size} fluent")
+}
+
 fun nextPathLesson(lessons: List<KanaLesson>, mastery: Map<String, Int>): KanaLesson? =
     lessons.firstOrNull { lesson ->
         isLessonUnlocked(lesson, lessons, mastery) && lessonAverageMastery(lesson, mastery) < 4f

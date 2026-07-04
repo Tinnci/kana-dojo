@@ -77,6 +77,7 @@ fun LessonPathScreen(
     val visibleLessons = remember(lessons, selectedStage) {
         selectedStage?.let { stage -> lessons.filter { it.stage == stage } } ?: lessons
     }
+    val stageProgressCopy = pathStageProgressCopyFor(selectedStage, lessons, mastery)
     val mistakeSnapshot = mistakeIds.toList()
     val masterySnapshot = mastery.toMap()
     val reviewCount = remember(scriptItems, mistakeSnapshot, masterySnapshot) {
@@ -219,8 +220,7 @@ fun LessonPathScreen(
             StageFilterRow(
                 stages = lessonStages,
                 selectedStage = selectedStage,
-                visibleCount = visibleLessons.size,
-                totalCount = lessons.size,
+                progressCopy = stageProgressCopy,
                 onStageChange = { selectedStage = it }
             )
         }
@@ -257,8 +257,7 @@ private data class CompletedLessonResult(
 private fun StageFilterRow(
     stages: List<LearningStage>,
     selectedStage: LearningStage?,
-    visibleCount: Int,
-    totalCount: Int,
+    progressCopy: StageProgressCopy,
     onStageChange: (LearningStage?) -> Unit
 ) {
     Surface(
@@ -276,7 +275,7 @@ private fun StageFilterRow(
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text("Journey", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Black)
                 Spacer(Modifier.weight(1f))
-                Text("$visibleCount/$totalCount", style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Text(progressCopy.message, style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
             LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
                 item {
