@@ -668,7 +668,7 @@ fun practiceActionRationaleCopyFor(action: ReviewCompletionAction, stats: Lesson
     when (action) {
         ReviewCompletionAction.ReturnToPath -> PracticeActionRationaleCopy(
             title = "Path is ready",
-            message = "A clean queue means new prompts can build on this recall."
+            message = "A clean queue means new prompts can build on this recall; repeat is optional."
         )
 
         ReviewCompletionAction.RepeatQueue -> if (stats.attempts == 0) {

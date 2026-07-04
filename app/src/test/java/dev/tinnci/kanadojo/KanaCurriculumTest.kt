@@ -1222,6 +1222,7 @@ class KanaCurriculumTest {
 
         assertEquals("Path is ready", copy.title)
         assertTrue(copy.message.contains("clean queue"))
+        assertTrue(copy.message.contains("repeat is optional"))
     }
 
     @Test
