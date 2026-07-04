@@ -79,8 +79,8 @@ fun MistakePracticeScreen(
     var currentIndex by remember(selectedMode, queueSignature) { mutableIntStateOf(0) }
     var feedback by remember(selectedMode, practiceItems, currentIndex) { mutableStateOf<AnswerFeedback?>(null) }
     var sessionStats by remember(selectedMode, queueSignature) { mutableStateOf(LessonSessionStats()) }
-    var repairedIds by remember(selectedMode, queueSignature) { mutableStateOf(emptySet<String>()) }
-    var missedIds by remember(selectedMode, queueSignature) { mutableStateOf(emptySet<String>()) }
+    var correctCounts by remember(selectedMode, queueSignature) { mutableStateOf(emptyMap<String, Int>()) }
+    var missCounts by remember(selectedMode, queueSignature) { mutableStateOf(emptyMap<String, Int>()) }
     val queueComplete = currentIndex >= practiceItems.size
     val current = if (practiceItems.isEmpty() || queueComplete) null else practiceItems[currentIndex]
     val exercise = current?.let { practiceExerciseFor(it, selectedMode, currentIndex) }
@@ -133,19 +133,21 @@ fun MistakePracticeScreen(
             return@Column
         }
         if (queueComplete) {
+            val outcomes = reviewSessionOutcomesFor(correctCounts, missCounts)
             PracticeCompletionPanel(
                 stats = sessionStats,
-                repairedCount = repairedIds.size,
-                repairedItems = practiceItems.filter { it.id in repairedIds },
-                missedItems = practiceItems.filter { it.id in missedIds },
+                outcomes = outcomes,
+                cleanItems = practiceItems.filter { it.id in outcomes.cleanIds },
+                repairedItems = practiceItems.filter { it.id in outcomes.repairedIds },
+                shakyItems = practiceItems.filter { it.id in outcomes.shakyIds },
                 queueSize = practiceItems.size,
                 onReturnToPath = onReturnToPath,
                 onRepeat = {
                     currentIndex = 0
                     feedback = null
                     sessionStats = LessonSessionStats()
-                    repairedIds = emptySet()
-                    missedIds = emptySet()
+                    correctCounts = emptyMap()
+                    missCounts = emptyMap()
                     showIntro = true
                 }
             )
@@ -174,9 +176,9 @@ fun MistakePracticeScreen(
                         sessionStats.copy(missed = sessionStats.missed + 1)
                     }
                     if (correct) {
-                        repairedIds = repairedIds + current.id
+                        correctCounts = correctCounts + (current.id to ((correctCounts[current.id] ?: 0) + 1))
                     } else {
-                        missedIds = missedIds + current.id
+                        missCounts = missCounts + (current.id to ((missCounts[current.id] ?: 0) + 1))
                     }
                     onResult(listOf(current), correct)
                 }
@@ -192,9 +194,10 @@ fun MistakePracticeScreen(
 @Composable
 private fun PracticeCompletionPanel(
     stats: LessonSessionStats,
-    repairedCount: Int,
+    outcomes: ReviewSessionOutcomes,
+    cleanItems: List<KanaItem>,
     repairedItems: List<KanaItem>,
-    missedItems: List<KanaItem>,
+    shakyItems: List<KanaItem>,
     queueSize: Int,
     onReturnToPath: () -> Unit,
     onRepeat: () -> Unit
@@ -235,15 +238,19 @@ private fun PracticeCompletionPanel(
             }
             LinearProgressIndicator(progress = { accuracy }, modifier = Modifier.fillMaxWidth())
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
-                FocusMetric("Repaired", repairedCount, Modifier.weight(1f))
-                FocusMetric("Missed", stats.missed, Modifier.weight(1f))
+                FocusMetric("Clean", outcomes.cleanIds.size, Modifier.weight(1f))
+                FocusMetric("Repaired", outcomes.repairedIds.size, Modifier.weight(1f))
+                FocusMetric("Shaky", outcomes.shakyIds.size, Modifier.weight(1f))
                 FocusMetric("Queue", queueSize, Modifier.weight(1f))
+            }
+            if (cleanItems.isNotEmpty()) {
+                CompletionKanaGroup("Clean", cleanItems.take(8))
             }
             if (repairedItems.isNotEmpty()) {
                 CompletionKanaGroup("Repaired", repairedItems.take(8))
             }
-            if (missedItems.isNotEmpty()) {
-                CompletionKanaGroup("Missed", missedItems.take(8))
+            if (shakyItems.isNotEmpty()) {
+                CompletionKanaGroup("Still shaky", shakyItems.take(8))
             }
             if (stable) {
                 Button(onClick = onReturnToPath, shape = RoundedCornerShape(18.dp), modifier = Modifier.fillMaxWidth()) {

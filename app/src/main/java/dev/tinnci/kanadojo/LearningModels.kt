@@ -35,6 +35,12 @@ data class PracticeIntroCopy(
     val actionLabel: String
 )
 
+data class ReviewSessionOutcomes(
+    val cleanIds: Set<String>,
+    val repairedIds: Set<String>,
+    val shakyIds: Set<String>
+)
+
 fun reviewIntroCopyFor(mode: PracticeMode, dueCount: Int, weakCount: Int): PracticeIntroCopy =
     when (mode) {
         PracticeMode.Weak -> when {
@@ -145,3 +151,12 @@ fun reviewCompletionActionFor(stats: LessonSessionStats): ReviewCompletionAction
     } else {
         ReviewCompletionAction.RepeatQueue
     }
+
+fun reviewSessionOutcomesFor(correctCounts: Map<String, Int>, missCounts: Map<String, Int>): ReviewSessionOutcomes {
+    val ids = correctCounts.keys + missCounts.keys
+    return ReviewSessionOutcomes(
+        cleanIds = ids.filter { id -> (correctCounts[id] ?: 0) > 0 && (missCounts[id] ?: 0) == 0 }.toSet(),
+        repairedIds = ids.filter { id -> (correctCounts[id] ?: 0) > 0 && (missCounts[id] ?: 0) > 0 }.toSet(),
+        shakyIds = ids.filter { id -> (correctCounts[id] ?: 0) == 0 && (missCounts[id] ?: 0) > 0 }.toSet()
+    )
+}

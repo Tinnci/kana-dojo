@@ -448,4 +448,22 @@ class KanaCurriculumTest {
 
         assertEquals(ReviewCompletionAction.RepeatQueue, action)
     }
+
+    @Test
+    fun reviewSessionOutcomesSeparateCleanRepairedAndShakyKana() {
+        val outcomes = reviewSessionOutcomesFor(
+            correctCounts = mapOf(
+                "clean" to 1,
+                "repaired" to 1
+            ),
+            missCounts = mapOf(
+                "repaired" to 1,
+                "shaky" to 2
+            )
+        )
+
+        assertEquals(setOf("clean"), outcomes.cleanIds)
+        assertEquals(setOf("repaired"), outcomes.repairedIds)
+        assertEquals(setOf("shaky"), outcomes.shakyIds)
+    }
 }
