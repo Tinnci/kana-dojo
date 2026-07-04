@@ -220,9 +220,10 @@ Implemented:
 - Added tested compact kana-group tone chips for clean, repaired, and shaky groups.
 - Added compact section tones to practice completion dividers.
 - Added compact action-button grouping for clean practice completions.
+- Added compact action-button grouping for repeat-required practice completions.
 
 ## Next Polish Pass
 
 Implement next:
 
-- Add compact action-button grouping for repeat-required practice completions.
+- Add compact action group tone background for practice completion actions.

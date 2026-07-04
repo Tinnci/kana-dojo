@@ -363,19 +363,7 @@ private fun PracticeCompletionPanel(
                     onRepeat = onRepeat
                 )
             } else {
-                Button(
-                    onClick = onRepeat,
-                    shape = RoundedCornerShape(18.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.error,
-                        contentColor = MaterialTheme.colorScheme.onError
-                    ),
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Icon(Icons.Outlined.Replay, contentDescription = null)
-                    Spacer(Modifier.width(8.dp))
-                    Text(repeatActionLabel, fontWeight = FontWeight.Bold)
-                }
+                PracticeRepeatRequiredActionGroup(repeatActionLabel = repeatActionLabel, onRepeat = onRepeat)
             }
         }
     }
@@ -394,6 +382,25 @@ private fun PracticeCompletionActionGroup(
             Text("Back to path", fontWeight = FontWeight.Bold)
         }
         FilledTonalButton(onClick = onRepeat, shape = RoundedCornerShape(18.dp), modifier = Modifier.fillMaxWidth()) {
+            Icon(Icons.Outlined.Replay, contentDescription = null)
+            Spacer(Modifier.width(8.dp))
+            Text(repeatActionLabel, fontWeight = FontWeight.Bold)
+        }
+    }
+}
+
+@Composable
+private fun PracticeRepeatRequiredActionGroup(repeatActionLabel: String, onRepeat: () -> Unit) {
+    Column(verticalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
+        Button(
+            onClick = onRepeat,
+            shape = RoundedCornerShape(18.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = MaterialTheme.colorScheme.error,
+                contentColor = MaterialTheme.colorScheme.onError
+            ),
+            modifier = Modifier.fillMaxWidth()
+        ) {
             Icon(Icons.Outlined.Replay, contentDescription = null)
             Spacer(Modifier.width(8.dp))
             Text(repeatActionLabel, fontWeight = FontWeight.Bold)
