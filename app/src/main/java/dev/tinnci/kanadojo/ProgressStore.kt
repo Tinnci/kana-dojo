@@ -11,6 +11,13 @@ class ProgressStore(context: Context) {
     fun loadMistakes(): Set<String> =
         prefs.getStringSet("mistakes", emptySet()).orEmpty()
 
+    fun loadReduceMotion(): Boolean =
+        prefs.getBoolean("reduce_motion", false)
+
+    fun setReduceMotion(enabled: Boolean) {
+        prefs.edit().putBoolean("reduce_motion", enabled).apply()
+    }
+
     fun mark(items: List<KanaItem>, correct: Boolean) {
         val editor = prefs.edit()
         val currentMistakes = loadMistakes().toMutableSet()

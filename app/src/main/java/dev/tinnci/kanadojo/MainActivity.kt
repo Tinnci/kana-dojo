@@ -109,7 +109,7 @@ private fun KanaDojoApp() {
     val mistakes = remember { mutableStateListOf<String>() }
     var selectedScript by remember { mutableStateOf(Script.Hiragana) }
     var currentTab by remember { mutableStateOf(ScreenTab.Lessons) }
-    var reduceMotion by remember { mutableStateOf(false) }
+    var reduceMotion by remember { mutableStateOf(progressStore.loadReduceMotion()) }
 
     LaunchedEffect(Unit) {
         mastery.putAll(progressStore.loadMastery(allItems))
@@ -125,7 +125,10 @@ private fun KanaDojoApp() {
                     selectedScript = selectedScript,
                     reduceMotion = reduceMotion,
                     onScriptChange = { selectedScript = it },
-                    onReduceMotionChange = { reduceMotion = it }
+                    onReduceMotionChange = {
+                        reduceMotion = it
+                        progressStore.setReduceMotion(it)
+                    }
                 )
             },
             bottomBar = {
