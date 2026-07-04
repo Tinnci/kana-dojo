@@ -61,7 +61,7 @@ fun LessonPathScreen(
     currentEpochDay: Long,
     onSpeak: (String) -> Unit,
     reduceMotion: Boolean,
-    onOpenPractice: () -> Unit,
+    onOpenPractice: (PracticeMode) -> Unit,
     onResult: (List<KanaItem>, Boolean) -> Unit
 ) {
     val lessons = remember(script) { lessonsFor(script) }
@@ -97,7 +97,7 @@ fun LessonPathScreen(
             onExit = { activeLesson = null },
             onReviewMistakes = {
                 activeLesson = null
-                onOpenPractice()
+                onOpenPractice(PracticeMode.Weak)
             }
         )
         return
@@ -225,11 +225,16 @@ private fun DailyFocusPanel(
     dueReviewCount: Int,
     dueReviewItems: List<KanaItem>,
     onStart: () -> Unit,
-    onReview: () -> Unit
+    onReview: (PracticeMode) -> Unit
 ) {
-    val hasDueReview = dueReviewCount > 0
-    val reviewButtonLabel = if (hasDueReview) "Review due" else "Repair"
     val phaseSummary = remember(lesson) { lessonPhaseSummaryFor(lesson) }
+    val practiceRecommendation = remember(dueReviewCount, reviewCount, lesson.stage) {
+        pathPracticeRecommendationFor(
+            dueReviewCount = dueReviewCount,
+            weakCount = reviewCount,
+            stage = lesson.stage
+        )
+    }
     Surface(
         shape = RoundedCornerShape(22.dp),
         color = MaterialTheme.colorScheme.tertiaryContainer,
@@ -269,6 +274,7 @@ private fun DailyFocusPanel(
             if (dueReviewItems.isNotEmpty()) {
                 DueKanaPreviewRow(dueReviewItems.take(10))
             }
+            PracticeRecommendationPanel(practiceRecommendation)
             Row(horizontalArrangement = Arrangement.spacedBy(10.dp), modifier = Modifier.fillMaxWidth()) {
                 Button(onClick = onStart, shape = RoundedCornerShape(18.dp), modifier = Modifier.weight(1f)) {
                     Icon(Icons.Outlined.PlayArrow, contentDescription = null)
@@ -276,19 +282,57 @@ private fun DailyFocusPanel(
                     Text("Start")
                 }
                 FilledTonalButton(
-                    onClick = onReview,
-                    enabled = dueReviewCount > 0 || reviewCount > 0,
+                    onClick = { onReview(practiceRecommendation.mode) },
                     shape = RoundedCornerShape(18.dp),
                     modifier = Modifier.weight(1f)
                 ) {
                     Icon(Icons.Outlined.Replay, contentDescription = null)
                     Spacer(Modifier.width(8.dp))
-                    Text(reviewButtonLabel)
+                    Text(practiceRecommendation.actionLabel)
                 }
             }
         }
     }
 }
+
+@Composable
+private fun PracticeRecommendationPanel(recommendation: PracticeRecommendation) {
+    Surface(
+        shape = RoundedCornerShape(16.dp),
+        color = MaterialTheme.colorScheme.surface.copy(alpha = 0.74f),
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Row(
+            modifier = Modifier.padding(12.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(10.dp)
+        ) {
+            Surface(shape = CircleShape, color = practiceRecommendationColor(recommendation.mode)) {
+                Text(
+                    recommendation.mode.label.take(1),
+                    modifier = Modifier.padding(horizontal = 9.dp, vertical = 5.dp),
+                    style = MaterialTheme.typography.labelMedium,
+                    fontWeight = FontWeight.Black
+                )
+            }
+            Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                Text(recommendation.title, style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Black)
+                Text(recommendation.message, style = MaterialTheme.typography.bodySmall)
+            }
+        }
+    }
+}
+
+private fun practiceRecommendationColor(mode: PracticeMode): Color =
+    when (mode) {
+        PracticeMode.Weak -> Color(0xFFFFDFD6)
+        PracticeMode.Contrast -> Color(0xFFE7DEFF)
+        PracticeMode.Sound -> Color(0xFFE2EEF8)
+        PracticeMode.Writing -> Color(0xFFDCEBDD)
+        PracticeMode.Speed -> Color(0xFFFFF1BC)
+        PracticeMode.Cross -> Color(0xFFE2EEF8)
+        PracticeMode.Mixed -> Color(0xFFDCEBDD)
+    }
 
 @Composable
 private fun LessonPhasePreviewRow(phases: List<LessonPhaseCount>) {

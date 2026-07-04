@@ -49,6 +49,7 @@ import androidx.compose.ui.unit.sp
 @Composable
 fun MistakePracticeScreen(
     script: Script,
+    initialMode: PracticeMode,
     allItems: List<KanaItem>,
     mistakeIds: List<String>,
     mastery: Map<String, Int>,
@@ -60,7 +61,7 @@ fun MistakePracticeScreen(
     onReturnToPath: () -> Unit
 ) {
     val scriptItems = remember(script) { itemsFor(script) }
-    var selectedMode by remember(script) { mutableStateOf(PracticeMode.Weak) }
+    var selectedMode by remember(script, initialMode) { mutableStateOf(initialMode) }
     val mistakeSnapshot = mistakeIds.toList()
     val masterySnapshot = mastery.toMap()
     val dueSnapshot = reviewDueEpochDays.toMap()

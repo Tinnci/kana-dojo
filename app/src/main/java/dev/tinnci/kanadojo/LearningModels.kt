@@ -35,11 +35,60 @@ data class PracticeIntroCopy(
     val actionLabel: String
 )
 
+data class PracticeRecommendation(
+    val mode: PracticeMode,
+    val title: String,
+    val message: String,
+    val actionLabel: String
+)
+
 data class ReviewSessionOutcomes(
     val cleanIds: Set<String>,
     val repairedIds: Set<String>,
     val shakyIds: Set<String>
 )
+
+fun pathPracticeRecommendationFor(
+    dueReviewCount: Int,
+    weakCount: Int,
+    stage: LearningStage
+): PracticeRecommendation =
+    when {
+        dueReviewCount > 0 -> PracticeRecommendation(
+            mode = PracticeMode.Weak,
+            title = "Due review",
+            message = "$dueReviewCount kana are ready for spaced recall.",
+            actionLabel = "Review due"
+        )
+
+        weakCount > 0 -> PracticeRecommendation(
+            mode = PracticeMode.Weak,
+            title = "Repair weak kana",
+            message = "$weakCount kana need a quick repair pass.",
+            actionLabel = "Repair"
+        )
+
+        stage == LearningStage.Confusable -> PracticeRecommendation(
+            mode = PracticeMode.Contrast,
+            title = "Contrast drill",
+            message = "Separate lookalike kana before the next lesson.",
+            actionLabel = "Contrast"
+        )
+
+        stage == LearningStage.ShapeHeavy || stage == LearningStage.Special -> PracticeRecommendation(
+            mode = PracticeMode.Writing,
+            title = "Writing reps",
+            message = "Trace the shapes until the stroke pattern feels stable.",
+            actionLabel = "Write"
+        )
+
+        else -> PracticeRecommendation(
+            mode = PracticeMode.Sound,
+            title = "Sound recall",
+            message = "Listen first so kana map directly to Japanese sound.",
+            actionLabel = "Listen"
+        )
+    }
 
 fun reviewIntroCopyFor(mode: PracticeMode, dueCount: Int, weakCount: Int): PracticeIntroCopy =
     when (mode) {

@@ -165,9 +165,10 @@ Implemented:
 - Added tested lesson pacing so recognition, listening, matching, writing, and contrast prompts appear in deliberate phases.
 - Added a lesson phase mix preview to the daily focus panel so learners see read, hear, match, write, and contrast counts before starting.
 - Added compact lesson-node phase totals so the full path communicates each lesson's exercise load at a glance.
+- Added a tested path practice recommendation that opens the recommended mode based on due review, weak kana, and lesson stage.
 
 ## Next Polish Pass
 
 Implement next:
 
-- Add a compact practice-mode recommendation on the path based on due review, weak kana, and current lesson stage.
+- Add stronger practice-mode empty states so recommended sound, writing, or contrast queues explain their fallback clearly.

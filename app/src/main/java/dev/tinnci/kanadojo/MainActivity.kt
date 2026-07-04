@@ -42,6 +42,7 @@ private fun KanaDojoApp() {
     val reviewDueEpochDays = remember { mutableStateMapOf<String, Long>() }
     var selectedScript by remember { mutableStateOf(Script.Hiragana) }
     var currentTab by remember { mutableStateOf(ScreenTab.Lessons) }
+    var requestedPracticeMode by remember { mutableStateOf(PracticeMode.Weak) }
     var reduceMotion by remember { mutableStateOf(progressStore.loadReduceMotion()) }
     var soundEnabled by remember { mutableStateOf(progressStore.loadSoundEnabled()) }
     var hapticsEnabled by remember { mutableStateOf(progressStore.loadHapticsEnabled()) }
@@ -116,7 +117,10 @@ private fun KanaDojoApp() {
                         currentEpochDay = currentEpochDay(),
                         onSpeak = speakKana,
                         reduceMotion = reduceMotion,
-                        onOpenPractice = { currentTab = ScreenTab.Mistakes },
+                        onOpenPractice = { mode ->
+                            requestedPracticeMode = mode
+                            currentTab = ScreenTab.Mistakes
+                        },
                         onResult = markResult
                     )
 
@@ -128,6 +132,7 @@ private fun KanaDojoApp() {
 
                     ScreenTab.Mistakes -> MistakePracticeScreen(
                         script = selectedScript,
+                        initialMode = requestedPracticeMode,
                         allItems = allItems,
                         mistakeIds = mistakes,
                         mastery = mastery,

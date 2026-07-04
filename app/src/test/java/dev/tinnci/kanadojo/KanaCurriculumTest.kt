@@ -158,6 +158,28 @@ class KanaCurriculumTest {
     }
 
     @Test
+    fun pathPracticeRecommendationPrioritizesDueReviewThenWeakRepair() {
+        val due = pathPracticeRecommendationFor(dueReviewCount = 3, weakCount = 2, stage = LearningStage.Confusable)
+        val weak = pathPracticeRecommendationFor(dueReviewCount = 0, weakCount = 2, stage = LearningStage.Confusable)
+
+        assertEquals(PracticeMode.Weak, due.mode)
+        assertEquals("Review due", due.actionLabel)
+        assertEquals(PracticeMode.Weak, weak.mode)
+        assertEquals("Repair", weak.actionLabel)
+    }
+
+    @Test
+    fun pathPracticeRecommendationUsesLessonStageWhenReviewIsClear() {
+        val contrast = pathPracticeRecommendationFor(dueReviewCount = 0, weakCount = 0, stage = LearningStage.Confusable)
+        val writing = pathPracticeRecommendationFor(dueReviewCount = 0, weakCount = 0, stage = LearningStage.ShapeHeavy)
+        val sound = pathPracticeRecommendationFor(dueReviewCount = 0, weakCount = 0, stage = LearningStage.RegularRows)
+
+        assertEquals(PracticeMode.Contrast, contrast.mode)
+        assertEquals(PracticeMode.Writing, writing.mode)
+        assertEquals(PracticeMode.Sound, sound.mode)
+    }
+
+    @Test
     fun weakPracticeFiltersMistakesToSelectedScript() {
         val allItems = hiraganaItems + katakanaItems
         val hiraganaMistake = hiraganaItems.first { it.romaji == "a" }
