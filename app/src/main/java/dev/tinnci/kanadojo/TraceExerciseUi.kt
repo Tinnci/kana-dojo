@@ -255,10 +255,11 @@ private fun TraceCuePanel(cues: List<TraceFeedbackCue>) {
 
 @Composable
 private fun TraceComparisonPanel(item: KanaItem, points: List<Offset>, replayProgress: Float) {
+    val guidance = traceGuidanceFor(item)
     Column(verticalArrangement = Arrangement.spacedBy(10.dp), modifier = Modifier.fillMaxWidth()) {
         Row(horizontalArrangement = Arrangement.spacedBy(10.dp), modifier = Modifier.fillMaxWidth()) {
             TraceComparisonTile(label = "Model", modifier = Modifier.weight(1f)) {
-                Text(item.kana, fontSize = 64.sp, color = Color(0x882F5D50), fontWeight = FontWeight.Black)
+                TraceModelGlyph(item = item, guidance = guidance)
             }
             TraceComparisonTile(label = "Yours", modifier = Modifier.weight(1f)) {
                 Canvas(modifier = Modifier.fillMaxSize()) {
@@ -286,8 +287,30 @@ private fun TraceComparisonPanel(item: KanaItem, points: List<Offset>, replayPro
                 }
             }
         }
-        traceGuidanceFor(item)?.let { guidance ->
+        guidance?.let { guidance ->
             TraceGuidancePanel(guidance = guidance)
+        }
+    }
+}
+
+@Composable
+private fun TraceModelGlyph(item: KanaItem, guidance: TraceGuidance?) {
+    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+        Text(item.kana, fontSize = 64.sp, color = Color(0x882F5D50), fontWeight = FontWeight.Black)
+        Canvas(modifier = Modifier.fillMaxSize()) {
+            guidance?.overlays.orEmpty().forEach { overlay ->
+                val start = Offset(size.width * overlay.start.x, size.height * overlay.start.y)
+                val end = Offset(size.width * overlay.end.x, size.height * overlay.end.y)
+                drawLine(
+                    color = Color(0xFFFFB84D),
+                    start = start,
+                    end = end,
+                    strokeWidth = 3.dp.toPx(),
+                    cap = StrokeCap.Round
+                )
+                drawCircle(color = Color(0xFF2F5D50), radius = 4.dp.toPx(), center = start)
+                drawCircle(color = Color(0xFFFFB84D), radius = 4.dp.toPx(), center = end)
+            }
         }
     }
 }
@@ -325,6 +348,9 @@ private fun TraceGuidancePanel(guidance: TraceGuidance) {
             Text(guidance.title, style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Black)
             guidance.cues.forEach { cue ->
                 Text(cue, style = MaterialTheme.typography.bodyMedium)
+            }
+            guidance.overlays.forEach { overlay ->
+                Text("${overlay.label}: ${overlay.cue}", style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Bold)
             }
         }
     }

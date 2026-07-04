@@ -93,6 +93,33 @@ class TraceScoringTest {
     }
 
     @Test
+    fun highConfusionKatakanaHaveTraceOverlays() {
+        val overlayKana = listOf("シ", "ツ", "ソ", "ン")
+
+        overlayKana.forEach { kana ->
+            val item = katakanaItems.first { it.kana == kana }
+            val guidance = traceGuidanceFor(item)
+
+            assertTrue("$kana should have overlay cues", guidance!!.overlays.isNotEmpty())
+            assertTrue(
+                guidance.overlays.all {
+                    it.start.x in 0f..1f &&
+                        it.start.y in 0f..1f &&
+                        it.end.x in 0f..1f &&
+                        it.end.y in 0f..1f
+                }
+            )
+        }
+    }
+
+    @Test
+    fun hiraganaTraceGuidanceDoesNotUseKatakanaOverlays() {
+        val item = hiraganaItems.first { it.kana == "さ" }
+
+        assertEquals(emptyList<TraceOverlayCue>(), traceGuidanceFor(item)?.overlays)
+    }
+
+    @Test
     fun traceGuidanceIgnoresNonConfusableKana() {
         val item = hiraganaItems.first { it.kana == "あ" }
 
