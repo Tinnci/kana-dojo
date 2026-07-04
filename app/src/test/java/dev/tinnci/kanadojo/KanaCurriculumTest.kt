@@ -1121,6 +1121,15 @@ class KanaCurriculumTest {
     }
 
     @Test
+    fun practiceCompletionActionGroupSummariesCoverEveryAction() {
+        val summaries = ReviewCompletionAction.entries.map { practiceCompletionActionGroupSummaryFor(it) }
+
+        assertEquals(ReviewCompletionAction.entries.size, summaries.size)
+        assertTrue(summaries.all { it.startsWith("Actions:") })
+        assertTrue(summaries.all { it.length <= 40 })
+    }
+
+    @Test
     fun practiceCompletionDisabledActionCopyExplainsUnavailableRepeat() {
         val copy = practiceCompletionDisabledActionCopyFor(
             action = ReviewCompletionAction.RepeatQueue,
