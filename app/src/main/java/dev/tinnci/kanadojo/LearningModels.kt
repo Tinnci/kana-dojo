@@ -588,6 +588,11 @@ fun practiceCompletionNextStepFor(mode: PracticeMode, stats: LessonSessionStats)
             message = "Return to the path and let reading or sound recall test the same kana."
         )
 
+        mode == PracticeMode.Sound -> PracticeCompletionNextStep(
+            title = "Sound recall is clear",
+            message = "Mix this with reading practice next so kana stay linked to sound, not romaji."
+        )
+
         else -> PracticeCompletionNextStep(
             title = "Ready for path",
             message = "Clean queue. Continue while recall is warm."

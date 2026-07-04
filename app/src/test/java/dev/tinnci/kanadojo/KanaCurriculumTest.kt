@@ -1115,11 +1115,22 @@ class KanaCurriculumTest {
     @Test
     fun practiceCompletionNextStepUsesGenericPathCopyForCleanNonWritingQueues() {
         val nextStep = practiceCompletionNextStepFor(
-            mode = PracticeMode.Sound,
+            mode = PracticeMode.Weak,
             stats = LessonSessionStats(correct = 6, missed = 0)
         )
 
         assertEquals("Ready for path", nextStep.title)
+    }
+
+    @Test
+    fun practiceCompletionNextStepExplainsCleanSoundQueues() {
+        val nextStep = practiceCompletionNextStepFor(
+            mode = PracticeMode.Sound,
+            stats = LessonSessionStats(correct = 6, missed = 0)
+        )
+
+        assertEquals("Sound recall is clear", nextStep.title)
+        assertTrue(nextStep.message.contains("not romaji"))
     }
 
     @Test

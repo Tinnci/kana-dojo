@@ -191,9 +191,10 @@ Implemented:
 - Added tested compact chart-card mastery copy so pips have readable level labels.
 - Added tested compact chart legend copy that explains fluent versus mastered.
 - Added tested practice completion next-step copy for clean writing-focused queues.
+- Added tested practice completion next-step copy for clean sound-focused queues.
 
 ## Next Polish Pass
 
 Implement next:
 
-- Add compact practice completion next-step copy for clean sound-focused queues.
+- Add compact practice completion next-step copy for clean contrast-focused queues.
