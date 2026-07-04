@@ -57,10 +57,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Tab
-import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -109,7 +109,7 @@ private enum class Script(val label: String) {
 private enum class ScreenTab(val label: String) {
     Lessons("Lessons"),
     Chart("Chart"),
-    Mistakes("Mistakes")
+    Mistakes("Practice")
 }
 
 private enum class ExerciseKind {
@@ -117,6 +117,12 @@ private enum class ExerciseKind {
     RomajiToKana,
     PairMatch,
     TraceKana
+}
+
+private enum class PracticeMode(val label: String, val title: String, val subtitle: String) {
+    Weak("Weak", "Weak repair", "Replay misses and low-mastery kana."),
+    Contrast("Contrast", "Lookalike contrast", "Separate symbols that are easy to confuse."),
+    Mixed("Mixed", "Mixed recall", "Keep familiar kana fast and automatic.")
 }
 
 private enum class LearningStage(val label: String, val description: String) {
@@ -259,6 +265,7 @@ private fun KanaDojoApp() {
                     )
 
                     ScreenTab.Mistakes -> MistakePracticeScreen(
+                        script = selectedScript,
                         allItems = allItems,
                         mistakeIds = mistakes,
                         mastery = mastery,
@@ -1097,23 +1104,30 @@ private fun MasteryPips(level: Int) {
 
 @Composable
 private fun MistakePracticeScreen(
+    script: Script,
     allItems: List<KanaItem>,
     mistakeIds: List<String>,
     mastery: Map<String, Int>,
     onSpeak: (String) -> Unit,
     onResult: (List<KanaItem>, Boolean) -> Unit
 ) {
-    val weakItems = remember(mistakeIds, mastery) {
-        val byId = allItems.associateBy { it.id }
-        mistakeIds.mapNotNull { byId[it] }.ifEmpty {
-            allItems.sortedBy { mastery[it.id] ?: 0 }.take(6)
-        }
+    val scriptItems = remember(script) { itemsFor(script) }
+    var selectedMode by remember(script) { mutableStateOf(PracticeMode.Weak) }
+    val practiceItems = remember(script, selectedMode, mistakeIds, mastery) {
+        practiceItemsFor(
+            mode = selectedMode,
+            scriptItems = scriptItems,
+            mistakeIds = mistakeIds,
+            allItems = allItems,
+            mastery = mastery
+        )
     }
-    var currentIndex by remember(weakItems) { mutableIntStateOf(0) }
-    var feedback by remember(weakItems, currentIndex) { mutableStateOf<AnswerFeedback?>(null) }
-    val current = weakItems.getOrNull(currentIndex % weakItems.size)
+    var currentIndex by remember(selectedMode, practiceItems) { mutableIntStateOf(0) }
+    var feedback by remember(selectedMode, practiceItems, currentIndex) { mutableStateOf<AnswerFeedback?>(null) }
+    val current = practiceItems.getOrNull(currentIndex % practiceItems.size)
+    val exercise = current?.let { practiceExerciseFor(it, selectedMode, currentIndex) }
 
-    if (current == null) {
+    if (current == null || exercise == null) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             Text("No kana to review yet.")
         }
@@ -1126,15 +1140,21 @@ private fun MistakePracticeScreen(
             .padding(20.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        HeroPanel("Mistake replay", "Short, targeted review for weak kana.")
+        HeroPanel(selectedMode.title, selectedMode.subtitle)
+        PracticeModeTabs(selectedMode = selectedMode, onModeChange = { selectedMode = it })
+        Text(
+            "${practiceItems.size} kana in this queue - ${script.label}",
+            style = MaterialTheme.typography.labelLarge,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
         ExerciseCard(
-            exercise = buildMistakeExercise(current),
-            allItems = itemsFor(current.script),
+            exercise = exercise,
+            allItems = scriptItems,
             onSpeak = onSpeak,
             feedback = feedback,
             onAnswer = { correct ->
                 if (feedback == null) {
-                    feedback = AnswerFeedback(correct = correct, answer = "${current.kana} ${current.romaji}")
+                    feedback = AnswerFeedback(correct = correct, answer = correctAnswerFor(exercise))
                     onResult(listOf(current), correct)
                 }
             },
@@ -1143,6 +1163,23 @@ private fun MistakePracticeScreen(
                 feedback = null
             }
         )
+    }
+}
+
+@Composable
+private fun PracticeModeTabs(selectedMode: PracticeMode, onModeChange: (PracticeMode) -> Unit) {
+    PrimaryTabRow(
+        selectedTabIndex = PracticeMode.entries.indexOf(selectedMode),
+        containerColor = MaterialTheme.colorScheme.background,
+        contentColor = MaterialTheme.colorScheme.primary
+    ) {
+        PracticeMode.entries.forEach { mode ->
+            Tab(
+                selected = selectedMode == mode,
+                onClick = { onModeChange(mode) },
+                text = { Text(mode.label, fontWeight = if (selectedMode == mode) FontWeight.Bold else FontWeight.Medium) }
+            )
+        }
     }
 }
 
@@ -1192,6 +1229,50 @@ private fun buildMistakeExercise(item: KanaItem): Exercise =
         kind = listOf(ExerciseKind.RomajiToKana, ExerciseKind.KanaToRomaji, ExerciseKind.TraceKana).random(Random(item.id.hashCode())),
         items = listOf(item)
     )
+
+private fun practiceItemsFor(
+    mode: PracticeMode,
+    scriptItems: List<KanaItem>,
+    mistakeIds: List<String>,
+    allItems: List<KanaItem>,
+    mastery: Map<String, Int>
+): List<KanaItem> {
+    val byId = allItems.associateBy { it.id }
+    return when (mode) {
+        PracticeMode.Weak -> mistakeIds
+            .mapNotNull { byId[it] }
+            .filter { it.script == scriptItems.firstOrNull()?.script }
+            .ifEmpty { scriptItems.sortedBy { mastery[it.id] ?: 0 }.take(6) }
+
+        PracticeMode.Contrast -> scriptItems
+            .filter { it.confusable.isNotEmpty() }
+            .ifEmpty { scriptItems.sortedBy { mastery[it.id] ?: 0 }.take(6) }
+
+        PracticeMode.Mixed -> scriptItems
+            .filter { (mastery[it.id] ?: 0) >= 2 }
+            .ifEmpty { scriptItems.sortedBy { mastery[it.id] ?: 0 }.take(8) }
+            .shuffled(Random(scriptItems.firstOrNull()?.script?.name.hashCode()))
+    }
+}
+
+private fun practiceExerciseFor(item: KanaItem, mode: PracticeMode, index: Int): Exercise =
+    when (mode) {
+        PracticeMode.Weak -> buildMistakeExercise(item)
+        PracticeMode.Contrast -> Exercise(
+            kind = if (index % 3 == 2) ExerciseKind.TraceKana else ExerciseKind.RomajiToKana,
+            items = listOf(item)
+        )
+
+        PracticeMode.Mixed -> Exercise(
+            kind = when (index % 4) {
+                0 -> ExerciseKind.KanaToRomaji
+                1 -> ExerciseKind.RomajiToKana
+                2 -> ExerciseKind.TraceKana
+                else -> ExerciseKind.KanaToRomaji
+            },
+            items = listOf(item)
+        )
+    }
 
 private fun correctAnswerFor(exercise: Exercise): String =
     when (exercise.kind) {
