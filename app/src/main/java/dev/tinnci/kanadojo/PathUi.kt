@@ -80,9 +80,10 @@ fun LessonPathScreen(
         reviewCountFor(scriptItems, mistakeSnapshot, masterySnapshot)
     }
     val dueSnapshot = reviewDueEpochDays.toMap()
-    val dueReviewCount = remember(scriptItems, dueSnapshot, currentEpochDay, masterySnapshot) {
-        dueReviewCountFor(scriptItems, dueSnapshot, currentEpochDay, masterySnapshot)
+    val dueReviewItems = remember(scriptItems, dueSnapshot, currentEpochDay, masterySnapshot) {
+        dueReviewItemsFor(scriptItems, dueSnapshot, currentEpochDay, masterySnapshot)
     }
+    val dueReviewCount = dueReviewItems.size
 
     if (activeLesson != null) {
         LessonRunner(
@@ -124,6 +125,7 @@ fun LessonPathScreen(
                 snapshot = snapshot,
                 reviewCount = reviewCount,
                 dueReviewCount = dueReviewCount,
+                dueReviewItems = dueReviewItems,
                 onStart = { activeLesson = nextLesson },
                 onReview = onOpenPractice
             )
@@ -221,6 +223,7 @@ private fun DailyFocusPanel(
     snapshot: ProgressSnapshot,
     reviewCount: Int,
     dueReviewCount: Int,
+    dueReviewItems: List<KanaItem>,
     onStart: () -> Unit,
     onReview: () -> Unit
 ) {
@@ -261,6 +264,9 @@ private fun DailyFocusPanel(
                 FocusMetric("Repair", reviewCount, Modifier.weight(1f))
                 FocusMetric("Fluent", snapshot.fluent, Modifier.weight(1f))
             }
+            if (dueReviewItems.isNotEmpty()) {
+                DueKanaPreviewRow(dueReviewItems.take(10))
+            }
             Row(horizontalArrangement = Arrangement.spacedBy(10.dp), modifier = Modifier.fillMaxWidth()) {
                 Button(onClick = onStart, shape = RoundedCornerShape(18.dp), modifier = Modifier.weight(1f)) {
                     Icon(Icons.Outlined.PlayArrow, contentDescription = null)
@@ -276,6 +282,29 @@ private fun DailyFocusPanel(
                     Icon(Icons.Outlined.Replay, contentDescription = null)
                     Spacer(Modifier.width(8.dp))
                     Text(reviewButtonLabel)
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun DueKanaPreviewRow(items: List<KanaItem>) {
+    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        Text("Due today", style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Bold)
+        LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
+            items(items, key = { it.id }) { item ->
+                Surface(
+                    shape = RoundedCornerShape(14.dp),
+                    color = MaterialTheme.colorScheme.surface.copy(alpha = 0.74f)
+                ) {
+                    Column(
+                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(item.kana, fontSize = 24.sp, fontWeight = FontWeight.Black)
+                        Text(item.romaji, style = MaterialTheme.typography.labelSmall)
+                    }
                 }
             }
         }
