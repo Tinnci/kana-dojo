@@ -694,7 +694,7 @@ private fun HeroMetric(label: String, value: String, modifier: Modifier = Modifi
 private fun PathCompletionFeedbackPanel(feedback: PathCompletionFeedback, onAction: () -> Unit) {
     Surface(
         shape = RoundedCornerShape(20.dp),
-        color = MaterialTheme.colorScheme.primaryContainer,
+        color = pathActionToneColor(feedback.tone),
         tonalElevation = 2.dp,
         modifier = Modifier.fillMaxWidth()
     ) {
@@ -721,6 +721,14 @@ private fun PathCompletionFeedbackPanel(feedback: PathCompletionFeedback, onActi
         }
     }
 }
+
+@Composable
+private fun pathActionToneColor(tone: PathActionTone): Color =
+    when (tone) {
+        PathActionTone.Advance -> MaterialTheme.colorScheme.primaryContainer
+        PathActionTone.Review -> Color(0xFFFFF1BC)
+        PathActionTone.Repair -> Color(0xFFFFDFD6)
+    }
 
 @Composable
 private fun PathResumeCuePanel(cue: LessonResumeCue, onResume: () -> Unit) {

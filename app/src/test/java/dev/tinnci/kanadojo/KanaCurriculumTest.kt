@@ -689,6 +689,7 @@ class KanaCurriculumTest {
         assertEquals(PathFeedbackAction.OpenPractice, feedback.action)
         assertEquals(PracticeMode.Weak, feedback.practiceMode)
         assertEquals("Misses queued", feedback.title)
+        assertEquals(PathActionTone.Repair, feedback.tone)
     }
 
     @Test
@@ -709,6 +710,26 @@ class KanaCurriculumTest {
         assertEquals(PathFeedbackAction.StartLesson, feedback.action)
         assertEquals(lessons[1].index, feedback.targetLessonIndex)
         assertEquals("Start next", feedback.actionLabel)
+        assertEquals(PathActionTone.Advance, feedback.tone)
+    }
+
+    @Test
+    fun pathCompletionFeedbackColorsDueReviewSeparatelyFromRepair() {
+        val lessons = lessonsFor(Script.Hiragana)
+        val feedback = pathCompletionFeedbackFor(
+            completedLesson = lessons[0],
+            stats = LessonSessionStats(correct = 10, missed = 0),
+            nextLesson = lessons[1],
+            practiceRecommendation = PracticeRecommendation(
+                mode = PracticeMode.Weak,
+                title = "Due review",
+                message = "3 kana are ready for spaced recall.",
+                actionLabel = "Review due"
+            )
+        )
+
+        assertEquals(PathFeedbackAction.OpenPractice, feedback.action)
+        assertEquals(PathActionTone.Review, feedback.tone)
     }
 
     @Test

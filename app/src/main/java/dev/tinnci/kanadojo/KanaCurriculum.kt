@@ -70,6 +70,11 @@ fun pathCompletionFeedbackFor(
             },
             actionLabel = practiceRecommendation.actionLabel,
             action = PathFeedbackAction.OpenPractice,
+            tone = if (stats.missed > 0 || "repair" in practiceRecommendation.title.lowercase()) {
+                PathActionTone.Repair
+            } else {
+                PathActionTone.Review
+            },
             practiceMode = practiceRecommendation.mode
         )
     } else {
@@ -78,6 +83,7 @@ fun pathCompletionFeedbackFor(
             message = "${completedLesson.title} is warm. The path now points to ${nextLesson.title}.",
             actionLabel = "Start next",
             action = PathFeedbackAction.StartLesson,
+            tone = PathActionTone.Advance,
             targetLessonIndex = nextLesson.index
         )
     }

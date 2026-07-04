@@ -177,9 +177,10 @@ Implemented:
 - Added a tested lesson-start preview that names the first exercise type and drill count before opening the runner.
 - Added tested path-level resume cues after exiting a lesson mid-session.
 - Added tested compact path feedback after completed lessons change the next recommended action.
+- Added tested outcome-aware path action tones so next-lesson, due-review, and repair feedback read distinctly.
 
 ## Next Polish Pass
 
 Implement next:
 
-- Add an outcome-aware path action color so lesson feedback, review pressure, and next-lesson actions read distinctly.
+- Add compact copy for why a locked lesson is unavailable without increasing path card height.

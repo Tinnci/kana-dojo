@@ -80,11 +80,18 @@ enum class PathFeedbackAction {
     OpenPractice
 }
 
+enum class PathActionTone {
+    Advance,
+    Review,
+    Repair
+}
+
 data class PathCompletionFeedback(
     val title: String,
     val message: String,
     val actionLabel: String,
     val action: PathFeedbackAction,
+    val tone: PathActionTone,
     val targetLessonIndex: Int? = null,
     val practiceMode: PracticeMode? = null
 )
