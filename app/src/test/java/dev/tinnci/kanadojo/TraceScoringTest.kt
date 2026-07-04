@@ -56,4 +56,24 @@ class TraceScoringTest {
         assertTrue(score.progress >= 0.72f)
         assertEquals("Looks ready to check.", score.message)
     }
+
+    @Test
+    fun traceGuidanceCoversConfusableKana() {
+        val guidedKana = listOf("シ", "ツ", "ソ", "ン", "さ", "ち", "ぬ", "め")
+
+        guidedKana.forEach { kana ->
+            val item = (hiraganaItems + katakanaItems).first { it.kana == kana }
+            val guidance = traceGuidanceFor(item)
+
+            assertTrue("$kana should have trace guidance", guidance != null)
+            assertTrue(guidance!!.cues.isNotEmpty())
+        }
+    }
+
+    @Test
+    fun traceGuidanceIgnoresNonConfusableKana() {
+        val item = hiraganaItems.first { it.kana == "あ" }
+
+        assertEquals(null, traceGuidanceFor(item))
+    }
 }

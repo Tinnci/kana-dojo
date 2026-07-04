@@ -218,19 +218,24 @@ private fun replayedTracePath(points: List<Offset>, progress: Float): Path {
 
 @Composable
 private fun TraceComparisonPanel(item: KanaItem, points: List<Offset>, replayProgress: Float) {
-    Row(horizontalArrangement = Arrangement.spacedBy(10.dp), modifier = Modifier.fillMaxWidth()) {
-        TraceComparisonTile(label = "Model", modifier = Modifier.weight(1f)) {
-            Text(item.kana, fontSize = 64.sp, color = Color(0x882F5D50), fontWeight = FontWeight.Black)
-        }
-        TraceComparisonTile(label = "Yours", modifier = Modifier.weight(1f)) {
-            Canvas(modifier = Modifier.fillMaxSize()) {
-                val path = replayedTracePath(normalizedTracePoints(points, size.width, size.height), replayProgress)
-                drawPath(
-                    path = path,
-                    color = Color(0xFF2F5D50),
-                    style = Stroke(width = 4.dp.toPx(), cap = StrokeCap.Round)
-                )
+    Column(verticalArrangement = Arrangement.spacedBy(10.dp), modifier = Modifier.fillMaxWidth()) {
+        Row(horizontalArrangement = Arrangement.spacedBy(10.dp), modifier = Modifier.fillMaxWidth()) {
+            TraceComparisonTile(label = "Model", modifier = Modifier.weight(1f)) {
+                Text(item.kana, fontSize = 64.sp, color = Color(0x882F5D50), fontWeight = FontWeight.Black)
             }
+            TraceComparisonTile(label = "Yours", modifier = Modifier.weight(1f)) {
+                Canvas(modifier = Modifier.fillMaxSize()) {
+                    val path = replayedTracePath(normalizedTracePoints(points, size.width, size.height), replayProgress)
+                    drawPath(
+                        path = path,
+                        color = Color(0xFF2F5D50),
+                        style = Stroke(width = 4.dp.toPx(), cap = StrokeCap.Round)
+                    )
+                }
+            }
+        }
+        traceGuidanceFor(item)?.let { guidance ->
+            TraceGuidancePanel(guidance = guidance)
         }
     }
 }
@@ -251,6 +256,25 @@ private fun normalizedTracePoints(points: List<Offset>, width: Float, height: Fl
             x = offsetX + (point.x - minX) * scale,
             y = offsetY + (point.y - minY) * scale
         )
+    }
+}
+
+@Composable
+private fun TraceGuidancePanel(guidance: TraceGuidance) {
+    Surface(
+        shape = RoundedCornerShape(16.dp),
+        color = Color(0xFFE7DEFF),
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Column(
+            modifier = Modifier.padding(12.dp),
+            verticalArrangement = Arrangement.spacedBy(6.dp)
+        ) {
+            Text(guidance.title, style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Black)
+            guidance.cues.forEach { cue ->
+                Text(cue, style = MaterialTheme.typography.bodyMedium)
+            }
+        }
     }
 }
 
