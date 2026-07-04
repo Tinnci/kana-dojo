@@ -171,9 +171,10 @@ Implemented:
 - Added tested practice-mode tab affordances that mark current, recommended, and fallback modes for faster scanning.
 - Added tested practice queue source cues for selected-script, recommended, and cross-script practice contexts.
 - Added tested practice-session goals so each queue states what a successful pass means before and during practice.
+- Added reduced-motion-aware crossfade for practice-mode intent changes.
 
 ## Next Polish Pass
 
 Implement next:
 
-- Add lightweight motion to practice-mode changes so queue intent shifts feel clear without distracting from drills.
+- Add a compact streak-free daily rhythm indicator so the path rewards consistency without creating pressure.

@@ -1,7 +1,9 @@
 package dev.tinnci.kanadojo
 
+import androidx.compose.animation.Crossfade
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -163,14 +165,17 @@ fun MistakePracticeScreen(
             fallbackMode = fallbackMode,
             onModeChange = { selectedMode = it }
         )
-        PracticeQueuePanel(
-            mode = selectedMode,
-            sourceCue = sourceCue,
-            queueSize = practiceItems.size,
-            weakCount = weakCount,
-            dueCount = dueCount,
-            contrastCount = contrastCount,
-            explanation = queueExplanation
+        PracticeQueueIntent(
+            state = PracticeQueueIntentState(
+                mode = selectedMode,
+                sourceCue = sourceCue,
+                queueSize = practiceItems.size,
+                weakCount = weakCount,
+                dueCount = dueCount,
+                contrastCount = contrastCount,
+                explanation = queueExplanation
+            ),
+            reduceMotion = reduceMotion
         )
         if (showIntro) {
             PracticeIntroPanel(
@@ -241,6 +246,16 @@ fun MistakePracticeScreen(
         )
     }
 }
+
+private data class PracticeQueueIntentState(
+    val mode: PracticeMode,
+    val sourceCue: PracticeQueueSourceCue,
+    val queueSize: Int,
+    val weakCount: Int,
+    val dueCount: Int,
+    val contrastCount: Int,
+    val explanation: PracticeQueueExplanation
+)
 
 @Composable
 private fun PracticeCompletionPanel(
@@ -445,6 +460,38 @@ private fun PracticeHeroPanel(title: String, subtitle: String) {
                 Text(subtitle, style = MaterialTheme.typography.bodyMedium)
             }
         }
+    }
+}
+
+@Composable
+private fun PracticeQueueIntent(state: PracticeQueueIntentState, reduceMotion: Boolean) {
+    if (reduceMotion) {
+        PracticeQueuePanel(
+            mode = state.mode,
+            sourceCue = state.sourceCue,
+            queueSize = state.queueSize,
+            weakCount = state.weakCount,
+            dueCount = state.dueCount,
+            contrastCount = state.contrastCount,
+            explanation = state.explanation
+        )
+        return
+    }
+
+    Crossfade(
+        targetState = state,
+        animationSpec = tween(durationMillis = 180),
+        label = "practiceQueueIntent"
+    ) { intent ->
+        PracticeQueuePanel(
+            mode = intent.mode,
+            sourceCue = intent.sourceCue,
+            queueSize = intent.queueSize,
+            weakCount = intent.weakCount,
+            dueCount = intent.dueCount,
+            contrastCount = intent.contrastCount,
+            explanation = intent.explanation
+        )
     }
 }
 
