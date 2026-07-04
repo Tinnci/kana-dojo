@@ -44,6 +44,7 @@ import androidx.compose.material.icons.outlined.School
 import androidx.compose.material.icons.outlined.TouchApp
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedButton
@@ -148,6 +149,11 @@ private data class KanaLesson(
 private data class Exercise(
     val kind: ExerciseKind,
     val items: List<KanaItem>
+)
+
+private data class AnswerFeedback(
+    val correct: Boolean,
+    val answer: String
 )
 
 private class ProgressStore(context: Context) {
@@ -354,9 +360,18 @@ private fun LessonPathScreen(
                 subtitle = "$mastered mastered. Unlock rows by reaching recall level 2 in the previous lesson."
             )
         }
+        item {
+            val nextLesson = lessons.firstOrNull { lesson ->
+                isLessonUnlocked(lesson, lessons, mastery) && lessonAverageMastery(lesson, mastery) < 4f
+            } ?: lessons.first()
+            NextLessonPanel(
+                lesson = nextLesson,
+                averageMastery = lessonAverageMastery(nextLesson, mastery),
+                onStart = { activeLesson = nextLesson }
+            )
+        }
         items(lessons) { lesson ->
-            val previous = lessons.lastOrNull { it.index == lesson.index - 1 }
-            val unlocked = previous == null || lessonAverageMastery(previous, mastery) >= 2f
+            val unlocked = isLessonUnlocked(lesson, lessons, mastery)
             val learned = lesson.items.count { (mastery[it.id] ?: 0) > 0 }
             LessonNode(
                 lesson = lesson,
@@ -366,6 +381,37 @@ private fun LessonPathScreen(
                 unlocked = unlocked,
                 onStart = { if (unlocked) activeLesson = lesson }
             )
+        }
+    }
+}
+
+@Composable
+private fun NextLessonPanel(lesson: KanaLesson, averageMastery: Float, onStart: () -> Unit) {
+    Surface(
+        shape = RoundedCornerShape(22.dp),
+        color = MaterialTheme.colorScheme.tertiaryContainer,
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(18.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                Text("Up next", style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Bold)
+                Text(lesson.title, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Black)
+                Text(
+                    "${lesson.stage.label} - ${masteryLabel(averageMastery)} - ${lesson.items.joinToString(" ") { it.kana }}",
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            }
+            Spacer(Modifier.width(12.dp))
+            Button(onClick = onStart, shape = RoundedCornerShape(18.dp)) {
+                Icon(Icons.Outlined.PlayArrow, contentDescription = null)
+                Spacer(Modifier.width(8.dp))
+                Text("Start")
+            }
         }
     }
 }
@@ -516,7 +562,7 @@ private fun LessonRunner(
 ) {
     val queue = remember(lesson) { mutableStateListOf<Exercise>().apply { addAll(buildLessonExercises(lesson)) } }
     var completed by remember(lesson) { mutableIntStateOf(0) }
-    var lastCorrect by remember { mutableStateOf<Boolean?>(null) }
+    var feedback by remember(lesson) { mutableStateOf<AnswerFeedback?>(null) }
     val current = queue.firstOrNull()
     val total = (completed + queue.size).coerceAtLeast(1)
 
@@ -543,14 +589,21 @@ private fun LessonRunner(
                 exercise = current,
                 allItems = allItems,
                 onSpeak = onSpeak,
-                feedback = lastCorrect,
+                feedback = feedback,
                 onAnswer = { correct ->
-                    lastCorrect = correct
-                    onResult(current.items, correct)
-                    queue.removeAt(0)
-                    completed += 1
-                    if (!correct) {
-                        queue.add(buildMistakeExercise(current.items.first()))
+                    if (feedback == null) {
+                        feedback = AnswerFeedback(correct = correct, answer = correctAnswerFor(current))
+                        onResult(current.items, correct)
+                    }
+                },
+                onContinue = {
+                    feedback?.let { result ->
+                        queue.removeAt(0)
+                        completed += 1
+                        if (!result.correct) {
+                            queue.add(buildMistakeExercise(current.items.first()))
+                        }
+                        feedback = null
                     }
                 }
             )
@@ -588,8 +641,9 @@ private fun ExerciseCard(
     exercise: Exercise,
     allItems: List<KanaItem>,
     onSpeak: (String) -> Unit,
-    feedback: Boolean?,
-    onAnswer: (Boolean) -> Unit
+    feedback: AnswerFeedback?,
+    onAnswer: (Boolean) -> Unit,
+    onContinue: () -> Unit
 ) {
     Card(
         shape = RoundedCornerShape(28.dp),
@@ -603,30 +657,54 @@ private fun ExerciseCard(
             verticalArrangement = Arrangement.spacedBy(18.dp)
         ) {
             ExerciseHeader(exercise.kind)
-            AnimatedVisibility(visible = feedback != null) {
-                FeedbackBanner(correct = feedback == true)
+            Box(modifier = Modifier.weight(1f)) {
+                when (exercise.kind) {
+                    ExerciseKind.KanaToRomaji -> ChoiceExercise(
+                        prompt = exercise.items.first().kana,
+                        promptIsKana = true,
+                        options = romajiOptions(exercise.items.first(), allItems),
+                        correct = exercise.items.first().romaji,
+                        onSpeak = { onSpeak(exercise.items.first().kana) },
+                        onAnswer = onAnswer
+                    )
+
+                    ExerciseKind.RomajiToKana -> ChoiceExercise(
+                        prompt = exercise.items.first().romaji,
+                        promptIsKana = false,
+                        options = kanaOptions(exercise.items.first(), allItems),
+                        correct = exercise.items.first().kana,
+                        onSpeak = { onSpeak(exercise.items.first().kana) },
+                        onAnswer = onAnswer
+                    )
+
+                    ExerciseKind.PairMatch -> PairMatchExercise(
+                        items = exercise.items,
+                        answered = feedback != null,
+                        onAnswer = onAnswer
+                    )
+
+                    ExerciseKind.TraceKana -> TraceKanaExercise(
+                        item = exercise.items.first(),
+                        answered = feedback != null,
+                        onSpeak = onSpeak,
+                        onAnswer = onAnswer
+                    )
+                }
             }
-            when (exercise.kind) {
-                ExerciseKind.KanaToRomaji -> ChoiceExercise(
-                    prompt = exercise.items.first().kana,
-                    promptIsKana = true,
-                    options = romajiOptions(exercise.items.first(), allItems),
-                    correct = exercise.items.first().romaji,
-                    onSpeak = { onSpeak(exercise.items.first().kana) },
-                    onAnswer = onAnswer
-                )
-
-                ExerciseKind.RomajiToKana -> ChoiceExercise(
-                    prompt = exercise.items.first().romaji,
-                    promptIsKana = false,
-                    options = kanaOptions(exercise.items.first(), allItems),
-                    correct = exercise.items.first().kana,
-                    onSpeak = { onSpeak(exercise.items.first().kana) },
-                    onAnswer = onAnswer
-                )
-
-                ExerciseKind.PairMatch -> PairMatchExercise(items = exercise.items, onAnswer = onAnswer)
-                ExerciseKind.TraceKana -> TraceKanaExercise(item = exercise.items.first(), onSpeak = onSpeak, onAnswer = onAnswer)
+            AnimatedVisibility(visible = feedback != null) {
+                feedback?.let {
+                    FeedbackBanner(feedback = it)
+                }
+            }
+            AnimatedVisibility(visible = feedback != null) {
+                Button(
+                    onClick = onContinue,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(56.dp)
+                ) {
+                    Text("Continue", fontWeight = FontWeight.Bold)
+                }
             }
         }
     }
@@ -661,20 +739,25 @@ private fun ExerciseHeader(kind: ExerciseKind) {
 }
 
 @Composable
-private fun FeedbackBanner(correct: Boolean) {
+private fun FeedbackBanner(feedback: AnswerFeedback) {
     Surface(
         shape = RoundedCornerShape(18.dp),
-        color = if (correct) Color(0xFFDCEBDD) else Color(0xFFFFDFD6),
+        color = if (feedback.correct) Color(0xFFDCEBDD) else Color(0xFFFFDFD6),
         modifier = Modifier.fillMaxWidth()
     ) {
         Row(modifier = Modifier.padding(14.dp), verticalAlignment = Alignment.CenterVertically) {
             Icon(
-                imageVector = if (correct) Icons.Outlined.CheckCircle else Icons.Outlined.Replay,
+                imageVector = if (feedback.correct) Icons.Outlined.CheckCircle else Icons.Outlined.Replay,
                 contentDescription = null,
-                tint = if (correct) Color(0xFF2F5D50) else Color(0xFF9B2D20)
+                tint = if (feedback.correct) Color(0xFF2F5D50) else Color(0xFF9B2D20)
             )
             Spacer(Modifier.width(10.dp))
-            Text(if (correct) "Nice. Keep going." else "Try this one again soon.", fontWeight = FontWeight.Bold)
+            Column {
+                Text(if (feedback.correct) "Nice. Keep going." else "Correct answer: ${feedback.answer}", fontWeight = FontWeight.Bold)
+                if (!feedback.correct) {
+                    Text("This will come back soon.", style = MaterialTheme.typography.bodySmall)
+                }
+            }
         }
     }
 }
@@ -688,6 +771,7 @@ private fun ChoiceExercise(
     onSpeak: () -> Unit,
     onAnswer: (Boolean) -> Unit
 ) {
+    var selectedOption by remember(prompt, correct) { mutableStateOf<String?>(null) }
     Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.SpaceBetween) {
         Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxWidth()) {
             Text(
@@ -710,9 +794,26 @@ private fun ChoiceExercise(
             modifier = Modifier.weight(1f)
         ) {
             items(options) { option ->
+                val answered = selectedOption != null
+                val containerColor = when {
+                    answered && option == correct -> Color(0xFFDCEBDD)
+                    answered && option == selectedOption -> Color(0xFFFFDFD6)
+                    else -> MaterialTheme.colorScheme.surface
+                }
                 ElevatedButton(
-                    onClick = { onAnswer(option == correct) },
+                    onClick = {
+                        if (selectedOption == null) {
+                            selectedOption = option
+                            onAnswer(option == correct)
+                        }
+                    },
+                    enabled = !answered,
                     shape = RoundedCornerShape(20.dp),
+                    colors = ButtonDefaults.elevatedButtonColors(
+                        containerColor = containerColor,
+                        disabledContainerColor = containerColor,
+                        disabledContentColor = MaterialTheme.colorScheme.onSurface
+                    ),
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(74.dp)
@@ -725,7 +826,7 @@ private fun ChoiceExercise(
 }
 
 @Composable
-private fun PairMatchExercise(items: List<KanaItem>, onAnswer: (Boolean) -> Unit) {
+private fun PairMatchExercise(items: List<KanaItem>, answered: Boolean, onAnswer: (Boolean) -> Unit) {
     var selectedKana by remember { mutableStateOf<KanaItem?>(null) }
     var selectedRomaji by remember { mutableStateOf<KanaItem?>(null) }
     val matched = remember { mutableStateListOf<String>() }
@@ -739,7 +840,7 @@ private fun PairMatchExercise(items: List<KanaItem>, onAnswer: (Boolean) -> Unit
             if (kana.id == romaji.id) matched.add(kana.id)
             selectedKana = null
             selectedRomaji = null
-            if (matched.size == items.size) onAnswer(true)
+            if (matched.size == items.size && !answered) onAnswer(true)
         }
     }
 
@@ -749,7 +850,7 @@ private fun PairMatchExercise(items: List<KanaItem>, onAnswer: (Boolean) -> Unit
             matched = matched,
             selected = selectedKana,
             label = { it.kana },
-            onSelect = { selectedKana = it },
+            onSelect = { if (!answered) selectedKana = it },
             modifier = Modifier.weight(1f)
         )
         MatchColumn(
@@ -757,7 +858,7 @@ private fun PairMatchExercise(items: List<KanaItem>, onAnswer: (Boolean) -> Unit
             matched = matched,
             selected = selectedRomaji,
             label = { it.romaji },
-            onSelect = { selectedRomaji = it },
+            onSelect = { if (!answered) selectedRomaji = it },
             modifier = Modifier.weight(1f)
         )
     }
@@ -797,7 +898,7 @@ private fun MatchColumn(
 }
 
 @Composable
-private fun TraceKanaExercise(item: KanaItem, onSpeak: (String) -> Unit, onAnswer: (Boolean) -> Unit) {
+private fun TraceKanaExercise(item: KanaItem, answered: Boolean, onSpeak: (String) -> Unit, onAnswer: (Boolean) -> Unit) {
     var points by remember(item.id) { mutableStateOf<List<Offset>>(emptyList()) }
     val pathLength = remember(points) { points.zipWithNext().sumOf { (a, b) -> hypot((a.x - b.x).toDouble(), (a.y - b.y).toDouble()) }.toFloat() }
     val hasShape = points.size > 12 && pathLength > 220f
@@ -856,7 +957,7 @@ private fun TraceKanaExercise(item: KanaItem, onSpeak: (String) -> Unit, onAnswe
             OutlinedButton(onClick = { points = emptyList() }, modifier = Modifier.weight(1f)) {
                 Text("Clear")
             }
-            Button(onClick = { onAnswer(hasShape) }, modifier = Modifier.weight(1f)) {
+            Button(onClick = { onAnswer(hasShape) }, enabled = !answered, modifier = Modifier.weight(1f)) {
                 Text("Check")
             }
         }
@@ -910,6 +1011,7 @@ private fun MistakePracticeScreen(
         }
     }
     var currentIndex by remember(weakItems) { mutableIntStateOf(0) }
+    var feedback by remember(weakItems, currentIndex) { mutableStateOf<AnswerFeedback?>(null) }
     val current = weakItems.getOrNull(currentIndex % weakItems.size)
 
     if (current == null) {
@@ -930,10 +1032,16 @@ private fun MistakePracticeScreen(
             exercise = buildMistakeExercise(current),
             allItems = itemsFor(current.script),
             onSpeak = onSpeak,
-            feedback = null,
+            feedback = feedback,
             onAnswer = { correct ->
-                onResult(listOf(current), correct)
+                if (feedback == null) {
+                    feedback = AnswerFeedback(correct = correct, answer = "${current.kana} ${current.romaji}")
+                    onResult(listOf(current), correct)
+                }
+            },
+            onContinue = {
                 currentIndex += 1
+                feedback = null
             }
         )
     }
@@ -986,6 +1094,14 @@ private fun buildMistakeExercise(item: KanaItem): Exercise =
         items = listOf(item)
     )
 
+private fun correctAnswerFor(exercise: Exercise): String =
+    when (exercise.kind) {
+        ExerciseKind.KanaToRomaji -> exercise.items.first().romaji
+        ExerciseKind.RomajiToKana -> exercise.items.first().kana
+        ExerciseKind.PairMatch -> exercise.items.joinToString("  ") { "${it.kana} ${it.romaji}" }
+        ExerciseKind.TraceKana -> "${exercise.items.first().kana} ${exercise.items.first().romaji}"
+    }
+
 private fun romajiOptions(target: KanaItem, allItems: List<KanaItem>): List<String> =
     (listOf(target.romaji) + allItems.filter { it.row == target.row && it.id != target.id }.map { it.romaji }.take(3) +
         allItems.filter { it.id != target.id }.shuffled(Random(target.id.hashCode())).map { it.romaji }.take(3))
@@ -1036,6 +1152,11 @@ private fun lessonDifficulty(stage: LearningStage): Int =
 
 private fun lessonAverageMastery(lesson: KanaLesson, mastery: Map<String, Int>): Float =
     if (lesson.items.isEmpty()) 0f else lesson.items.sumOf { (mastery[it.id] ?: 0).toDouble() }.toFloat() / lesson.items.size
+
+private fun isLessonUnlocked(lesson: KanaLesson, lessons: List<KanaLesson>, mastery: Map<String, Int>): Boolean {
+    val previous = lessons.lastOrNull { it.index == lesson.index - 1 }
+    return previous == null || lessonAverageMastery(previous, mastery) >= 2f
+}
 
 private fun masteryLabel(averageMastery: Float): String =
     when {
