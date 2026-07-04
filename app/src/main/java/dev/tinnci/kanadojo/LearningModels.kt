@@ -193,6 +193,11 @@ data class PracticeCompletionActionAvailability(
     val repeatEnabled: Boolean
 )
 
+data class PracticeCompletionDisabledActionCopy(
+    val title: String,
+    val message: String
+)
+
 data class PracticeCompletionNextStep(
     val title: String,
     val message: String
@@ -610,6 +615,24 @@ fun practiceCompletionActionAvailabilityFor(
         returnToPathEnabled = action == ReviewCompletionAction.ReturnToPath,
         repeatEnabled = queueSize > 0
     )
+
+fun practiceCompletionDisabledActionCopyFor(
+    action: ReviewCompletionAction,
+    availability: PracticeCompletionActionAvailability
+): PracticeCompletionDisabledActionCopy? =
+    when {
+        !availability.repeatEnabled -> PracticeCompletionDisabledActionCopy(
+            title = "No repeat queue",
+            message = "There are no kana in this queue yet, so repeat is disabled."
+        )
+
+        action == ReviewCompletionAction.ReturnToPath && !availability.returnToPathEnabled -> PracticeCompletionDisabledActionCopy(
+            title = "Path unavailable",
+            message = "Finish a clean pass before returning to the path."
+        )
+
+        else -> null
+    }
 
 fun practiceReturnActionLabelFor(compact: Boolean = false): String =
     if (compact) "Path" else "Back to path"

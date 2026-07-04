@@ -2,6 +2,7 @@ package dev.tinnci.kanadojo
 
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
@@ -1104,6 +1105,30 @@ class KanaCurriculumTest {
         assertEquals(
             PracticeCompletionActionAvailability(returnToPathEnabled = false, repeatEnabled = false),
             practiceCompletionActionAvailabilityFor(ReviewCompletionAction.RepeatQueue, queueSize = 0)
+        )
+    }
+
+    @Test
+    fun practiceCompletionDisabledActionCopyExplainsUnavailableRepeat() {
+        val copy = practiceCompletionDisabledActionCopyFor(
+            action = ReviewCompletionAction.RepeatQueue,
+            availability = PracticeCompletionActionAvailability(returnToPathEnabled = false, repeatEnabled = false)
+        )
+
+        assertEquals("No repeat queue", copy?.title)
+        assertTrue(copy?.message?.contains("repeat is disabled") == true)
+        assertEquals(
+            "Path unavailable",
+            practiceCompletionDisabledActionCopyFor(
+                action = ReviewCompletionAction.ReturnToPath,
+                availability = PracticeCompletionActionAvailability(returnToPathEnabled = false, repeatEnabled = true)
+            )?.title
+        )
+        assertNull(
+            practiceCompletionDisabledActionCopyFor(
+                action = ReviewCompletionAction.RepeatQueue,
+                availability = PracticeCompletionActionAvailability(returnToPathEnabled = false, repeatEnabled = true)
+            )
         )
     }
 

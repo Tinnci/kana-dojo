@@ -289,6 +289,7 @@ private fun PracticeCompletionPanel(
     val compactRepeatActionLabel = practiceRepeatActionLabelFor(mode, compact = true)
     val completionMetrics = practiceCompletionMetricsFor(outcomes, queueSize)
     val actionAvailability = practiceCompletionActionAvailabilityFor(action, queueSize)
+    val disabledActionCopy = practiceCompletionDisabledActionCopyFor(action, actionAvailability)
     val accuracyTone = practiceAccuracyToneCopyFor(stats)
     val outcomeGuidance = practiceOutcomeGuidanceCopyFor(outcomes)
     val actionRationale = practiceActionRationaleCopyFor(action, stats)
@@ -365,6 +366,7 @@ private fun PracticeCompletionPanel(
                     repeatActionLabel = repeatActionLabel,
                     compactRepeatActionLabel = compactRepeatActionLabel,
                     actionAvailability = actionAvailability,
+                    disabledActionCopy = disabledActionCopy,
                     reduceMotion = reduceMotion,
                     onReturnToPath = onReturnToPath,
                     onRepeat = onRepeat
@@ -374,6 +376,7 @@ private fun PracticeCompletionPanel(
                     repeatActionLabel = repeatActionLabel,
                     compactRepeatActionLabel = compactRepeatActionLabel,
                     actionAvailability = actionAvailability,
+                    disabledActionCopy = disabledActionCopy,
                     reduceMotion = reduceMotion,
                     onRepeat = onRepeat
                 )
@@ -387,6 +390,7 @@ private fun PracticeCompletionActionGroup(
     repeatActionLabel: String,
     compactRepeatActionLabel: String,
     actionAvailability: PracticeCompletionActionAvailability,
+    disabledActionCopy: PracticeCompletionDisabledActionCopy?,
     reduceMotion: Boolean,
     onReturnToPath: () -> Unit,
     onRepeat: () -> Unit
@@ -432,6 +436,7 @@ private fun PracticeCompletionActionGroup(
                 Spacer(Modifier.width(6.dp))
                 PracticeActionButtonLabel(compactRepeatActionLabel)
             }
+            disabledActionCopy?.let { PracticeDisabledActionCopy(it) }
         }
     }
 }
@@ -441,6 +446,7 @@ private fun PracticeRepeatRequiredActionGroup(
     repeatActionLabel: String,
     compactRepeatActionLabel: String,
     actionAvailability: PracticeCompletionActionAvailability,
+    disabledActionCopy: PracticeCompletionDisabledActionCopy?,
     reduceMotion: Boolean,
     onRepeat: () -> Unit
 ) {
@@ -478,12 +484,34 @@ private fun PracticeRepeatRequiredActionGroup(
                 Spacer(Modifier.width(6.dp))
                 PracticeActionButtonLabel(compactRepeatActionLabel)
             }
+            disabledActionCopy?.let { PracticeDisabledActionCopy(it) }
         }
     }
 }
 
 private fun Modifier.practiceCompletionActionButtonTouchTarget(): Modifier =
     fillMaxWidth().heightIn(min = 48.dp)
+
+@Composable
+private fun PracticeDisabledActionCopy(copy: PracticeCompletionDisabledActionCopy) {
+    Column(
+        verticalArrangement = Arrangement.spacedBy(2.dp),
+        modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp)
+    ) {
+        Text(
+            copy.title,
+            style = MaterialTheme.typography.labelSmall,
+            fontWeight = FontWeight.Black,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
+        )
+        Text(
+            copy.message,
+            style = MaterialTheme.typography.labelSmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+    }
+}
 
 @Composable
 private fun PracticeActionButtonLabel(label: String) {
