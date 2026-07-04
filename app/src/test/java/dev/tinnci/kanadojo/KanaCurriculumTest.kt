@@ -1092,6 +1092,37 @@ class KanaCurriculumTest {
     }
 
     @Test
+    fun practiceCompletionNextStepExplainsCleanWritingQueues() {
+        val nextStep = practiceCompletionNextStepFor(
+            mode = PracticeMode.Writing,
+            stats = LessonSessionStats(correct = 6, missed = 0)
+        )
+
+        assertEquals("Shapes are stable", nextStep.title)
+        assertTrue(nextStep.message.contains("reading or sound recall"))
+    }
+
+    @Test
+    fun practiceCompletionNextStepKeepsMissedQueuesOnRepeat() {
+        val nextStep = practiceCompletionNextStepFor(
+            mode = PracticeMode.Writing,
+            stats = LessonSessionStats(correct = 5, missed = 1)
+        )
+
+        assertEquals("Repeat while fresh", nextStep.title)
+    }
+
+    @Test
+    fun practiceCompletionNextStepUsesGenericPathCopyForCleanNonWritingQueues() {
+        val nextStep = practiceCompletionNextStepFor(
+            mode = PracticeMode.Sound,
+            stats = LessonSessionStats(correct = 6, missed = 0)
+        )
+
+        assertEquals("Ready for path", nextStep.title)
+    }
+
+    @Test
     fun reviewSessionOutcomesSeparateCleanRepairedAndShakyKana() {
         val outcomes = reviewSessionOutcomesFor(
             correctCounts = mapOf(

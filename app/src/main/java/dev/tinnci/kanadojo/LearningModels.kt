@@ -167,6 +167,11 @@ data class ReviewSessionOutcomes(
     val shakyIds: Set<String>
 )
 
+data class PracticeCompletionNextStep(
+    val title: String,
+    val message: String
+)
+
 fun pathPracticeRecommendationFor(
     dueReviewCount: Int,
     weakCount: Int,
@@ -569,6 +574,24 @@ fun reviewCompletionActionFor(stats: LessonSessionStats): ReviewCompletionAction
         ReviewCompletionAction.ReturnToPath
     } else {
         ReviewCompletionAction.RepeatQueue
+    }
+
+fun practiceCompletionNextStepFor(mode: PracticeMode, stats: LessonSessionStats): PracticeCompletionNextStep =
+    when {
+        stats.missed > 0 -> PracticeCompletionNextStep(
+            title = "Repeat while fresh",
+            message = "Missed kana are still in working memory; run the queue again before switching tasks."
+        )
+
+        mode == PracticeMode.Writing -> PracticeCompletionNextStep(
+            title = "Shapes are stable",
+            message = "Return to the path and let reading or sound recall test the same kana."
+        )
+
+        else -> PracticeCompletionNextStep(
+            title = "Ready for path",
+            message = "Clean queue. Continue while recall is warm."
+        )
     }
 
 fun reviewSessionOutcomesFor(correctCounts: Map<String, Int>, missCounts: Map<String, Int>): ReviewSessionOutcomes {

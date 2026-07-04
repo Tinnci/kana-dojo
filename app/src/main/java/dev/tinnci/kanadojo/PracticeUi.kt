@@ -190,6 +190,7 @@ fun MistakePracticeScreen(
         if (queueComplete) {
             val outcomes = reviewSessionOutcomesFor(correctCounts, missCounts)
             PracticeCompletionPanel(
+                mode = selectedMode,
                 stats = sessionStats,
                 outcomes = outcomes,
                 cleanItems = practiceItems.filter { it.id in outcomes.cleanIds },
@@ -259,6 +260,7 @@ private data class PracticeQueueIntentState(
 
 @Composable
 private fun PracticeCompletionPanel(
+    mode: PracticeMode,
     stats: LessonSessionStats,
     outcomes: ReviewSessionOutcomes,
     cleanItems: List<KanaItem>,
@@ -271,6 +273,7 @@ private fun PracticeCompletionPanel(
     val accuracy by animateFloatAsState(targetValue = stats.accuracy, label = "practiceCompletionAccuracy")
     val action = reviewCompletionActionFor(stats)
     val stable = action == ReviewCompletionAction.ReturnToPath
+    val nextStep = practiceCompletionNextStepFor(mode, stats)
     val summary = if (stable) {
         "Clean pass. Continue the path while recall is warm."
     } else {
@@ -318,6 +321,7 @@ private fun PracticeCompletionPanel(
             if (shakyItems.isNotEmpty()) {
                 CompletionKanaGroup("Still shaky", shakyItems.take(8))
             }
+            PracticeCompletionNextStepPanel(nextStep)
             if (stable) {
                 Button(onClick = onReturnToPath, shape = RoundedCornerShape(18.dp), modifier = Modifier.fillMaxWidth()) {
                     Icon(Icons.Outlined.School, contentDescription = null)
@@ -335,6 +339,27 @@ private fun PracticeCompletionPanel(
                     Spacer(Modifier.width(8.dp))
                     Text("Repeat queue", fontWeight = FontWeight.Bold)
                 }
+            }
+        }
+    }
+}
+
+@Composable
+private fun PracticeCompletionNextStepPanel(nextStep: PracticeCompletionNextStep) {
+    Surface(
+        shape = RoundedCornerShape(16.dp),
+        color = MaterialTheme.colorScheme.surface.copy(alpha = 0.74f),
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Row(
+            modifier = Modifier.padding(12.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(10.dp)
+        ) {
+            Icon(Icons.Outlined.CheckCircle, contentDescription = null, modifier = Modifier.size(18.dp))
+            Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                Text(nextStep.title, style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Black)
+                Text(nextStep.message, style = MaterialTheme.typography.bodySmall)
             }
         }
     }
