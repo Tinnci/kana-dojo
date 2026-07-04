@@ -48,12 +48,15 @@ import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material.icons.outlined.PlayArrow
 import androidx.compose.material.icons.outlined.Replay
 import androidx.compose.material.icons.outlined.School
+import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.outlined.TouchApp
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
@@ -66,6 +69,7 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -234,6 +238,8 @@ private fun KanaTopBar(
     onReduceMotionChange: (Boolean) -> Unit,
     onSoundEnabledChange: (Boolean) -> Unit
 ) {
+    var settingsOpen by remember { mutableStateOf(false) }
+
     TopAppBar(
         colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background),
         title = {
@@ -243,26 +249,32 @@ private fun KanaTopBar(
             }
         },
         actions = {
-            AssistChip(
-                modifier = Modifier.padding(end = 8.dp),
-                onClick = { onReduceMotionChange(!reduceMotion) },
-                label = { Text(if (reduceMotion) "Still" else "Motion") },
-                leadingIcon = {
-                    if (reduceMotion) {
-                        Icon(Icons.Outlined.CheckCircle, contentDescription = null, modifier = Modifier.size(18.dp))
+            Box {
+                AssistChip(
+                    modifier = Modifier.padding(end = 8.dp),
+                    onClick = { settingsOpen = true },
+                    label = { Text("Settings") },
+                    leadingIcon = {
+                        Icon(Icons.Outlined.Settings, contentDescription = null, modifier = Modifier.size(18.dp))
                     }
+                )
+                DropdownMenu(expanded = settingsOpen, onDismissRequest = { settingsOpen = false }) {
+                    DropdownMenuItem(
+                        text = { Text("Sound") },
+                        onClick = { onSoundEnabledChange(!soundEnabled) },
+                        trailingIcon = {
+                            Switch(checked = soundEnabled, onCheckedChange = onSoundEnabledChange)
+                        }
+                    )
+                    DropdownMenuItem(
+                        text = { Text("Reduced motion") },
+                        onClick = { onReduceMotionChange(!reduceMotion) },
+                        trailingIcon = {
+                            Switch(checked = reduceMotion, onCheckedChange = onReduceMotionChange)
+                        }
+                    )
                 }
-            )
-            AssistChip(
-                modifier = Modifier.padding(end = 8.dp),
-                onClick = { onSoundEnabledChange(!soundEnabled) },
-                label = { Text(if (soundEnabled) "Sound" else "Quiet") },
-                leadingIcon = {
-                    if (soundEnabled) {
-                        Icon(Icons.Outlined.CheckCircle, contentDescription = null, modifier = Modifier.size(18.dp))
-                    }
-                }
-            )
+            }
             Script.entries.forEach { script ->
                 AssistChip(
                     modifier = Modifier.padding(end = 8.dp),

@@ -135,13 +135,13 @@ Implemented:
 - Reduced-motion top-bar toggle that disables trace replay animation while keeping comparison available.
 - Persisted reduced-motion preference.
 - Persisted sound toggle that quiets speech playback without changing lessons.
+- Compact settings menu for motion and sound controls, keeping script selection visible.
 - Shared answer option component for kana, romaji, and sound-choice prompts.
 
 ## Next Polish Pass
 
 Implement next:
 
-- Move motion and sound controls into a compact settings surface before adding more preferences.
 - Add haptic preference controls after the settings surface exists.
 - Continue splitting large screen sections out of `MainActivity.kt`.
 
