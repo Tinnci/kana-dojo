@@ -524,7 +524,7 @@ private fun Modifier.practiceCompletionActionButtonTouchTarget(
 ): Modifier =
     fillMaxWidth()
         .heightIn(min = 48.dp)
-        .semantics {
+        .semantics(mergeDescendants = true) {
             contentDescription = actionSemanticLabel
             this.stateDescription = stateDescription
         }
