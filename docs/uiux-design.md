@@ -213,9 +213,10 @@ Implemented:
 - Added tested compact secondary repeat rationale for clean completions.
 - Added tested compact action summary for no-attempt practice completions.
 - Added tested action-rationale visibility so missed queues avoid duplicate repeat copy.
+- Audited practice completion panel density and added vertical scrolling for compact screens.
 
 ## Next Polish Pass
 
 Implement next:
 
-- Audit practice completion panel vertical spacing on small screens.
+- Add compact completion section dividers for long practice summaries.
