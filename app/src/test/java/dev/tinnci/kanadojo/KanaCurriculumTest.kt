@@ -1318,6 +1318,18 @@ class KanaCurriculumTest {
     }
 
     @Test
+    fun practiceActionRoleLabelsKeepPrimaryThenOptionalDisplayOrder() {
+        assertEquals(
+            listOf("Primary", "Optional repeat"),
+            practiceActionRoleLabelsInDisplayOrder(ReviewCompletionAction.ReturnToPath)
+        )
+        assertEquals(
+            listOf("Repeat first"),
+            practiceActionRoleLabelsInDisplayOrder(ReviewCompletionAction.RepeatQueue)
+        )
+    }
+
+    @Test
     fun practiceCompletionNextStepExplainsCleanWritingQueues() {
         val nextStep = practiceCompletionNextStepFor(
             mode = PracticeMode.Writing,

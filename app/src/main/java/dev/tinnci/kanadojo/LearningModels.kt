@@ -722,6 +722,16 @@ fun practiceActionRoleLabelFor(action: ReviewCompletionAction, optional: Boolean
         else -> "Primary"
     }
 
+fun practiceActionRoleLabelsInDisplayOrder(action: ReviewCompletionAction): List<String> =
+    when (action) {
+        ReviewCompletionAction.ReturnToPath -> listOf(
+            practiceActionRoleLabelFor(action),
+            practiceActionRoleLabelFor(action, optional = true)
+        )
+
+        ReviewCompletionAction.RepeatQueue -> listOf(practiceActionRoleLabelFor(action))
+    }
+
 fun practiceCompletionNextStepFor(mode: PracticeMode, stats: LessonSessionStats): PracticeCompletionNextStep =
     when {
         stats.missed > 0 -> PracticeCompletionNextStep(

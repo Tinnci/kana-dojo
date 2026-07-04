@@ -391,6 +391,7 @@ private fun PracticeCompletionActionGroup(
         key = "clean-$repeatActionLabel",
         reduceMotion = reduceMotion
     )
+    val roleLabels = practiceActionRoleLabelsInDisplayOrder(ReviewCompletionAction.ReturnToPath)
     Surface(
         shape = RoundedCornerShape(20.dp),
         color = Color(0xFFDCEBDD).copy(alpha = 0.72f),
@@ -404,7 +405,7 @@ private fun PracticeCompletionActionGroup(
                 .fillMaxWidth()
                 .padding(8.dp)
         ) {
-            PracticeActionRoleChip(practiceActionRoleLabelFor(ReviewCompletionAction.ReturnToPath))
+            PracticeActionRoleChip(roleLabels[0])
             Button(
                 onClick = onReturnToPath,
                 shape = RoundedCornerShape(18.dp),
@@ -414,7 +415,7 @@ private fun PracticeCompletionActionGroup(
                 Spacer(Modifier.width(6.dp))
                 PracticeActionButtonLabel(practiceReturnActionLabelFor(compact = true))
             }
-            PracticeActionRoleChip(practiceActionRoleLabelFor(ReviewCompletionAction.ReturnToPath, optional = true))
+            PracticeActionRoleChip(roleLabels[1])
             FilledTonalButton(
                 onClick = onRepeat,
                 shape = RoundedCornerShape(18.dp),
@@ -439,6 +440,7 @@ private fun PracticeRepeatRequiredActionGroup(
         key = "repeat-$repeatActionLabel",
         reduceMotion = reduceMotion
     )
+    val roleLabels = practiceActionRoleLabelsInDisplayOrder(ReviewCompletionAction.RepeatQueue)
     Surface(
         shape = RoundedCornerShape(20.dp),
         color = Color(0xFFFFDFD6).copy(alpha = 0.72f),
@@ -452,7 +454,7 @@ private fun PracticeRepeatRequiredActionGroup(
                 .fillMaxWidth()
                 .padding(8.dp)
         ) {
-            PracticeActionRoleChip(practiceActionRoleLabelFor(ReviewCompletionAction.RepeatQueue))
+            PracticeActionRoleChip(roleLabels.single())
             Button(
                 onClick = onRepeat,
                 shape = RoundedCornerShape(18.dp),

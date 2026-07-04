@@ -231,9 +231,10 @@ Implemented:
 - Added tested compact completion action labels for narrow screens.
 - Added compact completion action-button icon spacing for narrow screens.
 - Added compact completion action-button touch target audit.
+- Added tested compact completion action-button role ordering audit.
 
 ## Next Polish Pass
 
 Implement next:
 
-- Add compact completion action-button role ordering audit.
+- Add compact completion action-button color contrast audit.
