@@ -5,7 +5,9 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
@@ -81,6 +83,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
@@ -308,6 +311,7 @@ private fun LessonPathScreen(
                 total = lesson.items.size,
                 averageMastery = lessonAverageMastery(lesson, mastery),
                 unlocked = unlocked,
+                focus = lesson.index == nextLesson.index,
                 onStart = { if (unlocked) activeLesson = lesson }
             )
         }
@@ -528,6 +532,7 @@ private fun LessonNode(
     total: Int,
     averageMastery: Float,
     unlocked: Boolean,
+    focus: Boolean,
     onStart: () -> Unit
 ) {
     val progress by animateFloatAsState(
@@ -535,12 +540,32 @@ private fun LessonNode(
         label = "lessonProgress"
     )
     val complete = averageMastery >= 4f
-    val nodeColor = when {
-        complete -> MaterialTheme.colorScheme.primary
-        !unlocked -> MaterialTheme.colorScheme.surfaceVariant
-        averageMastery >= 2f -> MaterialTheme.colorScheme.tertiaryContainer
-        else -> MaterialTheme.colorScheme.secondaryContainer
-    }
+    val nodeColor by animateColorAsState(
+        targetValue = when {
+            complete -> MaterialTheme.colorScheme.primary
+            !unlocked -> MaterialTheme.colorScheme.surfaceVariant
+            focus -> MaterialTheme.colorScheme.primaryContainer
+            averageMastery >= 2f -> MaterialTheme.colorScheme.tertiaryContainer
+            else -> MaterialTheme.colorScheme.secondaryContainer
+        },
+        label = "lessonNodeColor"
+    )
+    val cardColor by animateColorAsState(
+        targetValue = when {
+            !unlocked -> MaterialTheme.colorScheme.surfaceVariant
+            focus -> MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.36f)
+            else -> MaterialTheme.colorScheme.surface
+        },
+        label = "lessonCardColor"
+    )
+    val cardElevation by animateDpAsState(
+        targetValue = if (focus && unlocked && !complete) 5.dp else 2.dp,
+        label = "lessonCardElevation"
+    )
+    val nodeScale by animateFloatAsState(
+        targetValue = if (focus && unlocked && !complete) 1.06f else 1f,
+        label = "lessonNodeScale"
+    )
     val nodeContentColor = when {
         complete -> MaterialTheme.colorScheme.onPrimary
         !unlocked -> MaterialTheme.colorScheme.onSurfaceVariant
@@ -551,9 +576,9 @@ private fun LessonNode(
         enabled = unlocked,
         shape = RoundedCornerShape(22.dp),
         colors = CardDefaults.cardColors(
-            containerColor = if (unlocked) MaterialTheme.colorScheme.surface else MaterialTheme.colorScheme.surfaceVariant
+            containerColor = cardColor
         ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = cardElevation)
     ) {
         Row(
             modifier = Modifier
@@ -565,6 +590,7 @@ private fun LessonNode(
             Box(
                 modifier = Modifier
                     .size(58.dp)
+                    .graphicsLayer(scaleX = nodeScale, scaleY = nodeScale)
                     .background(nodeColor, CircleShape),
                 contentAlignment = Alignment.Center
             ) {
@@ -946,31 +972,19 @@ private fun ChoiceExercise(
         ) {
             items(options) { option ->
                 val answered = selectedOption != null
-                val containerColor = when {
-                    answered && option == correct -> Color(0xFFDCEBDD)
-                    answered && option == selectedOption -> Color(0xFFFFDFD6)
-                    else -> MaterialTheme.colorScheme.surface
-                }
-                ElevatedButton(
+                AnswerOptionButton(
+                    option = option,
+                    answered = answered,
+                    correct = option == correct,
+                    selected = option == selectedOption,
+                    fontSize = if (option.length == 1) 34 else 22,
                     onClick = {
                         if (selectedOption == null) {
                             selectedOption = option
                             onAnswer(option == correct)
                         }
-                    },
-                    enabled = !answered,
-                    shape = RoundedCornerShape(20.dp),
-                    colors = ButtonDefaults.elevatedButtonColors(
-                        containerColor = containerColor,
-                        disabledContainerColor = containerColor,
-                        disabledContentColor = MaterialTheme.colorScheme.onSurface
-                    ),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(74.dp)
-                ) {
-                    Text(option, fontSize = if (option.length == 1) 34.sp else 22.sp, fontWeight = FontWeight.Bold)
-                }
+                    }
+                )
             }
         }
     }
@@ -1007,33 +1021,63 @@ private fun SoundChoiceExercise(
         ) {
             items(options) { option ->
                 val answered = selectedOption != null
-                val containerColor = when {
-                    answered && option == item.kana -> Color(0xFFDCEBDD)
-                    answered && option == selectedOption -> Color(0xFFFFDFD6)
-                    else -> MaterialTheme.colorScheme.surface
-                }
-                ElevatedButton(
+                AnswerOptionButton(
+                    option = option,
+                    answered = answered,
+                    correct = option == item.kana,
+                    selected = option == selectedOption,
+                    fontSize = 34,
                     onClick = {
                         if (selectedOption == null) {
                             selectedOption = option
                             onAnswer(option == item.kana)
                         }
-                    },
-                    enabled = !answered,
-                    shape = RoundedCornerShape(20.dp),
-                    colors = ButtonDefaults.elevatedButtonColors(
-                        containerColor = containerColor,
-                        disabledContainerColor = containerColor,
-                        disabledContentColor = MaterialTheme.colorScheme.onSurface
-                    ),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(74.dp)
-                ) {
-                    Text(option, fontSize = 34.sp, fontWeight = FontWeight.Bold)
-                }
+                    }
+                )
             }
         }
+    }
+}
+
+@Composable
+private fun AnswerOptionButton(
+    option: String,
+    answered: Boolean,
+    correct: Boolean,
+    selected: Boolean,
+    fontSize: Int,
+    onClick: () -> Unit
+) {
+    val targetColor = when {
+        answered && correct -> Color(0xFFDCEBDD)
+        answered && selected -> Color(0xFFFFDFD6)
+        else -> MaterialTheme.colorScheme.surface
+    }
+    val containerColor by animateColorAsState(targetValue = targetColor, label = "answerOptionColor")
+    val scale by animateFloatAsState(
+        targetValue = when {
+            answered && correct -> 1.02f
+            answered && selected -> 0.98f
+            else -> 1f
+        },
+        label = "answerOptionScale"
+    )
+
+    ElevatedButton(
+        onClick = onClick,
+        enabled = !answered,
+        shape = RoundedCornerShape(20.dp),
+        colors = ButtonDefaults.elevatedButtonColors(
+            containerColor = containerColor,
+            disabledContainerColor = containerColor,
+            disabledContentColor = MaterialTheme.colorScheme.onSurface
+        ),
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(74.dp)
+            .graphicsLayer(scaleX = scale, scaleY = scale)
+    ) {
+        Text(option, fontSize = fontSize.sp, fontWeight = FontWeight.Bold)
     }
 }
 
