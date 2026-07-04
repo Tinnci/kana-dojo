@@ -38,6 +38,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.CheckCircle
 import androidx.compose.material.icons.outlined.Close
 import androidx.compose.material.icons.outlined.GridView
+import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material.icons.outlined.PlayArrow
 import androidx.compose.material.icons.outlined.Replay
 import androidx.compose.material.icons.outlined.School
@@ -156,7 +157,9 @@ private fun KanaDojoApp() {
                     ScreenTab.Lessons -> LessonPathScreen(
                         script = selectedScript,
                         mastery = mastery,
+                        mistakeIds = mistakes,
                         onSpeak = tts::speak,
+                        onOpenPractice = { currentTab = ScreenTab.Mistakes },
                         onResult = { items, correct ->
                             progressStore.mark(items, correct)
                             mastery.putAll(progressStore.loadMastery(allItems))
@@ -232,13 +235,25 @@ private fun KanaTopBar(selectedScript: Script, onScriptChange: (Script) -> Unit)
 private fun LessonPathScreen(
     script: Script,
     mastery: Map<String, Int>,
+    mistakeIds: List<String>,
     onSpeak: (String) -> Unit,
+    onOpenPractice: () -> Unit,
     onResult: (List<KanaItem>, Boolean) -> Unit
 ) {
     val lessons = remember(script) { lessonsFor(script) }
     val scriptItems = remember(script) { itemsFor(script) }
     val snapshot = progressSnapshot(scriptItems, mastery)
     var activeLesson by remember(script) { mutableStateOf<KanaLesson?>(null) }
+    val nextLesson = lessons.firstOrNull { lesson ->
+        isLessonUnlocked(lesson, lessons, mastery) && lessonAverageMastery(lesson, mastery) < 4f
+    } ?: lessons.first()
+    val scriptItemIds = remember(scriptItems) { scriptItems.map { it.id }.toSet() }
+    val reviewCount = remember(scriptItemIds, scriptItems, mistakeIds, mastery) {
+        (
+            mistakeIds.filter { it in scriptItemIds } +
+                scriptItems.filter { (mastery[it.id] ?: 0) in 1..3 }.map { it.id }
+            ).toSet().size
+    }
 
     if (activeLesson != null) {
         LessonRunner(
@@ -263,17 +278,17 @@ private fun LessonPathScreen(
             )
         }
         item {
-            ProgressSummaryPanel(snapshot = snapshot)
-        }
-        item {
-            val nextLesson = lessons.firstOrNull { lesson ->
-                isLessonUnlocked(lesson, lessons, mastery) && lessonAverageMastery(lesson, mastery) < 4f
-            } ?: lessons.first()
-            NextLessonPanel(
+            DailyFocusPanel(
                 lesson = nextLesson,
                 averageMastery = lessonAverageMastery(nextLesson, mastery),
-                onStart = { activeLesson = nextLesson }
+                snapshot = snapshot,
+                reviewCount = reviewCount,
+                onStart = { activeLesson = nextLesson },
+                onReview = onOpenPractice
             )
+        }
+        item {
+            ProgressSummaryPanel(snapshot = snapshot)
         }
         items(lessons) { lesson ->
             val unlocked = isLessonUnlocked(lesson, lessons, mastery)
@@ -291,32 +306,77 @@ private fun LessonPathScreen(
 }
 
 @Composable
-private fun NextLessonPanel(lesson: KanaLesson, averageMastery: Float, onStart: () -> Unit) {
+private fun DailyFocusPanel(
+    lesson: KanaLesson,
+    averageMastery: Float,
+    snapshot: ProgressSnapshot,
+    reviewCount: Int,
+    onStart: () -> Unit,
+    onReview: () -> Unit
+) {
     Surface(
         shape = RoundedCornerShape(22.dp),
         color = MaterialTheme.colorScheme.tertiaryContainer,
         modifier = Modifier.fillMaxWidth()
     ) {
-        Row(
+        Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(18.dp),
+            verticalArrangement = Arrangement.spacedBy(14.dp)
+        ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Box(
+                    modifier = Modifier
+                        .size(72.dp)
+                        .background(MaterialTheme.colorScheme.surface, CircleShape),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(lesson.items.firstOrNull()?.kana.orEmpty(), fontSize = 36.sp, fontWeight = FontWeight.Black)
+                }
+                Spacer(Modifier.width(16.dp))
+                Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                    Text("Today's focus", style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Bold)
+                    Text(lesson.title, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Black)
+                    Text(
+                        "${lesson.stage.label} - ${masteryLabel(averageMastery)} - ${lesson.items.joinToString(" ") { it.kana }}",
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                }
+            }
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
+                FocusMetric("Review", reviewCount, Modifier.weight(1f))
+                FocusMetric("Fluent", snapshot.fluent, Modifier.weight(1f))
+                FocusMetric("Left", (snapshot.total - snapshot.fluent).coerceAtLeast(0), Modifier.weight(1f))
+            }
+            Row(horizontalArrangement = Arrangement.spacedBy(10.dp), modifier = Modifier.fillMaxWidth()) {
+                Button(onClick = onStart, shape = RoundedCornerShape(18.dp), modifier = Modifier.weight(1f)) {
+                    Icon(Icons.Outlined.PlayArrow, contentDescription = null)
+                    Spacer(Modifier.width(8.dp))
+                    Text("Start")
+                }
+                FilledTonalButton(onClick = onReview, enabled = reviewCount > 0, shape = RoundedCornerShape(18.dp), modifier = Modifier.weight(1f)) {
+                    Icon(Icons.Outlined.Replay, contentDescription = null)
+                    Spacer(Modifier.width(8.dp))
+                    Text("Review")
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun FocusMetric(label: String, value: Int, modifier: Modifier = Modifier) {
+    Surface(shape = RoundedCornerShape(12.dp), color = MaterialTheme.colorScheme.surface.copy(alpha = 0.72f), modifier = modifier) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 8.dp, vertical = 5.dp),
+            horizontalArrangement = Arrangement.spacedBy(4.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                Text("Up next", style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Bold)
-                Text(lesson.title, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Black)
-                Text(
-                    "${lesson.stage.label} - ${masteryLabel(averageMastery)} - ${lesson.items.joinToString(" ") { it.kana }}",
-                    style = MaterialTheme.typography.bodyMedium
-                )
-            }
-            Spacer(Modifier.width(12.dp))
-            Button(onClick = onStart, shape = RoundedCornerShape(18.dp)) {
-                Icon(Icons.Outlined.PlayArrow, contentDescription = null)
-                Spacer(Modifier.width(8.dp))
-                Text("Start")
-            }
+            Text(value.toString(), style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Black)
+            Text(label, style = MaterialTheme.typography.labelSmall)
         }
     }
 }
@@ -407,6 +467,18 @@ private fun LessonNode(
         targetValue = (averageMastery / 5f).coerceIn(0f, 1f),
         label = "lessonProgress"
     )
+    val complete = averageMastery >= 4f
+    val nodeColor = when {
+        complete -> MaterialTheme.colorScheme.primary
+        !unlocked -> MaterialTheme.colorScheme.surfaceVariant
+        averageMastery >= 2f -> MaterialTheme.colorScheme.tertiaryContainer
+        else -> MaterialTheme.colorScheme.secondaryContainer
+    }
+    val nodeContentColor = when {
+        complete -> MaterialTheme.colorScheme.onPrimary
+        !unlocked -> MaterialTheme.colorScheme.onSurfaceVariant
+        else -> MaterialTheme.colorScheme.onSurface
+    }
     Card(
         onClick = onStart,
         enabled = unlocked,
@@ -426,10 +498,14 @@ private fun LessonNode(
             Box(
                 modifier = Modifier
                     .size(58.dp)
-                    .background(MaterialTheme.colorScheme.secondaryContainer, CircleShape),
+                    .background(nodeColor, CircleShape),
                 contentAlignment = Alignment.Center
             ) {
-                Text(lesson.index.toString(), fontWeight = FontWeight.Black, fontSize = 22.sp)
+                when {
+                    complete -> Icon(Icons.Outlined.CheckCircle, contentDescription = null, tint = nodeContentColor)
+                    !unlocked -> Icon(Icons.Outlined.Lock, contentDescription = null, tint = nodeContentColor)
+                    else -> Text(lesson.index.toString(), color = nodeContentColor, fontWeight = FontWeight.Black, fontSize = 22.sp)
+                }
             }
             Spacer(Modifier.width(16.dp))
             Column(modifier = Modifier.weight(1f)) {
