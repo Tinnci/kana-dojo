@@ -81,6 +81,7 @@ fun KanaChartScreen(script: Script, mastery: Map<String, Int>, onSpeak: (String)
         }
         items(visibleItems) { item ->
             val level = mastery[item.id] ?: 0
+            val cardTag = chartCardTagFor(item)
             Card(
                 onClick = { onSpeak(item.kana) },
                 shape = RoundedCornerShape(20.dp),
@@ -100,6 +101,9 @@ fun KanaChartScreen(script: Script, mastery: Map<String, Int>, onSpeak: (String)
                     Text(item.kana, fontSize = 42.sp, fontWeight = FontWeight.Black)
                     Text(item.romaji, style = MaterialTheme.typography.labelLarge)
                     Text(chartRowLabelFor(item.row), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    cardTag?.let { tag ->
+                        Text(tag.label, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Black)
+                    }
                     if (item.confusable.isNotEmpty()) {
                         Text("contrast", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.tertiary)
                     }

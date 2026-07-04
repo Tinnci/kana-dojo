@@ -103,6 +103,10 @@ data class ChartContrastSummaryCopy(
     val message: String
 )
 
+data class ChartCardTag(
+    val label: String
+)
+
 enum class PathFeedbackAction {
     StartLesson,
     OpenPractice

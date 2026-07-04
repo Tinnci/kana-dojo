@@ -451,6 +451,17 @@ fun chartRowLabelFor(row: String): String =
         }
     }
 
+fun chartCardTagFor(item: KanaItem): ChartCardTag? {
+    if (item.row != "special") return null
+    return ChartCardTag(
+        label = when {
+            item.romaji == "long mark" -> "long mark"
+            item.romaji.startsWith("small ") -> "small"
+            else -> "special"
+        }
+    )
+}
+
 fun nextPathLesson(lessons: List<KanaLesson>, mastery: Map<String, Int>): KanaLesson? =
     lessons.firstOrNull { lesson ->
         isLessonUnlocked(lesson, lessons, mastery) && lessonAverageMastery(lesson, mastery) < 4f

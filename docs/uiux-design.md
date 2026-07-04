@@ -185,9 +185,10 @@ Implemented:
 - Added tested compact chart row guidance for filtered rows with no fluent kana yet.
 - Added tested compact chart contrast summaries for lookalike-heavy chart views.
 - Added tested chart row labels so filters and special-symbol rows avoid raw row IDs.
+- Added tested compact chart-card tags that distinguish small kana and long marks.
 
 ## Next Polish Pass
 
 Implement next:
 
-- Add compact reference-card labels that distinguish small kana and long marks.
+- Add compact reference-card action feedback when a kana is tapped for audio.

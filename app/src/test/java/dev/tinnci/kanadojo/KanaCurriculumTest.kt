@@ -271,6 +271,22 @@ class KanaCurriculumTest {
     }
 
     @Test
+    fun chartCardTagLabelsSmallKanaAndLongMarks() {
+        val hiraganaSmall = itemsFor(Script.Hiragana).first { it.romaji == "small tsu" }
+        val katakanaLong = itemsFor(Script.Katakana).first { it.romaji == "long mark" }
+
+        assertEquals("small", chartCardTagFor(hiraganaSmall)?.label)
+        assertEquals("long mark", chartCardTagFor(katakanaLong)?.label)
+    }
+
+    @Test
+    fun chartCardTagSkipsRegularKana() {
+        val regular = itemsFor(Script.Hiragana).first { it.romaji == "a" }
+
+        assertEquals(null, chartCardTagFor(regular))
+    }
+
+    @Test
     fun nextPathLessonReturnsFirstUnfinishedUnlockedLesson() {
         val lessons = lessonsFor(Script.Hiragana)
         val lessonOneFluent = lessons[0].items.associate { it.id to 4 }
