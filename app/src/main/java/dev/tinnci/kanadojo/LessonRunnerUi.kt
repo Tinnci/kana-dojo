@@ -97,6 +97,7 @@ fun LessonRunner(
                 lesson = lesson,
                 nextLesson = nextPreview,
                 stats = sessionStats,
+                reduceMotion = reduceMotion,
                 onContinue = onExit,
                 onRepeat = {
                     queue.clear()
@@ -145,6 +146,7 @@ private fun LessonComplete(
     lesson: KanaLesson,
     nextLesson: KanaLesson?,
     stats: LessonSessionStats,
+    reduceMotion: Boolean,
     onContinue: () -> Unit,
     onRepeat: () -> Unit,
     onReviewMistakes: () -> Unit
@@ -163,8 +165,20 @@ private fun LessonComplete(
         label = "completionColor"
     )
     val badgeScale by animateFloatAsState(
-        targetValue = if (entered) 1f else 0.88f,
+        targetValue = if (reduceMotion || entered) 1f else 0.88f,
         label = "completionBadgeScale"
+    )
+    val summaryAlpha by animateFloatAsState(
+        targetValue = if (reduceMotion || entered) 1f else 0f,
+        label = "completionSummaryAlpha"
+    )
+    val summaryScale by animateFloatAsState(
+        targetValue = if (reduceMotion || entered) 1f else 0.96f,
+        label = "completionSummaryScale"
+    )
+    val actionAlpha by animateFloatAsState(
+        targetValue = if (reduceMotion || entered) 1f else 0f,
+        label = "completionActionAlpha"
     )
     val message = when {
         stats.missed == 0 -> "Clean run. Keep the recall warm."
@@ -186,7 +200,7 @@ private fun LessonComplete(
         Spacer(Modifier.height(20.dp))
         Text("Lesson complete", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Black)
         Text(message, style = MaterialTheme.typography.bodyLarge, textAlign = TextAlign.Center)
-        CompletionSparkRow(visible = entered, cleanRun = stats.missed == 0)
+        CompletionSparkRow(visible = entered && !reduceMotion, cleanRun = stats.missed == 0)
         Spacer(Modifier.height(8.dp))
         StageChip(lesson.stage)
         Spacer(Modifier.height(18.dp))
@@ -194,7 +208,9 @@ private fun LessonComplete(
             shape = RoundedCornerShape(22.dp),
             color = MaterialTheme.colorScheme.surface,
             tonalElevation = 2.dp,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
+                .graphicsLayer(alpha = summaryAlpha, scaleX = summaryScale, scaleY = summaryScale)
         ) {
             Column(
                 modifier = Modifier.padding(18.dp),
@@ -212,13 +228,15 @@ private fun LessonComplete(
             }
         }
         Spacer(Modifier.height(24.dp))
-        CompletionActions(
-            stats = stats,
-            nextLesson = nextLesson,
-            onContinue = onContinue,
-            onRepeat = onRepeat,
-            onReviewMistakes = onReviewMistakes
-        )
+        Box(modifier = Modifier.graphicsLayer(alpha = actionAlpha)) {
+            CompletionActions(
+                stats = stats,
+                nextLesson = nextLesson,
+                onContinue = onContinue,
+                onRepeat = onRepeat,
+                onReviewMistakes = onReviewMistakes
+            )
+        }
     }
 }
 

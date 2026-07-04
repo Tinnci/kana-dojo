@@ -130,6 +130,7 @@ Implemented:
 - Trace comparison panel with model-vs-yours view and replayed learner stroke path.
 - Stroke guidance cues for confusable kana in trace comparison.
 - Outcome-aware lesson completion badge and restrained celebration sparks.
+- Reduced-motion-aware lesson completion transition for summary and action reveal.
 - Lesson-completion recommendations that route to repeat, mistake review, or the path.
 - Clean lesson completions preview the next unlocked lesson before returning to the path.
 - Data-driven path hero that previews the next lesson, overall progress, lesson progress, and review pressure.
@@ -152,4 +153,4 @@ Implemented:
 
 Implement next:
 
-- Polish the lesson path with richer transition and completion motion details.
+- Add more focused tests around exercise generation and review queue behavior.
