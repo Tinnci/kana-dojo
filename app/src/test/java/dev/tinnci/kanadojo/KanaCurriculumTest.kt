@@ -344,6 +344,29 @@ class KanaCurriculumTest {
     }
 
     @Test
+    fun lessonExercisesUseDeliberateRecognitionListeningMatchingWritingPace() {
+        val lesson = lessonsFor(Script.Hiragana).first()
+        val exercises = buildLessonExercises(lesson)
+        val firstSound = exercises.indexOfFirst { it.kind == ExerciseKind.SoundToKana }
+        val firstPair = exercises.indexOfFirst { it.kind == ExerciseKind.PairMatch }
+        val firstTrace = exercises.indexOfFirst { it.kind == ExerciseKind.TraceKana }
+
+        assertTrue(exercises.take(lesson.items.size * 2).all { it.kind == ExerciseKind.RomajiToKana || it.kind == ExerciseKind.KanaToRomaji })
+        assertTrue(firstSound > 0)
+        assertTrue(firstSound < firstPair)
+        assertTrue(firstPair < firstTrace)
+    }
+
+    @Test
+    fun confusableLessonKeepsContrastReinforcementAfterCorePractice() {
+        val lesson = lessonsFor(Script.Katakana).first { it.stage == LearningStage.Confusable }
+        val exercises = buildLessonExercises(lesson)
+        val finalKinds = exercises.takeLast(2).map { it.kind }
+
+        assertEquals(listOf(ExerciseKind.RomajiToKana, ExerciseKind.TraceKana), finalKinds)
+    }
+
+    @Test
     fun specialLessonsDoNotUseStandaloneSoundPrompts() {
         val lesson = lessonsFor(Script.Katakana).last()
         val exercises = buildLessonExercises(lesson)

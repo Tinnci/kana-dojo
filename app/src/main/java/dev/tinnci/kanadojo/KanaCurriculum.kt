@@ -3,15 +3,15 @@ package dev.tinnci.kanadojo
 import kotlin.random.Random
 
 fun buildLessonExercises(lesson: KanaLesson): List<Exercise> {
-    val intro = lesson.items.flatMap { item ->
+    val recognition = lesson.items.flatMap { item ->
         buildList {
             add(Exercise(ExerciseKind.RomajiToKana, listOf(item)))
             add(Exercise(ExerciseKind.KanaToRomaji, listOf(item)))
-            if (supportsAudioPrompt(item)) {
-                add(Exercise(ExerciseKind.SoundToKana, listOf(item)))
-            }
         }
     }
+    val listening = lesson.items
+        .filter { supportsAudioPrompt(it) }
+        .map { Exercise(ExerciseKind.SoundToKana, listOf(it)) }
     val pairs = lesson.items.chunked(4).map { Exercise(ExerciseKind.PairMatch, it) }
     val writingCount = when (lesson.stage) {
         LearningStage.Anchor -> 2
@@ -27,7 +27,7 @@ fun buildLessonExercises(lesson: KanaLesson): List<Exercise> {
     val contrast = lesson.items
         .filter { it.confusable.isNotEmpty() }
         .flatMap { listOf(Exercise(ExerciseKind.RomajiToKana, listOf(it)), Exercise(ExerciseKind.TraceKana, listOf(it))) }
-    return (intro + pairs + writing + contrast).shuffled(Random(lesson.index))
+    return recognition + listening + pairs + writing + contrast
 }
 
 fun supportsAudioPrompt(item: KanaItem): Boolean =
