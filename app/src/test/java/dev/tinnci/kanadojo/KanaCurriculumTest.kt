@@ -1134,6 +1134,15 @@ class KanaCurriculumTest {
                 )
             )
         )
+        assertEquals(
+            "Keep the full fallback reason.",
+            practiceCompletionDisabledActionVisibleMessageFor(
+                PracticeCompletionDisabledActionCopy(
+                    title = "Future reason",
+                    message = "Keep the full fallback reason."
+                )
+            )
+        )
         assertNull(
             practiceCompletionDisabledActionCopyFor(
                 action = ReviewCompletionAction.RepeatQueue,
