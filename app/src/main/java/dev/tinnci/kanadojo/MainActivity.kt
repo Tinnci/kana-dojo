@@ -249,12 +249,10 @@ private fun LessonPathScreen(
     val visibleLessons = remember(lessons, selectedStage) {
         selectedStage?.let { stage -> lessons.filter { it.stage == stage } } ?: lessons
     }
-    val scriptItemIds = remember(scriptItems) { scriptItems.map { it.id }.toSet() }
-    val reviewCount = remember(scriptItemIds, scriptItems, mistakeIds, mastery) {
-        (
-            mistakeIds.filter { it in scriptItemIds } +
-                scriptItems.filter { (mastery[it.id] ?: 0) in 1..3 }.map { it.id }
-            ).toSet().size
+    val mistakeSnapshot = mistakeIds.toList()
+    val masterySnapshot = mastery.toMap()
+    val reviewCount = remember(scriptItems, mistakeSnapshot, masterySnapshot) {
+        reviewCountFor(scriptItems, mistakeSnapshot, masterySnapshot)
     }
 
     if (activeLesson != null) {

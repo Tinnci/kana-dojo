@@ -117,6 +117,27 @@ class KanaCurriculumTest {
     }
 
     @Test
+    fun reviewCountCombinesMistakesAndLearningKanaWithoutDuplicates() {
+        val hiraganaItems = itemsFor(Script.Hiragana)
+        val katakanaMistake = itemsFor(Script.Katakana).first()
+        val weak = hiraganaItems[0]
+        val learning = hiraganaItems[1]
+        val fluent = hiraganaItems[2]
+
+        val count = reviewCountFor(
+            scriptItems = hiraganaItems,
+            mistakeIds = listOf(weak.id, katakanaMistake.id),
+            mastery = mapOf(
+                weak.id to 1,
+                learning.id to 3,
+                fluent.id to 4
+            )
+        )
+
+        assertEquals(2, count)
+    }
+
+    @Test
     fun weakPracticeFiltersMistakesToSelectedScript() {
         val allItems = hiraganaItems + katakanaItems
         val hiraganaMistake = hiraganaItems.first { it.romaji == "a" }

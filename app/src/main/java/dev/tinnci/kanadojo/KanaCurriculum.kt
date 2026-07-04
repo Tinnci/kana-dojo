@@ -231,6 +231,14 @@ fun progressSnapshot(items: List<KanaItem>, mastery: Map<String, Int>): Progress
         total = items.size
     )
 
+fun reviewCountFor(scriptItems: List<KanaItem>, mistakeIds: List<String>, mastery: Map<String, Int>): Int {
+    val scriptItemIds = scriptItems.map { it.id }.toSet()
+    return (
+        mistakeIds.filter { it in scriptItemIds } +
+            scriptItems.filter { (mastery[it.id] ?: 0) in 1..3 }.map { it.id }
+        ).toSet().size
+}
+
 fun isLessonUnlocked(lesson: KanaLesson, lessons: List<KanaLesson>, mastery: Map<String, Int>): Boolean {
     val previous = lessons.lastOrNull { it.index == lesson.index - 1 }
     return previous == null || lessonAverageMastery(previous, mastery) >= 2f
