@@ -80,6 +80,28 @@ class TraceScoringTest {
     }
 
     @Test
+    fun traceRemediationAppearsForUnreadyScores() {
+        val score = traceScoreFor(
+            listOf(
+                TracePoint(10f, 10f),
+                TracePoint(24f, 18f),
+                TracePoint(34f, 26f)
+            )
+        )
+        val remediation = traceRemediationFor(score)
+
+        assertEquals("Shape needs one more pass", remediation?.title)
+        assertEquals("Retry trace", remediation?.actionLabel)
+    }
+
+    @Test
+    fun traceRemediationIsSkippedForReadyScores() {
+        val score = TraceScore(progress = 0.86f, ready = true, message = "Looks ready to check.")
+
+        assertEquals(null, traceRemediationFor(score))
+    }
+
+    @Test
     fun traceGuidanceCoversConfusableKana() {
         val guidedKana = listOf("シ", "ツ", "ソ", "ン", "さ", "ち", "ぬ", "め")
 

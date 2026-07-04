@@ -18,6 +18,12 @@ data class TraceFeedbackCue(
     val message: String
 )
 
+data class TraceRemediationCopy(
+    val title: String,
+    val message: String,
+    val actionLabel: String
+)
+
 fun traceScoreFor(points: List<TracePoint>): TraceScore {
     if (points.isEmpty()) {
         return TraceScore(0f, ready = false, message = "Trace over the ghost kana.")
@@ -40,6 +46,17 @@ fun traceScoreFor(points: List<TracePoint>): TraceScore {
     }
     return TraceScore(progress, ready, message)
 }
+
+fun traceRemediationFor(score: TraceScore): TraceRemediationCopy? =
+    if (score.ready) {
+        null
+    } else {
+        TraceRemediationCopy(
+            title = "Shape needs one more pass",
+            message = "${score.message} Compare the model, then retry the stroke.",
+            actionLabel = "Retry trace"
+        )
+    }
 
 fun traceFeedbackCuesFor(points: List<TracePoint>, score: TraceScore = traceScoreFor(points)): List<TraceFeedbackCue> {
     if (points.isEmpty()) {

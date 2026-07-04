@@ -161,9 +161,10 @@ Implemented:
 - Added tested per-kana review session outcomes so completion distinguishes clean, repaired, and still-shaky kana.
 - Added tested trace feedback cues for start, direction, and coverage, plus visible start/end markers in trace and comparison views.
 - Added tested kana-specific trace overlays for high-confusion katakana such as シ/ツ and ソ/ン.
+- Added adaptive trace remediation after weak checks, opening comparison and retry prompts before completing the exercise.
 
 ## Next Polish Pass
 
 Implement next:
 
-- Add adaptive trace remediation after failed checks, with stronger comparison and retry prompts for shaky kana.
+- Tune lesson pacing so new kana, listening, matching, and trace prompts feel more deliberately sequenced.

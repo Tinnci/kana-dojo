@@ -69,10 +69,12 @@ fun TraceKanaExercise(
 ) {
     var points by remember(item.id) { mutableStateOf<List<Offset>>(emptyList()) }
     var showComparison by remember(item.id) { mutableStateOf(false) }
+    var showRemediation by remember(item.id) { mutableStateOf(false) }
     var replayNonce by remember(item.id) { mutableIntStateOf(0) }
     val replayProgress = remember(item.id) { Animatable(1f) }
     val traceScore = remember(points) { traceScoreFor(points.map { TracePoint(it.x, it.y) }) }
     val traceCues = remember(points, traceScore) { traceFeedbackCuesFor(points.map { TracePoint(it.x, it.y) }, traceScore) }
+    val remediation = remember(traceScore) { traceRemediationFor(traceScore) }
     val animatedScore by animateFloatAsState(targetValue = traceScore.progress, label = "traceScore")
     val guideAlpha by animateFloatAsState(
         targetValue = if (traceScore.ready || answered) 0.28f else 0.14f,
@@ -185,11 +187,28 @@ fun TraceKanaExercise(
         }
         TraceScorePanel(score = animatedScore, ready = traceScore.ready, message = traceScore.message)
         TraceCuePanel(cues = traceCues)
+        AnimatedVisibility(
+            visible = showRemediation && remediation != null,
+            enter = fadeIn() + expandVertically(expandFrom = Alignment.Top),
+            exit = fadeOut() + shrinkVertically(shrinkTowards = Alignment.Top)
+        ) {
+            remediation?.let { copy ->
+                TraceRemediationPanel(
+                    remediation = copy,
+                    onRetry = {
+                        points = emptyList()
+                        showComparison = false
+                        showRemediation = false
+                    }
+                )
+            }
+        }
         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
             OutlinedButton(
                 onClick = {
                     points = emptyList()
                     showComparison = false
+                    showRemediation = false
                 },
                 modifier = Modifier.weight(1f)
             ) {
@@ -206,7 +225,19 @@ fun TraceKanaExercise(
             ) {
                 Text(if (showComparison) "Hide" else "Compare")
             }
-            Button(onClick = { onAnswer(traceScore.ready) }, enabled = !answered && points.isNotEmpty(), modifier = Modifier.weight(1f)) {
+            Button(
+                onClick = {
+                    if (traceScore.ready) {
+                        onAnswer(true)
+                    } else {
+                        showRemediation = true
+                        showComparison = true
+                        if (points.size > 1) replayNonce += 1
+                    }
+                },
+                enabled = !answered && points.isNotEmpty(),
+                modifier = Modifier.weight(1f)
+            ) {
                 Text("Check")
             }
         }
@@ -248,6 +279,30 @@ private fun TraceCuePanel(cues: List<TraceFeedbackCue>) {
                     Text(cue.label, style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Black)
                     Text(cue.message, style = MaterialTheme.typography.bodySmall)
                 }
+            }
+        }
+    }
+}
+
+@Composable
+private fun TraceRemediationPanel(remediation: TraceRemediationCopy, onRetry: () -> Unit) {
+    Surface(
+        shape = RoundedCornerShape(18.dp),
+        color = Color(0xFFFFDFD6),
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Row(
+            modifier = Modifier.padding(12.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(10.dp)
+        ) {
+            Icon(Icons.Outlined.TouchApp, contentDescription = null, tint = Color(0xFF9B2D20))
+            Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(3.dp)) {
+                Text(remediation.title, style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Black)
+                Text(remediation.message, style = MaterialTheme.typography.bodySmall)
+            }
+            OutlinedButton(onClick = onRetry) {
+                Text(remediation.actionLabel)
             }
         }
     }
