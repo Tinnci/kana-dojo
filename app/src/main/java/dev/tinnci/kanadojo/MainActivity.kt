@@ -1367,18 +1367,21 @@ private fun MistakePracticeScreen(
 ) {
     val scriptItems = remember(script) { itemsFor(script) }
     var selectedMode by remember(script) { mutableStateOf(PracticeMode.Weak) }
-    val practiceItems = remember(script, selectedMode, mistakeIds, mastery) {
+    val mistakeSnapshot = mistakeIds.toList()
+    val masterySnapshot = mastery.toMap()
+    val practiceItems = remember(script, selectedMode, mistakeSnapshot, masterySnapshot) {
         practiceItemsFor(
             mode = selectedMode,
             scriptItems = scriptItems,
-            mistakeIds = mistakeIds,
+            mistakeIds = mistakeSnapshot,
             allItems = allItems,
-            mastery = mastery
+            mastery = masterySnapshot
         )
     }
-    var currentIndex by remember(selectedMode, practiceItems) { mutableIntStateOf(0) }
+    val queueSignature = remember(practiceItems) { practiceItems.joinToString("|") { it.id } }
+    var currentIndex by remember(selectedMode, queueSignature) { mutableIntStateOf(0) }
     var feedback by remember(selectedMode, practiceItems, currentIndex) { mutableStateOf<AnswerFeedback?>(null) }
-    var sessionStats by remember(selectedMode, practiceItems) { mutableStateOf(LessonSessionStats()) }
+    var sessionStats by remember(selectedMode, queueSignature) { mutableStateOf(LessonSessionStats()) }
     val current = if (practiceItems.isEmpty()) null else practiceItems[currentIndex % practiceItems.size]
     val exercise = current?.let { practiceExerciseFor(it, selectedMode, currentIndex) }
     val optionItems = if (selectedMode == PracticeMode.Cross) allItems else scriptItems

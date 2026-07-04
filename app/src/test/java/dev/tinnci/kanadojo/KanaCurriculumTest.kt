@@ -134,6 +134,31 @@ class KanaCurriculumTest {
     }
 
     @Test
+    fun weakPracticeUsesCurrentMistakeList() {
+        val allItems = hiraganaItems + katakanaItems
+        val firstMistake = hiraganaItems.first { it.romaji == "a" }
+        val nextMistake = hiraganaItems.first { it.romaji == "i" }
+
+        val firstQueue = practiceItemsFor(
+            mode = PracticeMode.Weak,
+            scriptItems = itemsFor(Script.Hiragana),
+            mistakeIds = listOf(firstMistake.id),
+            allItems = allItems,
+            mastery = emptyMap()
+        )
+        val nextQueue = practiceItemsFor(
+            mode = PracticeMode.Weak,
+            scriptItems = itemsFor(Script.Hiragana),
+            mistakeIds = listOf(nextMistake.id),
+            allItems = allItems,
+            mastery = emptyMap()
+        )
+
+        assertEquals(listOf(firstMistake.id), firstQueue.map { it.id })
+        assertEquals(listOf(nextMistake.id), nextQueue.map { it.id })
+    }
+
+    @Test
     fun contrastPracticeTargetsConfusableKana() {
         val contrastItems = practiceItemsFor(
             mode = PracticeMode.Contrast,
