@@ -270,7 +270,11 @@ private fun LessonPathScreen(
             allItems = itemsFor(script),
             onSpeak = onSpeak,
             onResult = onResult,
-            onExit = { activeLesson = null }
+            onExit = { activeLesson = null },
+            onReviewMistakes = {
+                activeLesson = null
+                onOpenPractice()
+            }
         )
         return
     }
@@ -683,7 +687,8 @@ private fun LessonRunner(
     allItems: List<KanaItem>,
     onSpeak: (String) -> Unit,
     onResult: (List<KanaItem>, Boolean) -> Unit,
-    onExit: () -> Unit
+    onExit: () -> Unit,
+    onReviewMistakes: () -> Unit
 ) {
     val queue = remember(lesson) { mutableStateListOf<Exercise>().apply { addAll(buildLessonExercises(lesson)) } }
     var completed by remember(lesson) { mutableIntStateOf(0) }
@@ -715,7 +720,19 @@ private fun LessonRunner(
         }
 
         if (current == null) {
-            LessonComplete(lesson = lesson, stats = sessionStats, onContinue = onExit)
+            LessonComplete(
+                lesson = lesson,
+                stats = sessionStats,
+                onContinue = onExit,
+                onRepeat = {
+                    queue.clear()
+                    queue.addAll(buildLessonExercises(lesson))
+                    completed = 0
+                    sessionStats = LessonSessionStats()
+                    feedback = null
+                },
+                onReviewMistakes = onReviewMistakes
+            )
         } else {
             ExerciseCard(
                 exercise = current,
@@ -749,7 +766,13 @@ private fun LessonRunner(
 }
 
 @Composable
-private fun LessonComplete(lesson: KanaLesson, stats: LessonSessionStats, onContinue: () -> Unit) {
+private fun LessonComplete(
+    lesson: KanaLesson,
+    stats: LessonSessionStats,
+    onContinue: () -> Unit,
+    onRepeat: () -> Unit,
+    onReviewMistakes: () -> Unit
+) {
     val accuracy by animateFloatAsState(targetValue = stats.accuracy, label = "lessonAccuracy")
     var entered by remember(lesson.index) { mutableStateOf(false) }
     LaunchedEffect(lesson.index) {
@@ -813,14 +836,110 @@ private fun LessonComplete(lesson: KanaLesson, stats: LessonSessionStats, onCont
             }
         }
         Spacer(Modifier.height(24.dp))
-        Button(
-            onClick = onContinue,
-            shape = RoundedCornerShape(18.dp),
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(56.dp)
-        ) {
-            Text("Continue")
+        CompletionActions(stats = stats, onContinue = onContinue, onRepeat = onRepeat, onReviewMistakes = onReviewMistakes)
+    }
+}
+
+@Composable
+private fun CompletionActions(
+    stats: LessonSessionStats,
+    onContinue: () -> Unit,
+    onRepeat: () -> Unit,
+    onReviewMistakes: () -> Unit
+) {
+    val needsRepeat = stats.accuracy < 0.75f
+    val hasMisses = stats.missed > 0
+    val recommendation = when {
+        needsRepeat -> "Recommended: repeat this row while it is fresh."
+        hasMisses -> "Recommended: repair the missed kana next."
+        else -> "Recommended: return to the path for the next lesson."
+    }
+
+    Column(verticalArrangement = Arrangement.spacedBy(10.dp), modifier = Modifier.fillMaxWidth()) {
+        Text(
+            recommendation,
+            style = MaterialTheme.typography.labelLarge,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.fillMaxWidth()
+        )
+        when {
+            needsRepeat -> {
+                Button(
+                    onClick = onRepeat,
+                    shape = RoundedCornerShape(18.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(56.dp)
+                ) {
+                    Text("Repeat row", fontWeight = FontWeight.Bold)
+                }
+                if (hasMisses) {
+                    Row(horizontalArrangement = Arrangement.spacedBy(10.dp), modifier = Modifier.fillMaxWidth()) {
+                        OutlinedButton(
+                            onClick = onReviewMistakes,
+                            shape = RoundedCornerShape(18.dp),
+                            modifier = Modifier
+                                .weight(1f)
+                                .height(52.dp)
+                        ) {
+                            Text("Review")
+                        }
+                        OutlinedButton(
+                            onClick = onContinue,
+                            shape = RoundedCornerShape(18.dp),
+                            modifier = Modifier
+                                .weight(1f)
+                                .height(52.dp)
+                        ) {
+                            Text("Path")
+                        }
+                    }
+                } else {
+                    OutlinedButton(
+                        onClick = onContinue,
+                        shape = RoundedCornerShape(18.dp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(52.dp)
+                    ) {
+                        Text("Back to path")
+                    }
+                }
+            }
+
+            hasMisses -> {
+                Button(
+                    onClick = onReviewMistakes,
+                    shape = RoundedCornerShape(18.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(56.dp)
+                ) {
+                    Text("Review misses", fontWeight = FontWeight.Bold)
+                }
+                OutlinedButton(
+                    onClick = onContinue,
+                    shape = RoundedCornerShape(18.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(52.dp)
+                ) {
+                    Text("Back to path")
+                }
+            }
+
+            else -> {
+                Button(
+                    onClick = onContinue,
+                    shape = RoundedCornerShape(18.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(56.dp)
+                ) {
+                    Text("Back to path", fontWeight = FontWeight.Bold)
+                }
+            }
         }
     }
 }
