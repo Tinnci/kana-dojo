@@ -23,6 +23,8 @@ The first screen should always answer one question: what should I do next?
 
 ## Material 3 Expressive Interpretation
 
+Source check: Material Design's M3 Expressive article describes the update as a way to make products more engaging and easier to use. For Kana Dojo, that means expressive UI must improve lesson clarity and feedback speed, not just add decoration.
+
 Material 3 Expressive should show up through:
 
 - Confident shape: rounded lesson nodes, pill chips, large touch targets.
@@ -30,6 +32,14 @@ Material 3 Expressive should show up through:
 - Clear hierarchy: large kana prompts, medium lesson titles, small status labels.
 - Color roles with contrast: primary for action, tertiary for contrast/confusable work, error/coral for misses.
 - Accessible flow: readable text, stable layout, no hidden critical state behind color alone.
+
+Implementation rules:
+
+- The active next lesson should be visually stronger than the rest of the path.
+- Answer feedback may scale, shift color, or reveal status, but it must not resize the answer grid.
+- Motion should explain cause and effect: tap, answer, progress, complete.
+- Exercise screens should prefer one strong prompt over multiple competing panels.
+- Expressive color should keep semantic meaning stable across the app.
 
 ## Duolingo-Like Learning Feel
 
@@ -104,13 +114,23 @@ The chart is a reference surface:
 - Avoid looping decorative animation during exercises.
 - Respect future reduced-motion settings.
 
-## First Polish Pass
+## Current Polish State
 
-Implement next:
+Implemented:
 
 - Stage chips and difficulty dots on lesson cards.
 - Locked lesson state based on previous lesson mastery.
-- More expressive hero status.
-- Animated lesson card sizing and progress.
-- Stronger mistake/contrast visual language.
+- Animated lesson progress.
+- Stronger active next-lesson state with animated card color, elevation, and node scale.
+- Animated answer feedback color and scale for choice exercises.
+- Shared answer option component for kana, romaji, and sound-choice prompts.
 
+## Next Polish Pass
+
+Implement next:
+
+- More expressive hero status.
+- Feedback banner enter/exit motion.
+- Stronger mistake/contrast visual language.
+- Trace pad refinement: clearer guide state, stroke replay, and model comparison.
+- Reduced-motion setting path before adding any looping animation.
