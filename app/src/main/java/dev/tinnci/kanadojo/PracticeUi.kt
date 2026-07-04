@@ -45,6 +45,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
@@ -383,10 +384,39 @@ private fun PracticeCompletionNextStepPanel(
                 )
             }
             Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
-                Text(nextStep.title, style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Black)
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(
+                        nextStep.title,
+                        style = MaterialTheme.typography.labelLarge,
+                        fontWeight = FontWeight.Black,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.weight(1f)
+                    )
+                    PracticeCompletionModeChip(mode)
+                }
                 Text(nextStep.message, style = MaterialTheme.typography.bodySmall)
             }
         }
+    }
+}
+
+@Composable
+private fun PracticeCompletionModeChip(mode: PracticeMode) {
+    Surface(
+        shape = RoundedCornerShape(999.dp),
+        color = MaterialTheme.colorScheme.surface.copy(alpha = 0.72f)
+    ) {
+        Text(
+            mode.label,
+            style = MaterialTheme.typography.labelSmall,
+            fontWeight = FontWeight.Black,
+            modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp)
+        )
     }
 }
 
