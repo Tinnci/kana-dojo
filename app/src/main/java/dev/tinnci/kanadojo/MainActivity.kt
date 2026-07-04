@@ -271,9 +271,7 @@ private fun LessonPathScreen(
     val snapshot = progressSnapshot(scriptItems, mastery)
     var activeLesson by remember(script) { mutableStateOf<KanaLesson?>(null) }
     var selectedStage by remember(script) { mutableStateOf<LearningStage?>(null) }
-    val nextLesson = lessons.firstOrNull { lesson ->
-        isLessonUnlocked(lesson, lessons, mastery) && lessonAverageMastery(lesson, mastery) < 4f
-    } ?: lessons.first()
+    val nextLesson = nextPathLesson(lessons, mastery) ?: lessons.first()
     val lessonStages = remember(lessons) { lessons.map { it.stage }.distinct() }
     val visibleLessons = remember(lessons, selectedStage) {
         selectedStage?.let { stage -> lessons.filter { it.stage == stage } } ?: lessons
@@ -288,6 +286,8 @@ private fun LessonPathScreen(
         LessonRunner(
             lesson = activeLesson!!,
             allItems = itemsFor(script),
+            lessons = lessons,
+            mastery = mastery,
             onSpeak = onSpeak,
             reduceMotion = reduceMotion,
             onResult = onResult,
@@ -783,6 +783,8 @@ private fun DifficultyDots(difficulty: Int) {
 private fun LessonRunner(
     lesson: KanaLesson,
     allItems: List<KanaItem>,
+    lessons: List<KanaLesson>,
+    mastery: Map<String, Int>,
     onSpeak: (String) -> Unit,
     reduceMotion: Boolean,
     onResult: (List<KanaItem>, Boolean) -> Unit,
@@ -795,6 +797,13 @@ private fun LessonRunner(
     var feedback by remember(lesson) { mutableStateOf<AnswerFeedback?>(null) }
     val current = queue.firstOrNull()
     val total = (completed + queue.size).coerceAtLeast(1)
+    val masterySnapshot = mastery.toMap()
+    val completionMastery = remember(lesson, masterySnapshot) {
+        masterySnapshot.toMutableMap().apply { lesson.items.forEach { put(it.id, 4) } }
+    }
+    val nextPreview = remember(lesson, lessons, completionMastery) {
+        nextPathLesson(lessons, completionMastery)?.takeIf { it.index != lesson.index }
+    }
 
     Column(
         modifier = Modifier
@@ -821,6 +830,7 @@ private fun LessonRunner(
         if (current == null) {
             LessonComplete(
                 lesson = lesson,
+                nextLesson = nextPreview,
                 stats = sessionStats,
                 onContinue = onExit,
                 onRepeat = {
@@ -868,6 +878,7 @@ private fun LessonRunner(
 @Composable
 private fun LessonComplete(
     lesson: KanaLesson,
+    nextLesson: KanaLesson?,
     stats: LessonSessionStats,
     onContinue: () -> Unit,
     onRepeat: () -> Unit,
@@ -936,13 +947,20 @@ private fun LessonComplete(
             }
         }
         Spacer(Modifier.height(24.dp))
-        CompletionActions(stats = stats, onContinue = onContinue, onRepeat = onRepeat, onReviewMistakes = onReviewMistakes)
+        CompletionActions(
+            stats = stats,
+            nextLesson = nextLesson,
+            onContinue = onContinue,
+            onRepeat = onRepeat,
+            onReviewMistakes = onReviewMistakes
+        )
     }
 }
 
 @Composable
 private fun CompletionActions(
     stats: LessonSessionStats,
+    nextLesson: KanaLesson?,
     onContinue: () -> Unit,
     onRepeat: () -> Unit,
     onReviewMistakes: () -> Unit
@@ -1026,6 +1044,9 @@ private fun CompletionActions(
             }
 
             else -> {
+                nextLesson?.let { lesson ->
+                    NextLessonPreview(lesson = lesson)
+                }
                 Button(
                     onClick = onContinue,
                     shape = RoundedCornerShape(18.dp),
@@ -1035,6 +1056,37 @@ private fun CompletionActions(
                 ) {
                     Text("Back to path", fontWeight = FontWeight.Bold)
                 }
+            }
+        }
+    }
+}
+
+@Composable
+private fun NextLessonPreview(lesson: KanaLesson) {
+    Surface(
+        shape = RoundedCornerShape(18.dp),
+        color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.42f),
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(14.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(46.dp)
+                    .background(MaterialTheme.colorScheme.surface, CircleShape),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(lesson.items.firstOrNull()?.kana.orEmpty(), fontSize = 24.sp, fontWeight = FontWeight.Black)
+            }
+            Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                Text("Up next", style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.Bold)
+                Text(lesson.title, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Black)
+                Text(lesson.items.joinToString(" ") { it.kana }, style = MaterialTheme.typography.bodyMedium)
             }
         }
     }

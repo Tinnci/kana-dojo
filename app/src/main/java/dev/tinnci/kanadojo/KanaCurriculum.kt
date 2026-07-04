@@ -244,6 +244,11 @@ fun isLessonUnlocked(lesson: KanaLesson, lessons: List<KanaLesson>, mastery: Map
     return previous == null || lessonAverageMastery(previous, mastery) >= 2f
 }
 
+fun nextPathLesson(lessons: List<KanaLesson>, mastery: Map<String, Int>): KanaLesson? =
+    lessons.firstOrNull { lesson ->
+        isLessonUnlocked(lesson, lessons, mastery) && lessonAverageMastery(lesson, mastery) < 4f
+    }
+
 fun masteryLabel(averageMastery: Float): String =
     when {
         averageMastery >= 4f -> "fluent"

@@ -98,6 +98,26 @@ class KanaCurriculumTest {
     }
 
     @Test
+    fun nextPathLessonReturnsFirstUnfinishedUnlockedLesson() {
+        val lessons = lessonsFor(Script.Hiragana)
+        val lessonOneFluent = lessons[0].items.associate { it.id to 4 }
+
+        val next = nextPathLesson(lessons, lessonOneFluent)
+
+        assertEquals(lessons[1].index, next?.index)
+    }
+
+    @Test
+    fun nextPathLessonDoesNotSkipLockedLessons() {
+        val lessons = lessonsFor(Script.Hiragana)
+        val lessonOneFamiliar = lessons[0].items.associate { it.id to 1 }
+
+        val next = nextPathLesson(lessons, lessonOneFamiliar)
+
+        assertEquals(lessons[0].index, next?.index)
+    }
+
+    @Test
     fun progressSnapshotCountsThresholds() {
         val items = itemsFor(Script.Hiragana).take(5)
         val mastery = mapOf(
