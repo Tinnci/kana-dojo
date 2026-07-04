@@ -359,11 +359,16 @@ private fun PracticeCompletionPanel(
             if (stable) {
                 PracticeCompletionActionGroup(
                     repeatActionLabel = repeatActionLabel,
+                    reduceMotion = reduceMotion,
                     onReturnToPath = onReturnToPath,
                     onRepeat = onRepeat
                 )
             } else {
-                PracticeRepeatRequiredActionGroup(repeatActionLabel = repeatActionLabel, onRepeat = onRepeat)
+                PracticeRepeatRequiredActionGroup(
+                    repeatActionLabel = repeatActionLabel,
+                    reduceMotion = reduceMotion,
+                    onRepeat = onRepeat
+                )
             }
         }
     }
@@ -372,13 +377,20 @@ private fun PracticeCompletionPanel(
 @Composable
 private fun PracticeCompletionActionGroup(
     repeatActionLabel: String,
+    reduceMotion: Boolean,
     onReturnToPath: () -> Unit,
     onRepeat: () -> Unit
 ) {
+    val animationModifier = practiceCompletionActionGroupEntranceModifier(
+        key = "clean-$repeatActionLabel",
+        reduceMotion = reduceMotion
+    )
     Surface(
         shape = RoundedCornerShape(20.dp),
         color = Color(0xFFDCEBDD).copy(alpha = 0.72f),
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .fillMaxWidth()
+            .then(animationModifier)
     ) {
         Column(
             verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -401,11 +413,21 @@ private fun PracticeCompletionActionGroup(
 }
 
 @Composable
-private fun PracticeRepeatRequiredActionGroup(repeatActionLabel: String, onRepeat: () -> Unit) {
+private fun PracticeRepeatRequiredActionGroup(
+    repeatActionLabel: String,
+    reduceMotion: Boolean,
+    onRepeat: () -> Unit
+) {
+    val animationModifier = practiceCompletionActionGroupEntranceModifier(
+        key = "repeat-$repeatActionLabel",
+        reduceMotion = reduceMotion
+    )
     Surface(
         shape = RoundedCornerShape(20.dp),
         color = Color(0xFFFFDFD6).copy(alpha = 0.72f),
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .fillMaxWidth()
+            .then(animationModifier)
     ) {
         Column(
             verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -428,6 +450,25 @@ private fun PracticeRepeatRequiredActionGroup(repeatActionLabel: String, onRepea
             }
         }
     }
+}
+
+@Composable
+private fun practiceCompletionActionGroupEntranceModifier(key: String, reduceMotion: Boolean): Modifier {
+    var entered by remember(key) { mutableStateOf(false) }
+    LaunchedEffect(key) {
+        entered = true
+    }
+    val alpha by animateFloatAsState(
+        targetValue = if (reduceMotion || entered) 1f else 0f,
+        animationSpec = tween(durationMillis = 200),
+        label = "practiceActionGroupAlpha"
+    )
+    val scale by animateFloatAsState(
+        targetValue = if (reduceMotion || entered) 1f else 0.98f,
+        animationSpec = tween(durationMillis = 200),
+        label = "practiceActionGroupScale"
+    )
+    return Modifier.graphicsLayer(alpha = alpha, scaleX = scale, scaleY = scale)
 }
 
 @Composable
