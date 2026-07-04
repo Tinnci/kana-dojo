@@ -459,7 +459,7 @@ private fun PracticeRepeatRequiredActionGroup(
 private fun PracticeActionRoleChip(label: String) {
     Surface(
         shape = RoundedCornerShape(999.dp),
-        color = MaterialTheme.colorScheme.surface.copy(alpha = 0.68f)
+        color = practiceActionRoleColor(label)
     ) {
         Text(
             label,
@@ -469,6 +469,14 @@ private fun PracticeActionRoleChip(label: String) {
         )
     }
 }
+
+@Composable
+private fun practiceActionRoleColor(label: String): Color =
+    when (label) {
+        "Primary" -> Color(0xFFE2EEF8)
+        "Optional" -> MaterialTheme.colorScheme.surface.copy(alpha = 0.68f)
+        else -> MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.78f)
+    }
 
 @Composable
 private fun practiceCompletionActionGroupEntranceModifier(key: String, reduceMotion: Boolean): Modifier {
