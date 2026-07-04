@@ -3,7 +3,8 @@ package dev.tinnci.kanadojo
 data class ProgressUpdate(
     val mastery: Int,
     val missStreak: Int,
-    val inMistakes: Boolean
+    val inMistakes: Boolean,
+    val reviewDelayDays: Int
 )
 
 fun progressUpdateFor(
@@ -19,15 +20,29 @@ fun progressUpdateFor(
         ProgressUpdate(
             mastery = nextMastery,
             missStreak = 0,
-            inMistakes = nextMastery < 2
+            inMistakes = nextMastery < 2,
+            reviewDelayDays = reviewDelayDaysFor(nextMastery, correct = true)
         )
     } else {
         val nextMissStreak = clampedMissStreak + 1
         val shouldDemote = clampedMastery < 5 || nextMissStreak >= 2
+        val nextMastery = if (shouldDemote) (clampedMastery - 1).coerceAtLeast(0) else clampedMastery
         ProgressUpdate(
-            mastery = if (shouldDemote) (clampedMastery - 1).coerceAtLeast(0) else clampedMastery,
+            mastery = nextMastery,
             missStreak = nextMissStreak,
-            inMistakes = true
+            inMistakes = true,
+            reviewDelayDays = reviewDelayDaysFor(nextMastery, correct = false)
         )
+    }
+}
+
+fun reviewDelayDaysFor(mastery: Int, correct: Boolean): Int {
+    if (!correct) return 0
+    return when (mastery.coerceIn(0, 5)) {
+        0, 1 -> 0
+        2 -> 1
+        3 -> 3
+        4 -> 7
+        else -> 14
     }
 }

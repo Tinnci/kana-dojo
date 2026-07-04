@@ -150,9 +150,10 @@ Implemented:
 - Polished the app shell with a compact settings icon and segmented script switch for clearer global controls.
 - Added focused tests for weak queue fallback, confusable options, and sound-practice fallback behavior.
 - Added tested progress policy so mastered kana demote only after repeated misses while weaker kana still repair quickly.
+- Persisted simple review due dates for future calendar-based spaced review.
 
 ## Next Polish Pass
 
 Implement next:
 
-- Continue expanding spaced review once calendar-based scheduling is introduced.
+- Surface due spaced-review counts in practice once the review queue UI is ready for calendar timing.
