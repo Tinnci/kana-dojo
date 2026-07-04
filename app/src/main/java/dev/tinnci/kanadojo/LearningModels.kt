@@ -14,6 +14,7 @@ enum class ScreenTab(val label: String) {
 enum class ExerciseKind {
     KanaToRomaji,
     RomajiToKana,
+    SoundToKana,
     PairMatch,
     TraceKana
 }
@@ -21,6 +22,9 @@ enum class ExerciseKind {
 enum class PracticeMode(val label: String, val title: String, val subtitle: String) {
     Weak("Weak", "Weak repair", "Replay misses and low-mastery kana."),
     Contrast("Contrast", "Lookalike contrast", "Separate symbols that are easy to confuse."),
+    Sound("Sound", "Sound recall", "Choose kana from Japanese audio first."),
+    Writing("Write", "Writing reps", "Trace symbols until the shape feels familiar."),
+    Speed("Speed", "Speed round", "Fast recognition with familiar kana."),
     Mixed("Mixed", "Mixed recall", "Keep familiar kana fast and automatic.")
 }
 

@@ -103,4 +103,38 @@ class KanaCurriculumTest {
 
         assertEquals(recallReady.keys.toSet(), mixedItems.map { it.id }.toSet())
     }
+
+    @Test
+    fun lessonsIncludeSoundRecallExercises() {
+        val lesson = lessonsFor(Script.Hiragana).first()
+        val exercises = buildLessonExercises(lesson)
+
+        assertTrue(exercises.any { it.kind == ExerciseKind.SoundToKana })
+    }
+
+    @Test
+    fun focusedPracticeModesUseDistinctExerciseKinds() {
+        val item = itemsFor(Script.Katakana).first()
+
+        assertEquals(ExerciseKind.SoundToKana, practiceExerciseFor(item, PracticeMode.Sound, 0).kind)
+        assertEquals(ExerciseKind.TraceKana, practiceExerciseFor(item, PracticeMode.Writing, 0).kind)
+        assertEquals(ExerciseKind.KanaToRomaji, practiceExerciseFor(item, PracticeMode.Speed, 0).kind)
+        assertEquals(ExerciseKind.RomajiToKana, practiceExerciseFor(item, PracticeMode.Speed, 1).kind)
+    }
+
+    @Test
+    fun soundPracticePrefersSeenKana() {
+        val scriptItems = itemsFor(Script.Hiragana)
+        val seen = scriptItems.drop(2).take(2).associate { it.id to 1 }
+
+        val soundItems = practiceItemsFor(
+            mode = PracticeMode.Sound,
+            scriptItems = scriptItems,
+            mistakeIds = emptyList(),
+            allItems = hiraganaItems + katakanaItems,
+            mastery = seen
+        )
+
+        assertEquals(seen.keys.toSet(), soundItems.map { it.id }.toSet())
+    }
 }

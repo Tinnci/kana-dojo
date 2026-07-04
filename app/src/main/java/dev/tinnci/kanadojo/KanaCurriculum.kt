@@ -6,7 +6,8 @@ fun buildLessonExercises(lesson: KanaLesson): List<Exercise> {
     val intro = lesson.items.flatMap {
         listOf(
             Exercise(ExerciseKind.RomajiToKana, listOf(it)),
-            Exercise(ExerciseKind.KanaToRomaji, listOf(it))
+            Exercise(ExerciseKind.KanaToRomaji, listOf(it)),
+            Exercise(ExerciseKind.SoundToKana, listOf(it))
         )
     }
     val pairs = lesson.items.chunked(4).map { Exercise(ExerciseKind.PairMatch, it) }
@@ -26,7 +27,7 @@ fun buildLessonExercises(lesson: KanaLesson): List<Exercise> {
 
 fun buildMistakeExercise(item: KanaItem): Exercise =
     Exercise(
-        kind = listOf(ExerciseKind.RomajiToKana, ExerciseKind.KanaToRomaji, ExerciseKind.TraceKana)
+        kind = listOf(ExerciseKind.RomajiToKana, ExerciseKind.KanaToRomaji, ExerciseKind.SoundToKana, ExerciseKind.TraceKana)
             .random(Random(item.id.hashCode())),
         items = listOf(item)
     )
@@ -49,6 +50,19 @@ fun practiceItemsFor(
             .filter { it.confusable.isNotEmpty() }
             .ifEmpty { scriptItems.sortedBy { mastery[it.id] ?: 0 }.take(6) }
 
+        PracticeMode.Sound -> scriptItems
+            .filter { (mastery[it.id] ?: 0) >= 1 }
+            .ifEmpty { scriptItems.take(6) }
+
+        PracticeMode.Writing -> scriptItems
+            .sortedWith(compareBy<KanaItem> { mastery[it.id] ?: 0 }.thenBy { it.lesson })
+            .take(8)
+
+        PracticeMode.Speed -> scriptItems
+            .filter { (mastery[it.id] ?: 0) >= 2 }
+            .ifEmpty { scriptItems.take(8) }
+            .shuffled(Random(scriptItems.firstOrNull()?.script?.name.hashCode() + 17))
+
         PracticeMode.Mixed -> scriptItems
             .filter { (mastery[it.id] ?: 0) >= 2 }
             .ifEmpty { scriptItems.sortedBy { mastery[it.id] ?: 0 }.take(8) }
@@ -64,11 +78,19 @@ fun practiceExerciseFor(item: KanaItem, mode: PracticeMode, index: Int): Exercis
             items = listOf(item)
         )
 
+        PracticeMode.Sound -> Exercise(ExerciseKind.SoundToKana, listOf(item))
+        PracticeMode.Writing -> Exercise(ExerciseKind.TraceKana, listOf(item))
+        PracticeMode.Speed -> Exercise(
+            kind = if (index % 2 == 0) ExerciseKind.KanaToRomaji else ExerciseKind.RomajiToKana,
+            items = listOf(item)
+        )
+
         PracticeMode.Mixed -> Exercise(
-            kind = when (index % 4) {
+            kind = when (index % 5) {
                 0 -> ExerciseKind.KanaToRomaji
                 1 -> ExerciseKind.RomajiToKana
-                2 -> ExerciseKind.TraceKana
+                2 -> ExerciseKind.SoundToKana
+                3 -> ExerciseKind.TraceKana
                 else -> ExerciseKind.KanaToRomaji
             },
             items = listOf(item)
@@ -79,6 +101,7 @@ fun correctAnswerFor(exercise: Exercise): String =
     when (exercise.kind) {
         ExerciseKind.KanaToRomaji -> exercise.items.first().romaji
         ExerciseKind.RomajiToKana -> exercise.items.first().kana
+        ExerciseKind.SoundToKana -> exercise.items.first().kana
         ExerciseKind.PairMatch -> exercise.items.joinToString("  ") { "${it.kana} ${it.romaji}" }
         ExerciseKind.TraceKana -> "${exercise.items.first().kana} ${exercise.items.first().romaji}"
     }

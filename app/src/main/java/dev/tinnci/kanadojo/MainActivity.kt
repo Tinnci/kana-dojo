@@ -750,6 +750,13 @@ private fun ExerciseCard(
                         onAnswer = onAnswer
                     )
 
+                    ExerciseKind.SoundToKana -> SoundChoiceExercise(
+                        item = exercise.items.first(),
+                        options = kanaOptions(exercise.items.first(), allItems),
+                        onSpeak = onSpeak,
+                        onAnswer = onAnswer
+                    )
+
                     ExerciseKind.PairMatch -> PairMatchExercise(
                         items = exercise.items,
                         answered = feedback != null,
@@ -788,6 +795,7 @@ private fun ExerciseHeader(kind: ExerciseKind) {
     val (title, subtitle) = when (kind) {
         ExerciseKind.KanaToRomaji -> "Read it" to "Choose the matching sound."
         ExerciseKind.RomajiToKana -> "Find the kana" to "Choose the symbol for this sound."
+        ExerciseKind.SoundToKana -> "Hear it" to "Choose the kana you heard."
         ExerciseKind.PairMatch -> "Match pairs" to "Pair each kana with its sound."
         ExerciseKind.TraceKana -> "Write it" to "Trace the kana and check your stroke shape."
     }
@@ -892,6 +900,67 @@ private fun ChoiceExercise(
                         .height(74.dp)
                 ) {
                     Text(option, fontSize = if (option.length == 1) 34.sp else 22.sp, fontWeight = FontWeight.Bold)
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun SoundChoiceExercise(
+    item: KanaItem,
+    options: List<String>,
+    onSpeak: (String) -> Unit,
+    onAnswer: (Boolean) -> Unit
+) {
+    var selectedOption by remember(item.id) { mutableStateOf<String?>(null) }
+
+    LaunchedEffect(item.id) {
+        onSpeak(item.kana)
+    }
+
+    Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.SpaceBetween) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxWidth()) {
+            FilledTonalButton(
+                onClick = { onSpeak(item.kana) },
+                shape = CircleShape,
+                modifier = Modifier.size(116.dp)
+            ) {
+                Icon(Icons.Outlined.PlayArrow, contentDescription = "Play sound", modifier = Modifier.size(52.dp))
+            }
+        }
+        LazyVerticalGrid(
+            columns = GridCells.Fixed(2),
+            verticalArrangement = Arrangement.spacedBy(12.dp),
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            modifier = Modifier.weight(1f)
+        ) {
+            items(options) { option ->
+                val answered = selectedOption != null
+                val containerColor = when {
+                    answered && option == item.kana -> Color(0xFFDCEBDD)
+                    answered && option == selectedOption -> Color(0xFFFFDFD6)
+                    else -> MaterialTheme.colorScheme.surface
+                }
+                ElevatedButton(
+                    onClick = {
+                        if (selectedOption == null) {
+                            selectedOption = option
+                            onAnswer(option == item.kana)
+                        }
+                    },
+                    enabled = !answered,
+                    shape = RoundedCornerShape(20.dp),
+                    colors = ButtonDefaults.elevatedButtonColors(
+                        containerColor = containerColor,
+                        disabledContainerColor = containerColor,
+                        disabledContentColor = MaterialTheme.colorScheme.onSurface
+                    ),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(74.dp)
+                ) {
+                    Text(option, fontSize = 34.sp, fontWeight = FontWeight.Bold)
                 }
             }
         }
