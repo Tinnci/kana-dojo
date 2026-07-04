@@ -41,6 +41,19 @@ fun lessonStartPreviewFor(lesson: KanaLesson): LessonStartPreview {
     )
 }
 
+fun lessonResumeCueFor(lesson: KanaLesson, completed: Int, total: Int): LessonResumeCue? {
+    val safeTotal = total.coerceAtLeast(1)
+    val safeCompleted = completed.coerceIn(0, safeTotal)
+    if (safeCompleted == 0 || safeCompleted >= safeTotal) return null
+    return LessonResumeCue(
+        lessonIndex = lesson.index,
+        title = "Return to ${lesson.title}",
+        message = "You left after $safeCompleted of $safeTotal drills. Return while the kana are still warm.",
+        actionLabel = "Return",
+        progress = safeCompleted / safeTotal.toFloat()
+    )
+}
+
 fun lessonPhaseSummaryFor(lesson: KanaLesson): List<LessonPhaseCount> =
     listOf(
         LessonPhaseCount("Read", lesson.items.size * 2),

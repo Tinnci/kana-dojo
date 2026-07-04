@@ -175,9 +175,10 @@ Implemented:
 - Added a persisted, streak-free daily rhythm indicator to reward recent practice without reset pressure.
 - Added a tested first-run path hint that explains why vowel anchors are the right starting point.
 - Added a tested lesson-start preview that names the first exercise type and drill count before opening the runner.
+- Added tested path-level resume cues after exiting a lesson mid-session.
 
 ## Next Polish Pass
 
 Implement next:
 
-- Add path-level resume cues after exiting a lesson mid-session.
+- Add compact path feedback after a completed lesson changes the next recommended action.

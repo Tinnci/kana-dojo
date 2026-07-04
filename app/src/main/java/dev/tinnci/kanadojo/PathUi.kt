@@ -69,6 +69,7 @@ fun LessonPathScreen(
     val scriptItems = remember(script) { itemsFor(script) }
     val snapshot = progressSnapshot(scriptItems, mastery)
     var activeLesson by remember(script) { mutableStateOf<KanaLesson?>(null) }
+    var resumeCue by remember(script) { mutableStateOf<LessonResumeCue?>(null) }
     var selectedStage by remember(script) { mutableStateOf<LearningStage?>(null) }
     val nextLesson = nextPathLesson(lessons, mastery) ?: lessons.first()
     val lessonStages = remember(lessons) { lessons.map { it.stage }.distinct() }
@@ -101,8 +102,12 @@ fun LessonPathScreen(
             onSpeak = onSpeak,
             reduceMotion = reduceMotion,
             onResult = onResult,
-            onExit = { activeLesson = null },
+            onExit = { cue ->
+                resumeCue = cue
+                activeLesson = null
+            },
             onReviewMistakes = {
+                resumeCue = null
                 activeLesson = null
                 onOpenPractice(PracticeMode.Weak)
             }
@@ -125,6 +130,19 @@ fun LessonPathScreen(
                 dueReviewCount = dueReviewCount
             )
         }
+        resumeCue?.let { cue ->
+            item {
+                PathResumeCuePanel(
+                    cue = cue,
+                    onResume = {
+                        lessons.firstOrNull { it.index == cue.lessonIndex }?.let { lesson ->
+                            resumeCue = null
+                            activeLesson = lesson
+                        }
+                    }
+                )
+            }
+        }
         item {
             DailyFocusPanel(
                 lesson = nextLesson,
@@ -135,7 +153,10 @@ fun LessonPathScreen(
                 dueReviewItems = dueReviewItems,
                 dailyRhythm = dailyRhythm,
                 startGuidance = startGuidance,
-                onStart = { activeLesson = nextLesson },
+                onStart = {
+                    resumeCue = null
+                    activeLesson = nextLesson
+                },
                 onReview = onOpenPractice
             )
         }
@@ -161,7 +182,12 @@ fun LessonPathScreen(
                 averageMastery = lessonAverageMastery(lesson, mastery),
                 unlocked = unlocked,
                 focus = lesson.index == nextLesson.index,
-                onStart = { if (unlocked) activeLesson = lesson }
+                onStart = {
+                    if (unlocked) {
+                        resumeCue = null
+                        activeLesson = lesson
+                    }
+                }
             )
         }
     }
@@ -608,6 +634,40 @@ private fun HeroMetric(label: String, value: String, modifier: Modifier = Modifi
         ) {
             Text(value, style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Black)
             Text(label, style = MaterialTheme.typography.labelSmall)
+        }
+    }
+}
+
+@Composable
+private fun PathResumeCuePanel(cue: LessonResumeCue, onResume: () -> Unit) {
+    Surface(
+        shape = RoundedCornerShape(20.dp),
+        color = MaterialTheme.colorScheme.secondaryContainer,
+        tonalElevation = 2.dp,
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Column(
+            modifier = Modifier.padding(14.dp),
+            verticalArrangement = Arrangement.spacedBy(10.dp)
+        ) {
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                Surface(shape = CircleShape, color = MaterialTheme.colorScheme.surface) {
+                    Icon(
+                        Icons.Outlined.PlayArrow,
+                        contentDescription = null,
+                        modifier = Modifier.padding(7.dp).size(18.dp),
+                        tint = MaterialTheme.colorScheme.onSurface
+                    )
+                }
+                Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                    Text(cue.title, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Black)
+                    Text(cue.message, style = MaterialTheme.typography.bodySmall)
+                }
+                Button(onClick = onResume, shape = RoundedCornerShape(16.dp)) {
+                    Text(cue.actionLabel, fontWeight = FontWeight.Bold)
+                }
+            }
+            LinearProgressIndicator(progress = { cue.progress }, modifier = Modifier.fillMaxWidth())
         }
     }
 }

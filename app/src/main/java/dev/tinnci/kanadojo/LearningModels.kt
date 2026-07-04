@@ -67,6 +67,14 @@ data class LessonStartPreview(
     val drillCount: Int
 )
 
+data class LessonResumeCue(
+    val lessonIndex: Int,
+    val title: String,
+    val message: String,
+    val actionLabel: String,
+    val progress: Float
+)
+
 data class PracticeQueueExplanation(
     val title: String,
     val message: String

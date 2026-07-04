@@ -53,7 +53,7 @@ fun LessonRunner(
     onSpeak: (String) -> Unit,
     reduceMotion: Boolean,
     onResult: (List<KanaItem>, Boolean) -> Unit,
-    onExit: () -> Unit,
+    onExit: (LessonResumeCue?) -> Unit,
     onReviewMistakes: () -> Unit
 ) {
     val queue = remember(lesson) { mutableStateListOf<Exercise>().apply { addAll(buildLessonExercises(lesson)) } }
@@ -77,7 +77,7 @@ fun LessonRunner(
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            IconButton(onClick = onExit) {
+            IconButton(onClick = { onExit(lessonResumeCueFor(lesson, completed, total)) }) {
                 Icon(Icons.Outlined.Close, contentDescription = "Close")
             }
             LinearProgressIndicator(
@@ -98,7 +98,7 @@ fun LessonRunner(
                 nextLesson = nextPreview,
                 stats = sessionStats,
                 reduceMotion = reduceMotion,
-                onContinue = onExit,
+                onContinue = { onExit(null) },
                 onRepeat = {
                     queue.clear()
                     queue.addAll(buildLessonExercises(lesson))

@@ -653,6 +653,25 @@ class KanaCurriculumTest {
     }
 
     @Test
+    fun lessonResumeCueAppearsOnlyAfterMidSessionProgress() {
+        val lesson = lessonsFor(Script.Hiragana).first()
+        val cue = lessonResumeCueFor(lesson, completed = 3, total = 17)
+
+        assertEquals(lesson.index, cue?.lessonIndex)
+        assertEquals("Return to Vowels", cue?.title)
+        assertEquals(3 / 17f, cue?.progress ?: 0f, 0.001f)
+        assertTrue(cue?.message.orEmpty().contains("3 of 17"))
+    }
+
+    @Test
+    fun lessonResumeCueSkipsUntouchedAndCompleteLessons() {
+        val lesson = lessonsFor(Script.Hiragana).first()
+
+        assertEquals(null, lessonResumeCueFor(lesson, completed = 0, total = 17))
+        assertEquals(null, lessonResumeCueFor(lesson, completed = 17, total = 17))
+    }
+
+    @Test
     fun lessonPhaseSummaryTotalMatchesGeneratedExerciseCount() {
         val lesson = lessonsFor(Script.Katakana).first { it.stage == LearningStage.Confusable }
 
