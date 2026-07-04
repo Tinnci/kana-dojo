@@ -3,12 +3,14 @@ package dev.tinnci.kanadojo
 import kotlin.random.Random
 
 fun buildLessonExercises(lesson: KanaLesson): List<Exercise> {
-    val intro = lesson.items.flatMap {
-        listOf(
-            Exercise(ExerciseKind.RomajiToKana, listOf(it)),
-            Exercise(ExerciseKind.KanaToRomaji, listOf(it)),
-            Exercise(ExerciseKind.SoundToKana, listOf(it))
-        )
+    val intro = lesson.items.flatMap { item ->
+        buildList {
+            add(Exercise(ExerciseKind.RomajiToKana, listOf(item)))
+            add(Exercise(ExerciseKind.KanaToRomaji, listOf(item)))
+            if (supportsAudioPrompt(item)) {
+                add(Exercise(ExerciseKind.SoundToKana, listOf(item)))
+            }
+        }
     }
     val pairs = lesson.items.chunked(4).map { Exercise(ExerciseKind.PairMatch, it) }
     val writingCount = when (lesson.stage) {
@@ -18,6 +20,7 @@ fun buildLessonExercises(lesson: KanaLesson): List<Exercise> {
         LearningStage.TailRows -> lesson.items.size
         LearningStage.Voiced -> lesson.items.size
         LearningStage.Combination -> lesson.items.size
+        LearningStage.Special -> lesson.items.size
         LearningStage.Confusable -> lesson.items.size
     }
     val writing = lesson.items.take(writingCount).map { Exercise(ExerciseKind.TraceKana, listOf(it)) }
@@ -27,12 +30,23 @@ fun buildLessonExercises(lesson: KanaLesson): List<Exercise> {
     return (intro + pairs + writing + contrast).shuffled(Random(lesson.index))
 }
 
-fun buildMistakeExercise(item: KanaItem): Exercise =
-    Exercise(
-        kind = listOf(ExerciseKind.RomajiToKana, ExerciseKind.KanaToRomaji, ExerciseKind.SoundToKana, ExerciseKind.TraceKana)
-            .random(Random(item.id.hashCode())),
+fun supportsAudioPrompt(item: KanaItem): Boolean =
+    item.row != "special"
+
+fun buildMistakeExercise(item: KanaItem): Exercise {
+    val kinds = buildList {
+        add(ExerciseKind.RomajiToKana)
+        add(ExerciseKind.KanaToRomaji)
+        if (supportsAudioPrompt(item)) {
+            add(ExerciseKind.SoundToKana)
+        }
+        add(ExerciseKind.TraceKana)
+    }
+    return Exercise(
+        kind = kinds.random(Random(item.id.hashCode())),
         items = listOf(item)
     )
+}
 
 fun practiceItemsFor(
     mode: PracticeMode,
@@ -53,8 +67,9 @@ fun practiceItemsFor(
             .ifEmpty { scriptItems.sortedBy { mastery[it.id] ?: 0 }.take(6) }
 
         PracticeMode.Sound -> scriptItems
+            .filter { supportsAudioPrompt(it) }
             .filter { (mastery[it.id] ?: 0) >= 1 }
-            .ifEmpty { scriptItems.take(6) }
+            .ifEmpty { scriptItems.filter { supportsAudioPrompt(it) }.take(6) }
 
         PracticeMode.Writing -> scriptItems
             .sortedWith(compareBy<KanaItem> { mastery[it.id] ?: 0 }.thenBy { it.lesson })
@@ -85,7 +100,7 @@ fun practiceExerciseFor(item: KanaItem, mode: PracticeMode, index: Int): Exercis
             items = listOf(item)
         )
 
-        PracticeMode.Sound -> Exercise(ExerciseKind.SoundToKana, listOf(item))
+        PracticeMode.Sound -> Exercise(if (supportsAudioPrompt(item)) ExerciseKind.SoundToKana else ExerciseKind.RomajiToKana, listOf(item))
         PracticeMode.Writing -> Exercise(ExerciseKind.TraceKana, listOf(item))
         PracticeMode.Speed -> Exercise(
             kind = if (index % 2 == 0) ExerciseKind.KanaToRomaji else ExerciseKind.RomajiToKana,
@@ -101,7 +116,7 @@ fun practiceExerciseFor(item: KanaItem, mode: PracticeMode, index: Int): Exercis
             kind = when (index % 5) {
                 0 -> ExerciseKind.KanaToRomaji
                 1 -> ExerciseKind.RomajiToKana
-                2 -> ExerciseKind.SoundToKana
+                2 -> if (supportsAudioPrompt(item)) ExerciseKind.SoundToKana else ExerciseKind.RomajiToKana
                 3 -> ExerciseKind.TraceKana
                 else -> ExerciseKind.KanaToRomaji
             },
@@ -150,6 +165,7 @@ fun lessonsFor(script: Script): List<KanaLesson> {
 private fun lessonStage(index: Int, items: List<KanaItem>, allItems: List<KanaItem>): LearningStage =
     when {
         index == 1 -> LearningStage.Anchor
+        index >= 21 -> LearningStage.Special
         index >= 16 -> LearningStage.Combination
         index >= 11 -> LearningStage.Voiced
         items.any { item -> item.confusable.any { kana -> (allItems.firstOrNull { it.kana == kana }?.lesson ?: Int.MAX_VALUE) <= index } } ->
@@ -167,6 +183,7 @@ private fun lessonDifficulty(stage: LearningStage): Int =
         LearningStage.TailRows,
         LearningStage.Voiced,
         LearningStage.Combination,
+        LearningStage.Special,
         LearningStage.Confusable -> 3
     }
 
@@ -315,7 +332,11 @@ val hiraganaItems = listOf(
     kana(Script.Hiragana, "びょ", "byo", "b-y", 20),
     kana(Script.Hiragana, "ぴゃ", "pya", "p-y", 20),
     kana(Script.Hiragana, "ぴゅ", "pyu", "p-y", 20),
-    kana(Script.Hiragana, "ぴょ", "pyo", "p-y", 20)
+    kana(Script.Hiragana, "ぴょ", "pyo", "p-y", 20),
+    kana(Script.Hiragana, "っ", "small tsu", "special", 21, idSuffix = "small-tsu"),
+    kana(Script.Hiragana, "ゃ", "small ya", "special", 21, idSuffix = "small-ya"),
+    kana(Script.Hiragana, "ゅ", "small yu", "special", 21, idSuffix = "small-yu"),
+    kana(Script.Hiragana, "ょ", "small yo", "special", 21, idSuffix = "small-yo")
 )
 
 val katakanaItems = listOf(
@@ -422,5 +443,15 @@ val katakanaItems = listOf(
     kana(Script.Katakana, "ビョ", "byo", "b-y", 20),
     kana(Script.Katakana, "ピャ", "pya", "p-y", 20),
     kana(Script.Katakana, "ピュ", "pyu", "p-y", 20),
-    kana(Script.Katakana, "ピョ", "pyo", "p-y", 20)
+    kana(Script.Katakana, "ピョ", "pyo", "p-y", 20),
+    kana(Script.Katakana, "ッ", "small tsu", "special", 21, idSuffix = "small-tsu"),
+    kana(Script.Katakana, "ー", "long mark", "special", 21, idSuffix = "long-mark"),
+    kana(Script.Katakana, "ァ", "small a", "special", 21, idSuffix = "small-a"),
+    kana(Script.Katakana, "ィ", "small i", "special", 21, idSuffix = "small-i"),
+    kana(Script.Katakana, "ゥ", "small u", "special", 21, idSuffix = "small-u"),
+    kana(Script.Katakana, "ェ", "small e", "special", 21, idSuffix = "small-e"),
+    kana(Script.Katakana, "ォ", "small o", "special", 21, idSuffix = "small-o"),
+    kana(Script.Katakana, "ャ", "small ya", "special", 21, idSuffix = "small-ya"),
+    kana(Script.Katakana, "ュ", "small yu", "special", 21, idSuffix = "small-yu"),
+    kana(Script.Katakana, "ョ", "small yo", "special", 21, idSuffix = "small-yo")
 )

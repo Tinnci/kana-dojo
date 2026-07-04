@@ -7,7 +7,7 @@ The curriculum plan lives in [docs/learning-design.md](docs/learning-design.md).
 ## Current Scope
 
 - Hiragana and katakana script switcher.
-- Twenty lessons per script: base kana, dakuten/handakuten, and small `ゃ/ゅ/ょ` blends.
+- Twenty-one lessons per script: base kana, dakuten/handakuten, small `ゃ/ゅ/ょ` blends, and special small kana or length marks.
 - Lesson path with unlock gates, stage filters, daily focus, progress summary, and completion feedback.
 - Practice modes for weak kana, contrast drills, sound recall, writing reps, speed rounds, both-script review, and mixed review.
 - Exercise types: kana to romaji, romaji to kana, sound to kana, pair matching, and trace writing.

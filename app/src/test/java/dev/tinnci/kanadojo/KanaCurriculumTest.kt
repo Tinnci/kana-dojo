@@ -11,8 +11,8 @@ class KanaCurriculumTest {
         val hiraganaLessons = lessonsFor(Script.Hiragana)
         val katakanaLessons = lessonsFor(Script.Katakana)
 
-        assertEquals(20, hiraganaLessons.size)
-        assertEquals(20, katakanaLessons.size)
+        assertEquals(21, hiraganaLessons.size)
+        assertEquals(21, katakanaLessons.size)
         assertEquals(LearningStage.Anchor, hiraganaLessons[0].stage)
         assertEquals(LearningStage.RegularRows, hiraganaLessons[1].stage)
         assertEquals(LearningStage.Confusable, hiraganaLessons[3].stage)
@@ -21,6 +21,8 @@ class KanaCurriculumTest {
         assertEquals(LearningStage.Voiced, katakanaLessons[14].stage)
         assertEquals(LearningStage.Combination, hiraganaLessons[15].stage)
         assertEquals(LearningStage.Combination, katakanaLessons[19].stage)
+        assertEquals(LearningStage.Special, hiraganaLessons[20].stage)
+        assertEquals(LearningStage.Special, katakanaLessons[20].stage)
         assertEquals(listOf("a", "i", "u", "e", "o"), hiraganaLessons[0].items.map { it.romaji })
     }
 
@@ -48,12 +50,24 @@ class KanaCurriculumTest {
     fun combinationLessonsCoverSmallYaYuYoBlends() {
         val hiraganaLessons = lessonsFor(Script.Hiragana)
         val katakanaLessons = lessonsFor(Script.Katakana)
-        val hiraganaBlends = hiraganaLessons.drop(15).flatMap { it.items }.map { it.kana }.toSet()
-        val katakanaBlends = katakanaLessons.drop(15).flatMap { it.items }.map { it.kana }.toSet()
+        val hiraganaBlends = hiraganaLessons.slice(15..19).flatMap { it.items }.map { it.kana }.toSet()
+        val katakanaBlends = katakanaLessons.slice(15..19).flatMap { it.items }.map { it.kana }.toSet()
 
         assertTrue(setOf("きゃ", "しゃ", "ちゃ", "にゃ", "ひゃ", "みゃ", "りゃ", "ぎゃ", "じゃ", "びゃ", "ぴゃ").all { it in hiraganaBlends })
         assertTrue(setOf("キャ", "シャ", "チャ", "ニャ", "ヒャ", "ミャ", "リャ", "ギャ", "ジャ", "ビャ", "ピャ").all { it in katakanaBlends })
-        assertTrue(hiraganaLessons.drop(15).all { it.stage == LearningStage.Combination })
+        assertTrue(hiraganaLessons.slice(15..19).all { it.stage == LearningStage.Combination })
+    }
+
+    @Test
+    fun specialLessonsCoverSmallKanaAndLengthMark() {
+        val hiraganaSpecial = lessonsFor(Script.Hiragana).last()
+        val katakanaSpecial = lessonsFor(Script.Katakana).last()
+
+        assertEquals(LearningStage.Special, hiraganaSpecial.stage)
+        assertEquals(LearningStage.Special, katakanaSpecial.stage)
+        assertTrue(setOf("っ", "ゃ", "ゅ", "ょ").all { it in hiraganaSpecial.items.map { item -> item.kana } })
+        assertTrue(setOf("ッ", "ー", "ァ", "ィ", "ゥ", "ェ", "ォ", "ャ", "ュ", "ョ").all { it in katakanaSpecial.items.map { item -> item.kana } })
+        assertTrue((hiraganaSpecial.items + katakanaSpecial.items).none { supportsAudioPrompt(it) })
     }
 
     @Test
@@ -146,6 +160,15 @@ class KanaCurriculumTest {
         val exercises = buildLessonExercises(lesson)
 
         assertTrue(exercises.any { it.kind == ExerciseKind.SoundToKana })
+    }
+
+    @Test
+    fun specialLessonsDoNotUseStandaloneSoundPrompts() {
+        val lesson = lessonsFor(Script.Katakana).last()
+        val exercises = buildLessonExercises(lesson)
+
+        assertFalse(exercises.any { it.kind == ExerciseKind.SoundToKana })
+        assertTrue(exercises.any { it.kind == ExerciseKind.TraceKana })
     }
 
     @Test

@@ -36,6 +36,7 @@ enum class LearningStage(val label: String, val description: String) {
     TailRows("Tail", "remaining base kana"),
     Voiced("Marks", "dakuten and handakuten"),
     Combination("Blend", "small ya yu yo combinations"),
+    Special("Special", "small kana and length marks"),
     Confusable("Contrast", "lookalike separation")
 }
 

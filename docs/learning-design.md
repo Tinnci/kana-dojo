@@ -99,7 +99,16 @@ Teach small `ゃ/ゅ/ょ` combinations after voiced kana. These should be learne
 - Exercises: listen-first choice, romaji recall, trace with attention to the smaller second kana
 - Goal: read common syllable blends without mentally spelling them out
 
-### Stage 8: Mixed Fluency
+### Stage 8: Special Small Kana
+
+Teach special small kana and the katakana long vowel mark as visual/usage symbols. Do not rely on standalone audio prompts for these symbols because several of them only make sense inside words.
+
+- Hiragana: small `っ`, `ゃ`, `ゅ`, `ょ`
+- Katakana: small `ッ`, `ァ`, `ィ`, `ゥ`, `ェ`, `ォ`, `ャ`, `ュ`, `ョ`, and long vowel mark `ー`
+- Exercises: kana recognition, romaji/label recall, pair matching, trace every symbol
+- Goal: recognize size-sensitive kana and length marks inside real words
+
+### Stage 9: Mixed Fluency
 
 Mix all learned kana inside one script first, then mix hiragana and katakana later.
 
@@ -110,7 +119,7 @@ Mix all learned kana inside one script first, then mix hiragana and katakana lat
 
 ## Lesson Grouping
 
-Use twenty lessons per script: ten base-kana lessons, five voiced-kana lessons, then five combination-kana lessons.
+Use twenty-one lessons per script: ten base-kana lessons, five voiced-kana lessons, five combination-kana lessons, then one special-symbol lesson.
 
 | Lesson | Group | Kana Count | Difficulty Note |
 | --- | --- | ---: | --- |
@@ -134,6 +143,7 @@ Use twenty lessons per script: ten base-kana lessons, five voiced-kana lessons, 
 | 18 | h/m blends | 6 | shape-heavy combinations |
 | 19 | r/g blends | 6 | mixes base and voiced blends |
 | 20 | j/b/p blends | 9 | densest combination lesson |
+| 21 | special symbols | varies | small kana and katakana length mark |
 
 The app should unlock the next lesson when the current lesson average mastery reaches `2`, but it should keep weak kana visible in mistakes until they reach `4`.
 
