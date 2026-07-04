@@ -1145,6 +1145,17 @@ class KanaCurriculumTest {
     }
 
     @Test
+    fun practiceCompletionNextStepExplainsCleanSpeedQueues() {
+        val nextStep = practiceCompletionNextStepFor(
+            mode = PracticeMode.Speed,
+            stats = LessonSessionStats(correct = 6, missed = 0)
+        )
+
+        assertEquals("Recall is quick", nextStep.title)
+        assertTrue(nextStep.message.contains("automatic"))
+    }
+
+    @Test
     fun reviewSessionOutcomesSeparateCleanRepairedAndShakyKana() {
         val outcomes = reviewSessionOutcomesFor(
             correctCounts = mapOf(

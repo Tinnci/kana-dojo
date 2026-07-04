@@ -598,6 +598,11 @@ fun practiceCompletionNextStepFor(mode: PracticeMode, stats: LessonSessionStats)
             message = "Mix this with reading practice next so kana stay linked to sound, not romaji."
         )
 
+        mode == PracticeMode.Speed -> PracticeCompletionNextStep(
+            title = "Recall is quick",
+            message = "Move to mixed review or the path while answers still feel automatic."
+        )
+
         else -> PracticeCompletionNextStep(
             title = "Ready for path",
             message = "Clean queue. Continue while recall is warm."
