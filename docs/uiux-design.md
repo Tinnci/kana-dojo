@@ -167,9 +167,10 @@ Implemented:
 - Added compact lesson-node phase totals so the full path communicates each lesson's exercise load at a glance.
 - Added a tested path practice recommendation that opens the recommended mode based on due review, weak kana, and lesson stage.
 - Added tested practice queue explanations so weak, sound, contrast, writing, and empty fallback states are explicit.
+- Added tested per-kana reason labels to practice queue intros so fallback modes show why each symbol was selected.
 
 ## Next Polish Pass
 
 Implement next:
 
-- Add a compact kana preview to practice queue intros for fallback modes so learners see why those symbols were selected.
+- Add clearer practice-mode tab affordances so recommended modes, current mode, and fallback modes are easier to scan.

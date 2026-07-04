@@ -114,6 +114,18 @@ fun MistakePracticeScreen(
         dueCount = dueCount,
         weakCount = weakCount
     )
+    val previewReasons = remember(selectedMode, practiceItems, masterySnapshot, mistakeSnapshot, dueSnapshot, currentEpochDay) {
+        practiceItems.take(8).associate { item ->
+            item.id to practicePreviewReasonFor(
+                item = item,
+                mode = selectedMode,
+                mastery = masterySnapshot,
+                mistakeIds = mistakeSnapshot,
+                reviewDueEpochDays = dueSnapshot,
+                currentEpochDay = currentEpochDay
+            )
+        }
+    }
 
     if (practiceItems.isEmpty()) {
         Box(modifier = Modifier.fillMaxSize().padding(20.dp), contentAlignment = Alignment.Center) {
@@ -143,6 +155,7 @@ fun MistakePracticeScreen(
             PracticeIntroPanel(
                 intro = intro,
                 previewItems = practiceItems.take(8),
+                previewReasons = previewReasons,
                 onStart = { showIntro = false }
             )
             return@Column
@@ -315,6 +328,7 @@ private fun CompletionKanaGroup(label: String, items: List<KanaItem>) {
 private fun PracticeIntroPanel(
     intro: PracticeIntroCopy,
     previewItems: List<KanaItem>,
+    previewReasons: Map<String, String>,
     onStart: () -> Unit
 ) {
     Surface(
@@ -345,6 +359,7 @@ private fun PracticeIntroPanel(
                         ) {
                             Text(item.kana, fontSize = 24.sp, fontWeight = FontWeight.Black)
                             Text(item.romaji, style = MaterialTheme.typography.labelSmall)
+                            Text(previewReasons[item.id].orEmpty(), style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Bold)
                         }
                     }
                 }

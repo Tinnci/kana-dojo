@@ -165,6 +165,32 @@ fun practiceQueueExplanationFor(
         )
     }
 
+fun practicePreviewReasonFor(
+    item: KanaItem,
+    mode: PracticeMode,
+    mastery: Map<String, Int>,
+    mistakeIds: List<String>,
+    reviewDueEpochDays: Map<String, Long>,
+    currentEpochDay: Long
+): String {
+    val level = mastery[item.id] ?: 0
+    val due = (reviewDueEpochDays[item.id] ?: Long.MAX_VALUE) <= currentEpochDay && level >= 2
+    return when (mode) {
+        PracticeMode.Weak -> when {
+            due -> "due"
+            item.id in mistakeIds -> "miss"
+            else -> "m$level"
+        }
+
+        PracticeMode.Sound -> if (level >= 1) "seen" else "audio"
+        PracticeMode.Contrast -> if (item.confusable.isNotEmpty()) "look" else "m$level"
+        PracticeMode.Writing -> "m$level"
+        PracticeMode.Speed -> if (level >= 2) "recall" else "early"
+        PracticeMode.Cross -> if (level >= 2) item.script.label.take(4) else "early"
+        PracticeMode.Mixed -> if (level >= 2) "recall" else "m$level"
+    }
+}
+
 fun reviewIntroCopyFor(mode: PracticeMode, dueCount: Int, weakCount: Int): PracticeIntroCopy =
     when (mode) {
         PracticeMode.Weak -> when {

@@ -222,6 +222,59 @@ class KanaCurriculumTest {
     }
 
     @Test
+    fun practicePreviewReasonLabelsWeakQueueSources() {
+        val item = hiraganaItems.first()
+        val due = practicePreviewReasonFor(
+            item = item,
+            mode = PracticeMode.Weak,
+            mastery = mapOf(item.id to 2),
+            mistakeIds = emptyList(),
+            reviewDueEpochDays = mapOf(item.id to 10L),
+            currentEpochDay = 10L
+        )
+        val miss = practicePreviewReasonFor(
+            item = item,
+            mode = PracticeMode.Weak,
+            mastery = emptyMap(),
+            mistakeIds = listOf(item.id),
+            reviewDueEpochDays = emptyMap(),
+            currentEpochDay = 10L
+        )
+        val low = practicePreviewReasonFor(
+            item = item,
+            mode = PracticeMode.Weak,
+            mastery = mapOf(item.id to 1),
+            mistakeIds = emptyList(),
+            reviewDueEpochDays = emptyMap(),
+            currentEpochDay = 10L
+        )
+
+        assertEquals("due", due)
+        assertEquals("miss", miss)
+        assertEquals("m1", low)
+    }
+
+    @Test
+    fun practicePreviewReasonLabelsSoundAndContrastFallbacks() {
+        val sound = hiraganaItems.first()
+        val plain = hiraganaItems.first { it.confusable.isEmpty() }
+        val lookalike = katakanaItems.first { it.confusable.isNotEmpty() }
+
+        assertEquals(
+            "audio",
+            practicePreviewReasonFor(sound, PracticeMode.Sound, emptyMap(), emptyList(), emptyMap(), 10L)
+        )
+        assertEquals(
+            "m0",
+            practicePreviewReasonFor(plain, PracticeMode.Contrast, emptyMap(), emptyList(), emptyMap(), 10L)
+        )
+        assertEquals(
+            "look",
+            practicePreviewReasonFor(lookalike, PracticeMode.Contrast, emptyMap(), emptyList(), emptyMap(), 10L)
+        )
+    }
+
+    @Test
     fun weakPracticeFiltersMistakesToSelectedScript() {
         val allItems = hiraganaItems + katakanaItems
         val hiraganaMistake = hiraganaItems.first { it.romaji == "a" }
