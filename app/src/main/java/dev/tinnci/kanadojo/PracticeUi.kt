@@ -86,7 +86,13 @@ fun MistakePracticeScreen(
     val current = if (practiceItems.isEmpty() || queueComplete) null else practiceItems[currentIndex]
     val exercise = current?.let { practiceExerciseFor(it, selectedMode, currentIndex) }
     val optionItems = if (selectedMode == PracticeMode.Cross) allItems else scriptItems
-    val queueLabel = if (selectedMode == PracticeMode.Cross) "Both scripts" else script.label
+    val sourceCue = remember(script, selectedMode, initialMode) {
+        practiceQueueSourceCueFor(
+            script = script,
+            selectedMode = selectedMode,
+            recommendedMode = initialMode
+        )
+    }
     val weakCount = remember(mistakeSnapshot, scriptItems) {
         val scriptItemIds = scriptItems.map { it.id }.toSet()
         mistakeSnapshot.count { it in scriptItemIds }
@@ -150,7 +156,7 @@ fun MistakePracticeScreen(
         )
         PracticeQueuePanel(
             mode = selectedMode,
-            queueLabel = queueLabel,
+            sourceCue = sourceCue,
             queueSize = practiceItems.size,
             weakCount = weakCount,
             dueCount = dueCount,
@@ -411,7 +417,7 @@ private fun PracticeHeroPanel(title: String, subtitle: String) {
 @Composable
 private fun PracticeQueuePanel(
     mode: PracticeMode,
-    queueLabel: String,
+    sourceCue: PracticeQueueSourceCue,
     queueSize: Int,
     weakCount: Int,
     dueCount: Int,
@@ -456,7 +462,7 @@ private fun PracticeQueuePanel(
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Column(modifier = Modifier.weight(1f)) {
                         Text(mode.title, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Black)
-                        Text(queueLabel, style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        Text(sourceCue.title, style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     }
                     Text(queueSize.toString(), style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Black)
                 }
@@ -466,8 +472,27 @@ private fun PracticeQueuePanel(
                     PracticeQueueMetric("Due", dueCount, Modifier.weight(1f))
                     PracticeQueueMetric("Contrast", contrastCount, Modifier.weight(1f))
                 }
+                PracticeQueueSourcePanel(sourceCue)
                 PracticeQueueExplanationPanel(explanation)
             }
+        }
+    }
+}
+
+@Composable
+private fun PracticeQueueSourcePanel(sourceCue: PracticeQueueSourceCue) {
+    Surface(
+        shape = RoundedCornerShape(12.dp),
+        color = MaterialTheme.colorScheme.surface.copy(alpha = 0.56f),
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Row(
+            modifier = Modifier.padding(horizontal = 10.dp, vertical = 7.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Icon(Icons.Outlined.GridView, contentDescription = null, modifier = Modifier.size(16.dp))
+            Text(sourceCue.message, style = MaterialTheme.typography.bodySmall)
         }
     }
 }

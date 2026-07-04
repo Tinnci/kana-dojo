@@ -52,6 +52,11 @@ data class PracticeModeTabAffordance(
     val badge: String?
 )
 
+data class PracticeQueueSourceCue(
+    val title: String,
+    val message: String
+)
+
 data class ReviewSessionOutcomes(
     val cleanIds: Set<String>,
     val repairedIds: Set<String>,
@@ -211,6 +216,28 @@ fun practiceModeTabAffordanceFor(
             else -> null
         }
     )
+
+fun practiceQueueSourceCueFor(
+    script: Script,
+    selectedMode: PracticeMode,
+    recommendedMode: PracticeMode
+): PracticeQueueSourceCue =
+    when {
+        selectedMode == PracticeMode.Cross -> PracticeQueueSourceCue(
+            title = "Both scripts",
+            message = "This queue can pull hiragana and katakana together."
+        )
+
+        selectedMode == recommendedMode -> PracticeQueueSourceCue(
+            title = "${script.label} recommended",
+            message = "This queue follows the path recommendation for the selected script."
+        )
+
+        else -> PracticeQueueSourceCue(
+            title = script.label,
+            message = "This queue uses the currently selected script."
+        )
+    }
 
 fun reviewIntroCopyFor(mode: PracticeMode, dueCount: Int, weakCount: Int): PracticeIntroCopy =
     when (mode) {

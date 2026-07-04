@@ -301,6 +301,29 @@ class KanaCurriculumTest {
     }
 
     @Test
+    fun practiceQueueSourceCueExplainsCrossScriptAndRecommendedSources() {
+        val cross = practiceQueueSourceCueFor(
+            script = Script.Hiragana,
+            selectedMode = PracticeMode.Cross,
+            recommendedMode = PracticeMode.Sound
+        )
+        val recommended = practiceQueueSourceCueFor(
+            script = Script.Katakana,
+            selectedMode = PracticeMode.Sound,
+            recommendedMode = PracticeMode.Sound
+        )
+        val manual = practiceQueueSourceCueFor(
+            script = Script.Katakana,
+            selectedMode = PracticeMode.Writing,
+            recommendedMode = PracticeMode.Sound
+        )
+
+        assertEquals("Both scripts", cross.title)
+        assertEquals("Katakana recommended", recommended.title)
+        assertEquals("Katakana", manual.title)
+    }
+
+    @Test
     fun weakPracticeFiltersMistakesToSelectedScript() {
         val allItems = hiraganaItems + katakanaItems
         val hiraganaMistake = hiraganaItems.first { it.romaji == "a" }
