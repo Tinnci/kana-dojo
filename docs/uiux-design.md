@@ -216,9 +216,10 @@ Implemented:
 - Audited practice completion panel density and added vertical scrolling for compact screens.
 - Added compact completion section dividers for long practice summaries.
 - Added compact kana-group count labels to practice completion groups.
+- Added overflow hint copy when practice completion groups preview only part of a long kana list.
 
 ## Next Polish Pass
 
 Implement next:
 
-- Add overflow hint copy when practice completion groups preview only part of a long kana list.
+- Add compact kana-group tone chips for clean, repaired, and shaky groups.

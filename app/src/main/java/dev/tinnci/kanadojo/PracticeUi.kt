@@ -684,6 +684,8 @@ private fun PracticeCompletionModeChip(mode: PracticeMode) {
 
 @Composable
 private fun CompletionKanaGroup(label: String, items: List<KanaItem>) {
+    val previewLimit = 8
+    val hiddenCount = (items.size - previewLimit).coerceAtLeast(0)
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -696,6 +698,19 @@ private fun CompletionKanaGroup(label: String, items: List<KanaItem>) {
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.weight(1f)
             )
+            if (hiddenCount > 0) {
+                Surface(
+                    shape = RoundedCornerShape(999.dp),
+                    color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.78f)
+                ) {
+                    Text(
+                        "+$hiddenCount more",
+                        style = MaterialTheme.typography.labelSmall,
+                        fontWeight = FontWeight.Black,
+                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp)
+                    )
+                }
+            }
             Surface(
                 shape = RoundedCornerShape(999.dp),
                 color = MaterialTheme.colorScheme.surface.copy(alpha = 0.72f)
@@ -709,7 +724,7 @@ private fun CompletionKanaGroup(label: String, items: List<KanaItem>) {
             }
         }
         LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
-            items(items.take(8), key = { it.id }) { item ->
+            items(items.take(previewLimit), key = { it.id }) { item ->
                 Surface(
                     shape = RoundedCornerShape(14.dp),
                     color = MaterialTheme.colorScheme.surface.copy(alpha = 0.74f)
