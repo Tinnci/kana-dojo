@@ -275,6 +275,32 @@ class KanaCurriculumTest {
     }
 
     @Test
+    fun practiceModeTabAffordanceMarksSelectedRecommendedAndFallback() {
+        val selected = practiceModeTabAffordanceFor(
+            mode = PracticeMode.Sound,
+            selectedMode = PracticeMode.Sound,
+            recommendedMode = PracticeMode.Weak,
+            fallbackMode = null
+        )
+        val recommended = practiceModeTabAffordanceFor(
+            mode = PracticeMode.Weak,
+            selectedMode = PracticeMode.Sound,
+            recommendedMode = PracticeMode.Weak,
+            fallbackMode = null
+        )
+        val fallback = practiceModeTabAffordanceFor(
+            mode = PracticeMode.Contrast,
+            selectedMode = PracticeMode.Contrast,
+            recommendedMode = PracticeMode.Weak,
+            fallbackMode = PracticeMode.Contrast
+        )
+
+        assertEquals("Now", selected.badge)
+        assertEquals("Rec", recommended.badge)
+        assertEquals("Fallback", fallback.badge)
+    }
+
+    @Test
     fun weakPracticeFiltersMistakesToSelectedScript() {
         val allItems = hiraganaItems + katakanaItems
         val hiraganaMistake = hiraganaItems.first { it.romaji == "a" }

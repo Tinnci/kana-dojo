@@ -108,6 +108,7 @@ fun MistakePracticeScreen(
             soundReadyCount = soundReadyCount
         )
     }
+    val fallbackMode = if ("fallback" in queueExplanation.title.lowercase()) selectedMode else null
     var showIntro by remember(selectedMode, queueSignature) { mutableStateOf(true) }
     val intro = reviewIntroCopyFor(
         mode = selectedMode,
@@ -141,7 +142,12 @@ fun MistakePracticeScreen(
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         PracticeHeroPanel(selectedMode.title, selectedMode.subtitle)
-        PracticeModeTabs(selectedMode = selectedMode, onModeChange = { selectedMode = it })
+        PracticeModeTabs(
+            selectedMode = selectedMode,
+            recommendedMode = initialMode,
+            fallbackMode = fallbackMode,
+            onModeChange = { selectedMode = it }
+        )
         PracticeQueuePanel(
             mode = selectedMode,
             queueLabel = queueLabel,
@@ -567,13 +573,36 @@ private fun PracticeSessionPanel(stats: LessonSessionStats, completed: Int, queu
 }
 
 @Composable
-private fun PracticeModeTabs(selectedMode: PracticeMode, onModeChange: (PracticeMode) -> Unit) {
+private fun PracticeModeTabs(
+    selectedMode: PracticeMode,
+    recommendedMode: PracticeMode,
+    fallbackMode: PracticeMode?,
+    onModeChange: (PracticeMode) -> Unit
+) {
     LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
         PracticeMode.entries.forEach { mode ->
             item {
+                val affordance = practiceModeTabAffordanceFor(
+                    mode = mode,
+                    selectedMode = selectedMode,
+                    recommendedMode = recommendedMode,
+                    fallbackMode = fallbackMode
+                )
                 AssistChip(
                     onClick = { onModeChange(mode) },
-                    label = { Text(mode.label, fontWeight = if (selectedMode == mode) FontWeight.Bold else FontWeight.Medium) },
+                    label = {
+                        Row(horizontalArrangement = Arrangement.spacedBy(5.dp), verticalAlignment = Alignment.CenterVertically) {
+                            Text(affordance.label, fontWeight = if (selectedMode == mode) FontWeight.Bold else FontWeight.Medium)
+                            affordance.badge?.let { badge ->
+                                Text(
+                                    badge,
+                                    style = MaterialTheme.typography.labelSmall,
+                                    fontWeight = FontWeight.Black,
+                                    color = MaterialTheme.colorScheme.primary
+                                )
+                            }
+                        }
+                    },
                     leadingIcon = {
                         if (selectedMode == mode) {
                             Icon(Icons.Outlined.CheckCircle, contentDescription = null, modifier = Modifier.size(18.dp))

@@ -47,6 +47,11 @@ data class PracticeQueueExplanation(
     val message: String
 )
 
+data class PracticeModeTabAffordance(
+    val label: String,
+    val badge: String?
+)
+
 data class ReviewSessionOutcomes(
     val cleanIds: Set<String>,
     val repairedIds: Set<String>,
@@ -190,6 +195,22 @@ fun practicePreviewReasonFor(
         PracticeMode.Mixed -> if (level >= 2) "recall" else "m$level"
     }
 }
+
+fun practiceModeTabAffordanceFor(
+    mode: PracticeMode,
+    selectedMode: PracticeMode,
+    recommendedMode: PracticeMode,
+    fallbackMode: PracticeMode?
+): PracticeModeTabAffordance =
+    PracticeModeTabAffordance(
+        label = mode.label,
+        badge = when {
+            mode == selectedMode && mode == fallbackMode -> "Fallback"
+            mode == selectedMode -> "Now"
+            mode == recommendedMode -> "Rec"
+            else -> null
+        }
+    )
 
 fun reviewIntroCopyFor(mode: PracticeMode, dueCount: Int, weakCount: Int): PracticeIntroCopy =
     when (mode) {

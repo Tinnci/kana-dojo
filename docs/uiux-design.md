@@ -168,9 +168,10 @@ Implemented:
 - Added a tested path practice recommendation that opens the recommended mode based on due review, weak kana, and lesson stage.
 - Added tested practice queue explanations so weak, sound, contrast, writing, and empty fallback states are explicit.
 - Added tested per-kana reason labels to practice queue intros so fallback modes show why each symbol was selected.
+- Added tested practice-mode tab affordances that mark current, recommended, and fallback modes for faster scanning.
 
 ## Next Polish Pass
 
 Implement next:
 
-- Add clearer practice-mode tab affordances so recommended modes, current mode, and fallback modes are easier to scan.
+- Add a compact script-switch context cue in practice when cross-script or recommended modes change the queue source.
