@@ -1174,14 +1174,24 @@ class KanaCurriculumTest {
 
     @Test
     fun practiceCompletionActionHintsNameEnabledActions() {
+        val disabledCopy = PracticeCompletionDisabledActionCopy(
+            title = "No repeat queue",
+            message = "There are no kana in this queue yet, so repeat is disabled."
+        )
+
         assertEquals(
             "Activate Return to lesson path",
             practiceCompletionActionHintFor(practiceReturnActionSemanticLabelFor(), enabled = true)
         )
         assertEquals(
-            "Action unavailable",
-            practiceCompletionActionHintFor(practiceRepeatActionSemanticLabelFor(PracticeMode.Mixed), enabled = false)
+            "Action unavailable: No repeat queue",
+            practiceCompletionActionHintFor(
+                practiceRepeatActionSemanticLabelFor(PracticeMode.Mixed),
+                enabled = false,
+                disabledCopy = disabledCopy
+            )
         )
+        assertEquals("Action unavailable", practiceCompletionActionHintFor("Repeat mixed recall queue", enabled = false))
     }
 
     @Test

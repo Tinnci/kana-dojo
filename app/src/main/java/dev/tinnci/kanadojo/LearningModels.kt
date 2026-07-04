@@ -653,8 +653,16 @@ fun practiceReturnActionSemanticLabelFor(): String =
 fun practiceActionSemanticLabelWithRoleFor(roleLabel: String, actionSemanticLabel: String): String =
     "$roleLabel action: $actionSemanticLabel"
 
-fun practiceCompletionActionHintFor(actionSemanticLabel: String, enabled: Boolean): String =
-    if (enabled) "Activate $actionSemanticLabel" else "Action unavailable"
+fun practiceCompletionActionHintFor(
+    actionSemanticLabel: String,
+    enabled: Boolean,
+    disabledCopy: PracticeCompletionDisabledActionCopy? = null
+): String =
+    if (enabled) {
+        "Activate $actionSemanticLabel"
+    } else {
+        disabledCopy?.let { "Action unavailable: ${it.title}" } ?: "Action unavailable"
+    }
 
 fun practiceRepeatActionLabelFor(mode: PracticeMode, compact: Boolean = false): String =
     if (compact) {
