@@ -751,6 +751,22 @@ private fun LessonRunner(
 @Composable
 private fun LessonComplete(lesson: KanaLesson, stats: LessonSessionStats, onContinue: () -> Unit) {
     val accuracy by animateFloatAsState(targetValue = stats.accuracy, label = "lessonAccuracy")
+    var entered by remember(lesson.index) { mutableStateOf(false) }
+    LaunchedEffect(lesson.index) {
+        entered = true
+    }
+    val celebrationColor by animateColorAsState(
+        targetValue = when {
+            stats.missed == 0 -> MaterialTheme.colorScheme.primaryContainer
+            stats.accuracy >= 0.75f -> Color(0xFFFFF1BC)
+            else -> Color(0xFFFFDFD6)
+        },
+        label = "completionColor"
+    )
+    val badgeScale by animateFloatAsState(
+        targetValue = if (entered) 1f else 0.88f,
+        label = "completionBadgeScale"
+    )
     val message = when {
         stats.missed == 0 -> "Clean run. Keep the recall warm."
         stats.accuracy >= 0.75f -> "Good pass. Misses are queued for review."
@@ -763,17 +779,15 @@ private fun LessonComplete(lesson: KanaLesson, stats: LessonSessionStats, onCont
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        Box(
-            modifier = Modifier
-                .size(118.dp)
-                .background(MaterialTheme.colorScheme.primaryContainer, CircleShape),
-            contentAlignment = Alignment.Center
-        ) {
-            Text("済", fontSize = 44.sp, fontWeight = FontWeight.Black)
-        }
+        LessonCompleteBadge(
+            kana = lesson.items.firstOrNull()?.kana.orEmpty(),
+            color = celebrationColor,
+            scale = badgeScale
+        )
         Spacer(Modifier.height(20.dp))
         Text("Lesson complete", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Black)
         Text(message, style = MaterialTheme.typography.bodyLarge, textAlign = TextAlign.Center)
+        CompletionSparkRow(visible = entered, cleanRun = stats.missed == 0)
         Spacer(Modifier.height(8.dp))
         StageChip(lesson.stage)
         Spacer(Modifier.height(18.dp))
@@ -807,6 +821,61 @@ private fun LessonComplete(lesson: KanaLesson, stats: LessonSessionStats, onCont
                 .height(56.dp)
         ) {
             Text("Continue")
+        }
+    }
+}
+
+@Composable
+private fun LessonCompleteBadge(kana: String, color: Color, scale: Float) {
+    Box(contentAlignment = Alignment.Center) {
+        Box(
+            modifier = Modifier
+                .size(148.dp)
+                .graphicsLayer(alpha = 0.42f, scaleX = scale, scaleY = scale)
+                .background(color, CircleShape)
+        )
+        Box(
+            modifier = Modifier
+                .size(112.dp)
+                .graphicsLayer(scaleX = scale, scaleY = scale)
+                .background(MaterialTheme.colorScheme.surface, CircleShape)
+                .border(3.dp, color, CircleShape),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(kana.ifBlank { "済" }, fontSize = 48.sp, fontWeight = FontWeight.Black)
+        }
+    }
+}
+
+@Composable
+private fun CompletionSparkRow(visible: Boolean, cleanRun: Boolean) {
+    val sparkScale by animateFloatAsState(
+        targetValue = if (visible) 1f else 0.4f,
+        label = "completionSparkScale"
+    )
+    val sparkAlpha by animateFloatAsState(
+        targetValue = if (visible) 1f else 0f,
+        label = "completionSparkAlpha"
+    )
+    val colors = if (cleanRun) {
+        listOf(Color(0xFFDCEBDD), Color(0xFFFFF1BC), Color(0xFFE7DEFF))
+    } else {
+        listOf(Color(0xFFFFF1BC), Color(0xFFFFDFD6), Color(0xFFE7DEFF))
+    }
+    Row(
+        modifier = Modifier
+            .padding(top = 12.dp)
+            .graphicsLayer(alpha = sparkAlpha),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        colors.forEachIndexed { index, color ->
+            Box(
+                modifier = Modifier
+                    .size(if (index == 1) 12.dp else 9.dp)
+                    .graphicsLayer(scaleX = sparkScale, scaleY = sparkScale)
+                    .background(color, CircleShape)
+            )
         }
     }
 }
