@@ -122,6 +122,7 @@ Implemented:
 - Locked lesson state based on previous lesson mastery.
 - Animated lesson progress.
 - Stronger active next-lesson state with animated card color, elevation, and node scale.
+- Active next lesson now has a primary border and compact "Next" marker for faster path scanning.
 - Animated answer feedback color and scale for choice exercises.
 - Feedback banner and continue button enter/exit motion.
 - Mode-aware practice queue panel for weak, contrast, writing, sound, speed, cross-script, and mixed review.
@@ -151,4 +152,4 @@ Implemented:
 
 Implement next:
 
-- Polish the lesson path with clearer active states and Material 3 Expressive motion details.
+- Polish the lesson path with richer transition and completion motion details.

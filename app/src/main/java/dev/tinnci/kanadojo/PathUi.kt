@@ -4,6 +4,7 @@ import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -386,6 +387,7 @@ private fun LessonNode(
         label = "lessonProgress"
     )
     val complete = averageMastery >= 4f
+    val active = focus && unlocked && !complete
     val nodeColor by animateColorAsState(
         targetValue = when {
             complete -> MaterialTheme.colorScheme.primary
@@ -405,11 +407,11 @@ private fun LessonNode(
         label = "lessonCardColor"
     )
     val cardElevation by animateDpAsState(
-        targetValue = if (focus && unlocked && !complete) 5.dp else 2.dp,
+        targetValue = if (active) 5.dp else 2.dp,
         label = "lessonCardElevation"
     )
     val nodeScale by animateFloatAsState(
-        targetValue = if (focus && unlocked && !complete) 1.06f else 1f,
+        targetValue = if (active) 1.06f else 1f,
         label = "lessonNodeScale"
     )
     val nodeContentColor = when {
@@ -424,7 +426,8 @@ private fun LessonNode(
         colors = CardDefaults.cardColors(
             containerColor = cardColor
         ),
-        elevation = CardDefaults.cardElevation(defaultElevation = cardElevation)
+        elevation = CardDefaults.cardElevation(defaultElevation = cardElevation),
+        border = if (active) BorderStroke(2.dp, MaterialTheme.colorScheme.primary) else null
     ) {
         Row(
             modifier = Modifier
@@ -448,7 +451,23 @@ private fun LessonNode(
             }
             Spacer(Modifier.width(16.dp))
             Column(modifier = Modifier.weight(1f)) {
-                Text(lesson.title, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleMedium)
+                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Text(lesson.title, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleMedium, modifier = Modifier.weight(1f))
+                    if (active) {
+                        Surface(
+                            shape = RoundedCornerShape(12.dp),
+                            color = MaterialTheme.colorScheme.primary
+                        ) {
+                            Text(
+                                "Next",
+                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                                style = MaterialTheme.typography.labelSmall,
+                                color = MaterialTheme.colorScheme.onPrimary,
+                                fontWeight = FontWeight.Black
+                            )
+                        }
+                    }
+                }
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
