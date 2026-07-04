@@ -75,6 +75,10 @@ data class LessonResumeCue(
     val progress: Float
 )
 
+data class LessonLockCopy(
+    val message: String
+)
+
 enum class PathFeedbackAction {
     StartLesson,
     OpenPractice

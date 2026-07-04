@@ -178,9 +178,10 @@ Implemented:
 - Added tested path-level resume cues after exiting a lesson mid-session.
 - Added tested compact path feedback after completed lessons change the next recommended action.
 - Added tested outcome-aware path action tones so next-lesson, due-review, and repair feedback read distinctly.
+- Added tested compact locked-lesson copy that names the previous recall gate without adding path card height.
 
 ## Next Polish Pass
 
 Implement next:
 
-- Add compact copy for why a locked lesson is unavailable without increasing path card height.
+- Add compact path-stage progress copy so filtered lesson groups communicate how much of that stage is done.

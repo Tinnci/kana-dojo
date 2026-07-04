@@ -360,6 +360,12 @@ fun isLessonUnlocked(lesson: KanaLesson, lessons: List<KanaLesson>, mastery: Map
     return previous == null || lessonAverageMastery(previous, mastery) >= 2f
 }
 
+fun lessonLockCopyFor(lesson: KanaLesson, lessons: List<KanaLesson>, mastery: Map<String, Int>): LessonLockCopy? {
+    val previous = lessons.lastOrNull { it.index == lesson.index - 1 } ?: return null
+    if (lessonAverageMastery(previous, mastery) >= 2f) return null
+    return LessonLockCopy(message = "Need ${previous.title} recall 2")
+}
+
 fun nextPathLesson(lessons: List<KanaLesson>, mastery: Map<String, Int>): KanaLesson? =
     lessons.firstOrNull { lesson ->
         isLessonUnlocked(lesson, lessons, mastery) && lessonAverageMastery(lesson, mastery) < 4f

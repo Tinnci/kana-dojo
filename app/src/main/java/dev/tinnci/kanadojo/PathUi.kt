@@ -226,6 +226,7 @@ fun LessonPathScreen(
         }
         items(visibleLessons, key = { it.index }) { lesson ->
             val unlocked = isLessonUnlocked(lesson, lessons, mastery)
+            val lockCopy = lessonLockCopyFor(lesson, lessons, mastery)
             val learned = lesson.items.count { (mastery[it.id] ?: 0) > 0 }
             LessonNode(
                 lesson = lesson,
@@ -233,6 +234,7 @@ fun LessonPathScreen(
                 total = lesson.items.size,
                 averageMastery = lessonAverageMastery(lesson, mastery),
                 unlocked = unlocked,
+                lockCopy = lockCopy,
                 focus = lesson.index == nextLesson.index,
                 onStart = {
                     if (unlocked) {
@@ -771,6 +773,7 @@ private fun LessonNode(
     total: Int,
     averageMastery: Float,
     unlocked: Boolean,
+    lockCopy: LessonLockCopy?,
     focus: Boolean,
     onStart: () -> Unit
 ) {
@@ -874,7 +877,7 @@ private fun LessonNode(
                 LessonNodePhaseSummary(phaseSummary)
                 Text(lesson.subtitle, style = MaterialTheme.typography.bodyMedium)
                 Text(
-                    if (unlocked) "$learned/$total seen - ${masteryLabel(averageMastery)}" else "Reach recall level 2 in the previous row",
+                    if (unlocked) "$learned/$total seen - ${masteryLabel(averageMastery)}" else lockCopy?.message.orEmpty(),
                     style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )

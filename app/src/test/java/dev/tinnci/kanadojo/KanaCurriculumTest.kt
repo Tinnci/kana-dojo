@@ -98,6 +98,26 @@ class KanaCurriculumTest {
     }
 
     @Test
+    fun lessonLockCopyNamesPreviousRecallGate() {
+        val lessons = lessonsFor(Script.Hiragana)
+        val lessonTwo = lessons[1]
+
+        val copy = lessonLockCopyFor(lessonTwo, lessons, emptyMap())
+
+        assertEquals("Need Vowels recall 2", copy?.message)
+    }
+
+    @Test
+    fun lessonLockCopyClearsWhenLessonIsUnlocked() {
+        val lessons = lessonsFor(Script.Hiragana)
+        val lessonOne = lessons[0]
+        val lessonTwo = lessons[1]
+        val recallReady = lessonOne.items.associate { it.id to 2 }
+
+        assertEquals(null, lessonLockCopyFor(lessonTwo, lessons, recallReady))
+    }
+
+    @Test
     fun nextPathLessonReturnsFirstUnfinishedUnlockedLesson() {
         val lessons = lessonsFor(Script.Hiragana)
         val lessonOneFluent = lessons[0].items.associate { it.id to 4 }
