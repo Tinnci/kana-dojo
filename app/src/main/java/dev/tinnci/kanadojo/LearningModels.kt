@@ -644,6 +644,13 @@ fun practiceCompletionActionStateDescriptionFor(
         disabledCopy?.let { "Unavailable: ${it.title}. ${it.message}" } ?: "Unavailable"
     }
 
+fun practiceCompletionDisabledActionVisibleMessageFor(copy: PracticeCompletionDisabledActionCopy): String =
+    when (copy.title) {
+        "No repeat queue" -> "No kana to repeat yet."
+        "Path unavailable" -> "Clean pass required."
+        else -> copy.message
+    }
+
 fun practiceReturnActionLabelFor(compact: Boolean = false): String =
     if (compact) "Path" else "Back to path"
 

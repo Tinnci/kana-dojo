@@ -1117,12 +1117,22 @@ class KanaCurriculumTest {
 
         assertEquals("No repeat queue", copy?.title)
         assertTrue(copy?.message?.contains("repeat is disabled") == true)
+        assertEquals("No kana to repeat yet.", copy?.let { practiceCompletionDisabledActionVisibleMessageFor(it) })
         assertEquals(
             "Path unavailable",
             practiceCompletionDisabledActionCopyFor(
                 action = ReviewCompletionAction.ReturnToPath,
                 availability = PracticeCompletionActionAvailability(returnToPathEnabled = false, repeatEnabled = true)
             )?.title
+        )
+        assertEquals(
+            "Clean pass required.",
+            practiceCompletionDisabledActionVisibleMessageFor(
+                PracticeCompletionDisabledActionCopy(
+                    title = "Path unavailable",
+                    message = "Finish a clean pass before returning to the path."
+                )
+            )
         )
         assertNull(
             practiceCompletionDisabledActionCopyFor(

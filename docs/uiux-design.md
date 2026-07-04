@@ -244,9 +244,10 @@ Implemented:
 - Added compact completion action-button accessibility role audit.
 - Added tested compact completion action-button accessibility action-copy audit.
 - Added tested compact completion action-button accessibility disabled-hint audit.
+- Added tested compact completion action-button accessibility unavailable-copy density audit.
 
 ## Next Polish Pass
 
 Implement next:
 
-- Add compact completion action-button accessibility unavailable-copy density audit.
+- Add compact completion action-button accessibility unavailable-copy fallback audit.

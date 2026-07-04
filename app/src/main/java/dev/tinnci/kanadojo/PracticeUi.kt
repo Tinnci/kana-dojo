@@ -565,7 +565,7 @@ private fun PracticeDisabledActionCopy(copy: PracticeCompletionDisabledActionCop
             overflow = TextOverflow.Ellipsis
         )
         Text(
-            copy.message,
+            practiceCompletionDisabledActionVisibleMessageFor(copy),
             style = MaterialTheme.typography.labelSmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
