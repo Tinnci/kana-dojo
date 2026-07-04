@@ -183,9 +183,10 @@ Implemented:
 - Added tested compact path-stage empty states when a filter has no actionable lesson.
 - Added tested chart filter progress copy so reference browsing mirrors path-stage clarity.
 - Added tested compact chart row guidance for filtered rows with no fluent kana yet.
+- Added tested compact chart contrast summaries for lookalike-heavy chart views.
 
 ## Next Polish Pass
 
 Implement next:
 
-- Add compact chart contrast summary copy so lookalike-heavy rows are easier to scan.
+- Add compact chart row labels that explain special-symbol rows without relying on raw row IDs.

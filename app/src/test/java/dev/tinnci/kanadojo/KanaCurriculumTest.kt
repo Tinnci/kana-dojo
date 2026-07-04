@@ -245,6 +245,25 @@ class KanaCurriculumTest {
     }
 
     @Test
+    fun chartContrastSummaryCountsVisibleLookalikes() {
+        val items = itemsFor(Script.Katakana)
+        val rowItems = items.filter { it.row == "s" }
+        val contrastCount = rowItems.count { it.confusable.isNotEmpty() }
+
+        val copy = chartContrastSummaryCopyFor("s", items)
+
+        assertEquals("$contrastCount contrast kana", copy?.title)
+        assertTrue(copy?.message.orEmpty().contains("s tiles"))
+    }
+
+    @Test
+    fun chartContrastSummarySkipsRowsWithoutLookalikes() {
+        val items = itemsFor(Script.Hiragana)
+
+        assertEquals(null, chartContrastSummaryCopyFor("vowels", items))
+    }
+
+    @Test
     fun nextPathLessonReturnsFirstUnfinishedUnlockedLesson() {
         val lessons = lessonsFor(Script.Hiragana)
         val lessonOneFluent = lessons[0].items.associate { it.id to 4 }

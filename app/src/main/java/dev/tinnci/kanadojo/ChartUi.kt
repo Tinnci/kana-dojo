@@ -52,6 +52,7 @@ fun KanaChartScreen(script: Script, mastery: Map<String, Int>, onSpeak: (String)
     }
     val progressCopy = chartProgressCopyFor(selectedRow, items, mastery)
     val rowGuidance = chartRowGuidanceCopyFor(selectedRow, items, mastery)
+    val contrastSummary = chartContrastSummaryCopyFor(selectedRow, items)
     LazyVerticalGrid(
         columns = GridCells.Adaptive(minSize = 86.dp),
         contentPadding = PaddingValues(16.dp),
@@ -68,6 +69,11 @@ fun KanaChartScreen(script: Script, mastery: Map<String, Int>, onSpeak: (String)
         rowGuidance?.let { copy ->
             item(span = { GridItemSpan(maxLineSpan) }) {
                 ChartRowGuidancePanel(copy)
+            }
+        }
+        contrastSummary?.let { copy ->
+            item(span = { GridItemSpan(maxLineSpan) }) {
+                ChartContrastSummaryPanel(copy)
             }
         }
         item(span = { GridItemSpan(maxLineSpan) }) {
@@ -100,6 +106,31 @@ fun KanaChartScreen(script: Script, mastery: Map<String, Int>, onSpeak: (String)
                     Spacer(Modifier.height(8.dp))
                     MasteryPips(level = level)
                 }
+            }
+        }
+    }
+}
+
+@Composable
+private fun ChartContrastSummaryPanel(copy: ChartContrastSummaryCopy) {
+    Surface(
+        shape = RoundedCornerShape(18.dp),
+        color = Color(0xFFE7DEFF),
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Row(
+            modifier = Modifier.padding(14.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(10.dp)
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(18.dp)
+                    .background(MaterialTheme.colorScheme.tertiary, CircleShape)
+            )
+            Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                Text(copy.title, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Black)
+                Text(copy.message, style = MaterialTheme.typography.bodySmall)
             }
         }
     }

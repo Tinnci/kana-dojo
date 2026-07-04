@@ -98,6 +98,11 @@ data class ChartRowGuidanceCopy(
     val message: String
 )
 
+data class ChartContrastSummaryCopy(
+    val title: String,
+    val message: String
+)
+
 enum class PathFeedbackAction {
     StartLesson,
     OpenPractice

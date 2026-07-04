@@ -427,6 +427,17 @@ fun chartRowGuidanceCopyFor(
     )
 }
 
+fun chartContrastSummaryCopyFor(selectedRow: String?, items: List<KanaItem>): ChartContrastSummaryCopy? {
+    val visibleItems = selectedRow?.let { row -> items.filter { it.row == row } } ?: items
+    val contrastCount = visibleItems.count { it.confusable.isNotEmpty() }
+    if (contrastCount == 0) return null
+    val label = selectedRow ?: "chart"
+    return ChartContrastSummaryCopy(
+        title = "$contrastCount contrast kana",
+        message = "Outlined $label tiles have known lookalikes; compare shape and stroke direction."
+    )
+}
+
 fun nextPathLesson(lessons: List<KanaLesson>, mastery: Map<String, Int>): KanaLesson? =
     lessons.firstOrNull { lesson ->
         isLessonUnlocked(lesson, lessons, mastery) && lessonAverageMastery(lesson, mastery) < 4f
