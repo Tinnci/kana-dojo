@@ -138,10 +138,11 @@ Implemented:
 - Persisted haptics toggle that keeps answer feedback tactile without forcing vibration.
 - Compact settings menu for motion, sound, and haptic controls, keeping script selection visible.
 - Shared answer option component for kana, romaji, and sound-choice prompts.
+- Extracted lesson-runner and completion shell so session flow can be polished independently from the main app scaffold.
 
 ## Next Polish Pass
 
 Implement next:
 
 - Continue splitting large screen sections out of `MainActivity.kt`.
-- Add a compact lesson-runner shell extraction so exercise flow, feedback, and completion UI are easier to polish independently.
+- Extract practice review and chart surfaces from `MainActivity.kt`.
