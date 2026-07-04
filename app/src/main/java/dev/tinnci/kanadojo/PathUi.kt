@@ -88,6 +88,9 @@ fun LessonPathScreen(
     val dailyRhythm = remember(practiceEpochDays, currentEpochDay) {
         dailyRhythmFor(practiceEpochDays, currentEpochDay)
     }
+    val startGuidance = remember(snapshot.seen, nextLesson.stage) {
+        pathStartGuidanceFor(snapshot.seen, nextLesson.stage)
+    }
 
     if (activeLesson != null) {
         LessonRunner(
@@ -131,6 +134,7 @@ fun LessonPathScreen(
                 dueReviewCount = dueReviewCount,
                 dueReviewItems = dueReviewItems,
                 dailyRhythm = dailyRhythm,
+                startGuidance = startGuidance,
                 onStart = { activeLesson = nextLesson },
                 onReview = onOpenPractice
             )
@@ -230,6 +234,7 @@ private fun DailyFocusPanel(
     dueReviewCount: Int,
     dueReviewItems: List<KanaItem>,
     dailyRhythm: DailyRhythm,
+    startGuidance: PathStartGuidance?,
     onStart: () -> Unit,
     onReview: (PracticeMode) -> Unit
 ) {
@@ -271,6 +276,7 @@ private fun DailyFocusPanel(
                     )
                 }
             }
+            startGuidance?.let { PathStartGuidancePanel(it) }
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
                 FocusMetric("Due", dueReviewCount, Modifier.weight(1f))
                 FocusMetric("Repair", reviewCount, Modifier.weight(1f))
@@ -325,6 +331,34 @@ private fun PracticeRecommendationPanel(recommendation: PracticeRecommendation) 
             Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
                 Text(recommendation.title, style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Black)
                 Text(recommendation.message, style = MaterialTheme.typography.bodySmall)
+            }
+        }
+    }
+}
+
+@Composable
+private fun PathStartGuidancePanel(guidance: PathStartGuidance) {
+    Surface(
+        shape = RoundedCornerShape(16.dp),
+        color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.72f),
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Row(
+            modifier = Modifier.padding(12.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(10.dp)
+        ) {
+            Surface(shape = CircleShape, color = MaterialTheme.colorScheme.surface) {
+                Text(
+                    "1",
+                    modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
+                    style = MaterialTheme.typography.labelLarge,
+                    fontWeight = FontWeight.Black
+                )
+            }
+            Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                Text(guidance.title, style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Black)
+                Text(guidance.message, style = MaterialTheme.typography.bodySmall)
             }
         }
     }

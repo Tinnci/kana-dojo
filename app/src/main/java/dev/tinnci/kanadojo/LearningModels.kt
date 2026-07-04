@@ -55,6 +55,11 @@ data class DailyRhythm(
     val days: List<DailyRhythmDay>
 )
 
+data class PathStartGuidance(
+    val title: String,
+    val message: String
+)
+
 data class PracticeQueueExplanation(
     val title: String,
     val message: String
@@ -154,6 +159,21 @@ fun dailyRhythmFor(practiceEpochDays: Set<Long>, currentEpochDay: Long): DailyRh
         activeDays = activeDays,
         days = days
     )
+}
+
+fun pathStartGuidanceFor(seenCount: Int, nextStage: LearningStage): PathStartGuidance? {
+    if (seenCount > 0) return null
+    return when (nextStage) {
+        LearningStage.Anchor -> PathStartGuidance(
+            title = "Start with sound anchors",
+            message = "Vowels make every row easier because each kana maps to one clear Japanese sound."
+        )
+
+        else -> PathStartGuidance(
+            title = "Start at the first open node",
+            message = "The path keeps new kana small, then brings mistakes back before they settle."
+        )
+    }
 }
 
 fun practiceQueueExplanationFor(

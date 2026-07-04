@@ -173,9 +173,10 @@ Implemented:
 - Added tested practice-session goals so each queue states what a successful pass means before and during practice.
 - Added reduced-motion-aware crossfade for practice-mode intent changes.
 - Added a persisted, streak-free daily rhythm indicator to reward recent practice without reset pressure.
+- Added a tested first-run path hint that explains why vowel anchors are the right starting point.
 
 ## Next Polish Pass
 
 Implement next:
 
-- Add a first-run path empty state that clearly explains why the first lesson is the right starting point.
+- Add a compact lesson-start preview that names the first exercise type before opening the runner.

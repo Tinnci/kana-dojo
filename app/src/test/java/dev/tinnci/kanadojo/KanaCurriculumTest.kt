@@ -217,6 +217,21 @@ class KanaCurriculumTest {
     }
 
     @Test
+    fun pathStartGuidanceExplainsVowelStartingPointForFirstRun() {
+        val guidance = pathStartGuidanceFor(seenCount = 0, nextStage = LearningStage.Anchor)
+
+        assertEquals("Start with sound anchors", guidance?.title)
+        assertTrue(guidance?.message.orEmpty().contains("Vowels"))
+    }
+
+    @Test
+    fun pathStartGuidanceDisappearsAfterFirstKanaIsSeen() {
+        val guidance = pathStartGuidanceFor(seenCount = 1, nextStage = LearningStage.Anchor)
+
+        assertEquals(null, guidance)
+    }
+
+    @Test
     fun practiceQueueExplanationCallsOutWeakFallback() {
         val explanation = practiceQueueExplanationFor(
             mode = PracticeMode.Weak,
