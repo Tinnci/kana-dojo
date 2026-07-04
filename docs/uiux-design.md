@@ -181,9 +181,10 @@ Implemented:
 - Added tested compact locked-lesson copy that names the previous recall gate without adding path card height.
 - Added tested path-stage progress copy so filtered lesson groups show stage fluency in the existing journey header.
 - Added tested compact path-stage empty states when a filter has no actionable lesson.
+- Added tested chart filter progress copy so reference browsing mirrors path-stage clarity.
 
 ## Next Polish Pass
 
 Implement next:
 
-- Add compact chart filter progress copy so reference browsing mirrors path-stage clarity.
+- Add compact chart empty guidance for rows with no fluent kana yet.

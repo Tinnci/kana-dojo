@@ -50,7 +50,7 @@ fun KanaChartScreen(script: Script, mastery: Map<String, Int>, onSpeak: (String)
     val visibleItems = remember(items, selectedRow) {
         selectedRow?.let { row -> items.filter { it.row == row } } ?: items
     }
-    val snapshot = progressSnapshot(items, mastery)
+    val progressCopy = chartProgressCopyFor(selectedRow, items, mastery)
     LazyVerticalGrid(
         columns = GridCells.Adaptive(minSize = 86.dp),
         contentPadding = PaddingValues(16.dp),
@@ -59,7 +59,7 @@ fun KanaChartScreen(script: Script, mastery: Map<String, Int>, onSpeak: (String)
         modifier = Modifier.fillMaxSize()
     ) {
         item(span = { GridItemSpan(maxLineSpan) }) {
-            ChartHeader(script = script, snapshot = snapshot)
+            ChartHeader(script = script, progressCopy = progressCopy)
         }
         item(span = { GridItemSpan(maxLineSpan) }) {
             ChartRowFilters(rows = rows, selectedRow = selectedRow, onRowChange = { selectedRow = it })
@@ -100,7 +100,7 @@ fun KanaChartScreen(script: Script, mastery: Map<String, Int>, onSpeak: (String)
 }
 
 @Composable
-private fun ChartHeader(script: Script, snapshot: ProgressSnapshot) {
+private fun ChartHeader(script: Script, progressCopy: ChartProgressCopy) {
     Surface(
         shape = RoundedCornerShape(22.dp),
         color = MaterialTheme.colorScheme.surface,
@@ -117,7 +117,7 @@ private fun ChartHeader(script: Script, snapshot: ProgressSnapshot) {
                 Text("${script.label} chart", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Black)
                 Text("Tap any kana to hear it. Contrast marks show lookalikes.", style = MaterialTheme.typography.bodyMedium)
             }
-            Text("${snapshot.fluent}/${snapshot.total}", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Black)
+            Text(progressCopy.message, style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Black)
         }
     }
 }

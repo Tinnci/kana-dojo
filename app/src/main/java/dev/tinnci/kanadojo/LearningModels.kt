@@ -89,6 +89,10 @@ data class StageEmptyStateCopy(
     val actionLabel: String
 )
 
+data class ChartProgressCopy(
+    val message: String
+)
+
 enum class PathFeedbackAction {
     StartLesson,
     OpenPractice

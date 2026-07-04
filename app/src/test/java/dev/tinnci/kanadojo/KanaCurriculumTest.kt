@@ -188,6 +188,34 @@ class KanaCurriculumTest {
     }
 
     @Test
+    fun chartProgressCopySummarizesWholeScriptWhenUnfiltered() {
+        val items = itemsFor(Script.Hiragana)
+
+        val copy = chartProgressCopyFor(
+            selectedRow = null,
+            items = items,
+            mastery = emptyMap()
+        )
+
+        assertEquals("All 0/${items.size} fluent", copy.message)
+    }
+
+    @Test
+    fun chartProgressCopySummarizesSelectedRow() {
+        val items = itemsFor(Script.Hiragana)
+        val rowItems = items.filter { it.row == "vowels" }
+        val mastery = rowItems.take(2).associate { it.id to 4 }
+
+        val copy = chartProgressCopyFor(
+            selectedRow = "vowels",
+            items = items,
+            mastery = mastery
+        )
+
+        assertEquals("vowels 2/${rowItems.size} fluent", copy.message)
+    }
+
+    @Test
     fun nextPathLessonReturnsFirstUnfinishedUnlockedLesson() {
         val lessons = lessonsFor(Script.Hiragana)
         val lessonOneFluent = lessons[0].items.associate { it.id to 4 }

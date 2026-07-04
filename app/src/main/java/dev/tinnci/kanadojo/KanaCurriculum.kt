@@ -402,6 +402,17 @@ fun pathStageEmptyStateCopyFor(
     }
 }
 
+fun chartProgressCopyFor(
+    selectedRow: String?,
+    items: List<KanaItem>,
+    mastery: Map<String, Int>
+): ChartProgressCopy {
+    val visibleItems = selectedRow?.let { row -> items.filter { it.row == row } } ?: items
+    val fluentCount = visibleItems.count { (mastery[it.id] ?: 0) >= 4 }
+    val label = selectedRow ?: "All"
+    return ChartProgressCopy(message = "$label $fluentCount/${visibleItems.size} fluent")
+}
+
 fun nextPathLesson(lessons: List<KanaLesson>, mastery: Map<String, Int>): KanaLesson? =
     lessons.firstOrNull { lesson ->
         isLessonUnlocked(lesson, lessons, mastery) && lessonAverageMastery(lesson, mastery) < 4f
