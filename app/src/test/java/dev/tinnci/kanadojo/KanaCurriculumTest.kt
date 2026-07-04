@@ -1111,11 +1111,11 @@ class KanaCurriculumTest {
     @Test
     fun practiceCompletionActionGroupSummariesNameActionSet() {
         assertEquals(
-            "Completion actions: primary path action, optional repeat.",
+            "Actions: path primary, repeat optional.",
             practiceCompletionActionGroupSummaryFor(ReviewCompletionAction.ReturnToPath)
         )
         assertEquals(
-            "Completion actions: repeat is required before continuing.",
+            "Actions: repeat required.",
             practiceCompletionActionGroupSummaryFor(ReviewCompletionAction.RepeatQueue)
         )
     }

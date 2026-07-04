@@ -248,9 +248,10 @@ Implemented:
 - Added tested compact completion action-button accessibility unavailable-copy fallback audit.
 - Added compact completion action-button accessibility helper text merge audit.
 - Added tested compact completion action-button accessibility group summary audit.
+- Added tested compact completion action-button accessibility group summary density audit.
 
 ## Next Polish Pass
 
 Implement next:
 
-- Add compact completion action-button accessibility group summary density audit.
+- Add compact completion action-button accessibility group summary fallback audit.

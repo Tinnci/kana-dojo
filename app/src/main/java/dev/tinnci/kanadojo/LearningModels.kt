@@ -618,8 +618,8 @@ fun practiceCompletionActionAvailabilityFor(
 
 fun practiceCompletionActionGroupSummaryFor(action: ReviewCompletionAction): String =
     when (action) {
-        ReviewCompletionAction.ReturnToPath -> "Completion actions: primary path action, optional repeat."
-        ReviewCompletionAction.RepeatQueue -> "Completion actions: repeat is required before continuing."
+        ReviewCompletionAction.ReturnToPath -> "Actions: path primary, repeat optional."
+        ReviewCompletionAction.RepeatQueue -> "Actions: repeat required."
     }
 
 fun practiceCompletionDisabledActionCopyFor(
