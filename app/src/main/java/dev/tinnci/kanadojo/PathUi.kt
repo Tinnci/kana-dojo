@@ -465,6 +465,8 @@ private fun LessonNode(
     focus: Boolean,
     onStart: () -> Unit
 ) {
+    val phaseSummary = remember(lesson) { lessonPhaseSummaryFor(lesson) }
+    val phaseTotal = phaseSummary.sumOf { it.count }
     val progress by animateFloatAsState(
         targetValue = (averageMastery / 5f).coerceIn(0f, 1f),
         label = "lessonProgress"
@@ -558,7 +560,9 @@ private fun LessonNode(
                 ) {
                     StageChip(lesson.stage)
                     DifficultyDots(lesson.difficulty)
+                    Text("$phaseTotal drills", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
+                LessonNodePhaseSummary(phaseSummary)
                 Text(lesson.subtitle, style = MaterialTheme.typography.bodyMedium)
                 Text(
                     if (unlocked) "$learned/$total seen - ${masteryLabel(averageMastery)}" else "Reach recall level 2 in the previous row",
@@ -575,6 +579,27 @@ private fun LessonNode(
                 fontWeight = FontWeight.Black,
                 color = if (unlocked) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant
             )
+        }
+    }
+}
+
+@Composable
+private fun LessonNodePhaseSummary(phases: List<LessonPhaseCount>) {
+    LazyRow(horizontalArrangement = Arrangement.spacedBy(6.dp), modifier = Modifier.fillMaxWidth()) {
+        items(phases) { phase ->
+            Surface(
+                shape = RoundedCornerShape(10.dp),
+                color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.72f)
+            ) {
+                Row(
+                    modifier = Modifier.padding(horizontal = 7.dp, vertical = 4.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+                    Text(phase.count.toString(), style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Black)
+                    Text(phase.label.take(1), style = MaterialTheme.typography.labelSmall)
+                }
+            }
         }
     }
 }

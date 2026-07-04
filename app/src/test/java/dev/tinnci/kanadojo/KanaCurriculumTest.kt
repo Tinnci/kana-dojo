@@ -369,6 +369,13 @@ class KanaCurriculumTest {
     }
 
     @Test
+    fun lessonPhaseSummaryTotalMatchesGeneratedExerciseCount() {
+        val lesson = lessonsFor(Script.Katakana).first { it.stage == LearningStage.Confusable }
+
+        assertEquals(buildLessonExercises(lesson).size, lessonPhaseSummaryFor(lesson).sumOf { it.count })
+    }
+
+    @Test
     fun specialLessonPhaseSummaryOmitsUnavailableListening() {
         val lesson = lessonsFor(Script.Katakana).last()
         val labels = lessonPhaseSummaryFor(lesson).map { it.label }

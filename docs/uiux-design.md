@@ -164,9 +164,10 @@ Implemented:
 - Added adaptive trace remediation after weak checks, opening comparison and retry prompts before completing the exercise.
 - Added tested lesson pacing so recognition, listening, matching, writing, and contrast prompts appear in deliberate phases.
 - Added a lesson phase mix preview to the daily focus panel so learners see read, hear, match, write, and contrast counts before starting.
+- Added compact lesson-node phase totals so the full path communicates each lesson's exercise load at a glance.
 
 ## Next Polish Pass
 
 Implement next:
 
-- Add compact lesson-node phase totals so the full path communicates each lesson's exercise load at a glance.
+- Add a compact practice-mode recommendation on the path based on due review, weak kana, and current lesson stage.
