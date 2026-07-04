@@ -143,10 +143,11 @@ Implemented:
 - Extracted practice review UI so weak, contrast, writing, sound, speed, cross-script, and mixed queues can be refined independently.
 - Extracted lesson path UI so journey, daily focus, progress, filters, and lesson nodes can be refined independently.
 - Extracted shared exercise widgets so prompts, feedback, choices, audio, trace, and pair matching can be polished independently.
+- Extracted common metric and stage chips so shared progress indicators stay consistent across path, lesson completion, and practice.
 
 ## Next Polish Pass
 
 Implement next:
 
 - Continue splitting large screen sections out of `MainActivity.kt`.
-- Extract common metric chips and settings shell helpers from `MainActivity.kt`.
+- Extract settings and top-bar shell helpers from `MainActivity.kt`.
