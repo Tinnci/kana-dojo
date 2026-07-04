@@ -172,9 +172,10 @@ Implemented:
 - Added tested practice queue source cues for selected-script, recommended, and cross-script practice contexts.
 - Added tested practice-session goals so each queue states what a successful pass means before and during practice.
 - Added reduced-motion-aware crossfade for practice-mode intent changes.
+- Added a persisted, streak-free daily rhythm indicator to reward recent practice without reset pressure.
 
 ## Next Polish Pass
 
 Implement next:
 
-- Add a compact streak-free daily rhythm indicator so the path rewards consistency without creating pressure.
+- Add a first-run path empty state that clearly explains why the first lesson is the right starting point.

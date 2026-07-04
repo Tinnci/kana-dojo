@@ -40,19 +40,22 @@ private fun KanaDojoApp() {
     val mastery = remember { mutableStateMapOf<String, Int>() }
     val mistakes = remember { mutableStateListOf<String>() }
     val reviewDueEpochDays = remember { mutableStateMapOf<String, Long>() }
+    var practiceEpochDays by remember { mutableStateOf(progressStore.loadPracticeEpochDays()) }
     var selectedScript by remember { mutableStateOf(Script.Hiragana) }
     var currentTab by remember { mutableStateOf(ScreenTab.Lessons) }
     var requestedPracticeMode by remember { mutableStateOf(PracticeMode.Weak) }
     var reduceMotion by remember { mutableStateOf(progressStore.loadReduceMotion()) }
     var soundEnabled by remember { mutableStateOf(progressStore.loadSoundEnabled()) }
     var hapticsEnabled by remember { mutableStateOf(progressStore.loadHapticsEnabled()) }
+    val today = currentEpochDay()
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(today) {
         mastery.putAll(progressStore.loadMastery(allItems))
         mistakes.clear()
         mistakes.addAll(progressStore.loadMistakes())
         reviewDueEpochDays.clear()
         reviewDueEpochDays.putAll(progressStore.loadReviewDueEpochDays(allItems))
+        practiceEpochDays = progressStore.loadPracticeEpochDays(today)
     }
 
     val tts = rememberKanaSpeech()
@@ -72,6 +75,7 @@ private fun KanaDojoApp() {
         mistakes.addAll(progressStore.loadMistakes())
         reviewDueEpochDays.clear()
         reviewDueEpochDays.putAll(progressStore.loadReviewDueEpochDays(allItems))
+        practiceEpochDays = progressStore.loadPracticeEpochDays(today)
     }
     KanaTheme {
         Scaffold(
@@ -114,7 +118,8 @@ private fun KanaDojoApp() {
                         mastery = mastery,
                         mistakeIds = mistakes,
                         reviewDueEpochDays = reviewDueEpochDays,
-                        currentEpochDay = currentEpochDay(),
+                        practiceEpochDays = practiceEpochDays,
+                        currentEpochDay = today,
                         onSpeak = speakKana,
                         reduceMotion = reduceMotion,
                         onOpenPractice = { mode ->
@@ -137,7 +142,7 @@ private fun KanaDojoApp() {
                         mistakeIds = mistakes,
                         mastery = mastery,
                         reviewDueEpochDays = reviewDueEpochDays,
-                        currentEpochDay = currentEpochDay(),
+                        currentEpochDay = today,
                         onSpeak = speakKana,
                         reduceMotion = reduceMotion,
                         onResult = markResult,

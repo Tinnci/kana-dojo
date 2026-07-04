@@ -58,6 +58,7 @@ fun LessonPathScreen(
     mastery: Map<String, Int>,
     mistakeIds: List<String>,
     reviewDueEpochDays: Map<String, Long>,
+    practiceEpochDays: Set<Long>,
     currentEpochDay: Long,
     onSpeak: (String) -> Unit,
     reduceMotion: Boolean,
@@ -84,6 +85,9 @@ fun LessonPathScreen(
         dueReviewItemsFor(scriptItems, dueSnapshot, currentEpochDay, masterySnapshot)
     }
     val dueReviewCount = dueReviewItems.size
+    val dailyRhythm = remember(practiceEpochDays, currentEpochDay) {
+        dailyRhythmFor(practiceEpochDays, currentEpochDay)
+    }
 
     if (activeLesson != null) {
         LessonRunner(
@@ -126,6 +130,7 @@ fun LessonPathScreen(
                 reviewCount = reviewCount,
                 dueReviewCount = dueReviewCount,
                 dueReviewItems = dueReviewItems,
+                dailyRhythm = dailyRhythm,
                 onStart = { activeLesson = nextLesson },
                 onReview = onOpenPractice
             )
@@ -224,6 +229,7 @@ private fun DailyFocusPanel(
     reviewCount: Int,
     dueReviewCount: Int,
     dueReviewItems: List<KanaItem>,
+    dailyRhythm: DailyRhythm,
     onStart: () -> Unit,
     onReview: (PracticeMode) -> Unit
 ) {
@@ -270,6 +276,7 @@ private fun DailyFocusPanel(
                 FocusMetric("Repair", reviewCount, Modifier.weight(1f))
                 FocusMetric("Fluent", snapshot.fluent, Modifier.weight(1f))
             }
+            DailyRhythmPanel(dailyRhythm)
             LessonPhasePreviewRow(phaseSummary)
             if (dueReviewItems.isNotEmpty()) {
                 DueKanaPreviewRow(dueReviewItems.take(10))
@@ -318,6 +325,43 @@ private fun PracticeRecommendationPanel(recommendation: PracticeRecommendation) 
             Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
                 Text(recommendation.title, style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Black)
                 Text(recommendation.message, style = MaterialTheme.typography.bodySmall)
+            }
+        }
+    }
+}
+
+@Composable
+private fun DailyRhythmPanel(rhythm: DailyRhythm) {
+    Surface(
+        shape = RoundedCornerShape(16.dp),
+        color = MaterialTheme.colorScheme.surface.copy(alpha = 0.74f),
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Row(
+            modifier = Modifier.padding(12.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(3.dp)) {
+                Text(rhythm.title, style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Black)
+                Text(rhythm.message, style = MaterialTheme.typography.bodySmall)
+            }
+            Column(horizontalAlignment = Alignment.End, verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                Text("${rhythm.activeDays}/7", style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Black)
+                Row(horizontalArrangement = Arrangement.spacedBy(4.dp), verticalAlignment = Alignment.CenterVertically) {
+                    rhythm.days.forEach { day ->
+                        val dotColor = when {
+                            day.active -> MaterialTheme.colorScheme.primary
+                            day.isToday -> MaterialTheme.colorScheme.outline
+                            else -> MaterialTheme.colorScheme.outlineVariant
+                        }
+                        Box(
+                            modifier = Modifier
+                                .size(if (day.isToday) 10.dp else 8.dp)
+                                .background(dotColor, CircleShape)
+                        )
+                    }
+                }
             }
         }
     }

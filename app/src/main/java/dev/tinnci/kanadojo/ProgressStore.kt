@@ -14,6 +14,12 @@ class ProgressStore(context: Context) {
     fun loadReviewDueEpochDays(items: List<KanaItem>): Map<String, Long> =
         items.associate { it.id to prefs.getLong("review_due_epoch_day:${it.id}", 0L) }
 
+    fun loadPracticeEpochDays(currentEpochDay: Long = currentEpochDay()): Set<Long> =
+        prefs.getStringSet("practice_epoch_days", emptySet()).orEmpty()
+            .mapNotNull { it.toLongOrNull() }
+            .filter { it in (currentEpochDay - 6)..currentEpochDay }
+            .toSet()
+
     fun loadReduceMotion(): Boolean =
         prefs.getBoolean("reduce_motion", false)
 
@@ -38,6 +44,7 @@ class ProgressStore(context: Context) {
     fun mark(items: List<KanaItem>, correct: Boolean) {
         val editor = prefs.edit()
         val currentMistakes = loadMistakes().toMutableSet()
+        val today = currentEpochDay()
         items.forEach { item ->
             val masteryKey = "mastery:${item.id}"
             val missStreakKey = "miss_streak:${item.id}"
@@ -49,14 +56,21 @@ class ProgressStore(context: Context) {
             )
             editor.putInt(masteryKey, update.mastery)
             editor.putInt(missStreakKey, update.missStreak)
-            editor.putLong(reviewDueKey, currentEpochDay() + update.reviewDelayDays)
+            editor.putLong(reviewDueKey, today + update.reviewDelayDays)
             if (update.inMistakes) {
                 currentMistakes.add(item.id)
             } else {
                 currentMistakes.remove(item.id)
             }
         }
-        editor.putStringSet("mistakes", currentMistakes).apply()
+        val practiceDays = (loadPracticeEpochDays(today) + today)
+            .filter { it in (today - 6)..today }
+            .map { it.toString() }
+            .toSet()
+        editor
+            .putStringSet("mistakes", currentMistakes)
+            .putStringSet("practice_epoch_days", practiceDays)
+            .apply()
     }
 
 }

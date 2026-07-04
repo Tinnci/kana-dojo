@@ -180,6 +180,43 @@ class KanaCurriculumTest {
     }
 
     @Test
+    fun dailyRhythmMarksTodayWithoutStreakPressure() {
+        val rhythm = dailyRhythmFor(
+            practiceEpochDays = setOf(94L, 97L, 100L),
+            currentEpochDay = 100L
+        )
+
+        assertEquals("Today touched", rhythm.title)
+        assertEquals(3, rhythm.activeDays)
+        assertTrue(rhythm.days.last().active)
+        assertTrue(rhythm.message.contains("Enough for today"))
+    }
+
+    @Test
+    fun dailyRhythmRewardsSteadyWindowWithoutResetLanguage() {
+        val rhythm = dailyRhythmFor(
+            practiceEpochDays = setOf(94L, 96L, 97L, 99L),
+            currentEpochDay = 100L
+        )
+
+        assertEquals("Steady rhythm", rhythm.title)
+        assertEquals(4, rhythm.activeDays)
+        assertTrue(rhythm.message.contains("without chasing a streak"))
+    }
+
+    @Test
+    fun dailyRhythmGivesLowPressureFreshStart() {
+        val rhythm = dailyRhythmFor(
+            practiceEpochDays = emptySet(),
+            currentEpochDay = 100L
+        )
+
+        assertEquals("Fresh start", rhythm.title)
+        assertEquals(0, rhythm.activeDays)
+        assertTrue(rhythm.message.contains("low-pressure"))
+    }
+
+    @Test
     fun practiceQueueExplanationCallsOutWeakFallback() {
         val explanation = practiceQueueExplanationFor(
             mode = PracticeMode.Weak,

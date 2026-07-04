@@ -42,6 +42,19 @@ data class PracticeRecommendation(
     val actionLabel: String
 )
 
+data class DailyRhythmDay(
+    val offsetFromToday: Int,
+    val active: Boolean,
+    val isToday: Boolean
+)
+
+data class DailyRhythm(
+    val title: String,
+    val message: String,
+    val activeDays: Int,
+    val days: List<DailyRhythmDay>
+)
+
 data class PracticeQueueExplanation(
     val title: String,
     val message: String
@@ -109,6 +122,39 @@ fun pathPracticeRecommendationFor(
             actionLabel = "Listen"
         )
     }
+
+fun dailyRhythmFor(practiceEpochDays: Set<Long>, currentEpochDay: Long): DailyRhythm {
+    val days = (6 downTo 0).map { offset ->
+        val epochDay = currentEpochDay - offset
+        DailyRhythmDay(
+            offsetFromToday = offset,
+            active = epochDay in practiceEpochDays,
+            isToday = offset == 0
+        )
+    }
+    val activeDays = days.count { it.active }
+    val practicedToday = days.last().active
+    val practicedYesterday = days.getOrNull(days.lastIndex - 1)?.active == true
+    val title = when {
+        practicedToday -> "Today touched"
+        activeDays >= 4 -> "Steady rhythm"
+        practicedYesterday -> "Warm start"
+        else -> "Fresh start"
+    }
+    val message = when {
+        practicedToday -> "Enough for today; review more only if it feels light."
+        activeDays >= 4 -> "$activeDays of 7 days active without chasing a streak."
+        practicedYesterday -> "One short lesson keeps yesterday's recall warm."
+        else -> "Start with a tiny queue; consistency can stay low-pressure."
+    }
+
+    return DailyRhythm(
+        title = title,
+        message = message,
+        activeDays = activeDays,
+        days = days
+    )
+}
 
 fun practiceQueueExplanationFor(
     mode: PracticeMode,
