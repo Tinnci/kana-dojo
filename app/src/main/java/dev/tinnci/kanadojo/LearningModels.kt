@@ -100,6 +100,11 @@ data class KanaLesson(
     val items: List<KanaItem>
 )
 
+data class LessonPhaseCount(
+    val label: String,
+    val count: Int
+)
+
 data class Exercise(
     val kind: ExerciseKind,
     val items: List<KanaItem>

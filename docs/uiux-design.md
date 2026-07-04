@@ -163,9 +163,10 @@ Implemented:
 - Added tested kana-specific trace overlays for high-confusion katakana such as シ/ツ and ソ/ン.
 - Added adaptive trace remediation after weak checks, opening comparison and retry prompts before completing the exercise.
 - Added tested lesson pacing so recognition, listening, matching, writing, and contrast prompts appear in deliberate phases.
+- Added a lesson phase mix preview to the daily focus panel so learners see read, hear, match, write, and contrast counts before starting.
 
 ## Next Polish Pass
 
 Implement next:
 
-- Preview lesson phase mix on the path so learners can see recognition, listening, matching, and writing before starting.
+- Add compact lesson-node phase totals so the full path communicates each lesson's exercise load at a glance.

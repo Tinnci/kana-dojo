@@ -229,6 +229,7 @@ private fun DailyFocusPanel(
 ) {
     val hasDueReview = dueReviewCount > 0
     val reviewButtonLabel = if (hasDueReview) "Review due" else "Repair"
+    val phaseSummary = remember(lesson) { lessonPhaseSummaryFor(lesson) }
     Surface(
         shape = RoundedCornerShape(22.dp),
         color = MaterialTheme.colorScheme.tertiaryContainer,
@@ -264,6 +265,7 @@ private fun DailyFocusPanel(
                 FocusMetric("Repair", reviewCount, Modifier.weight(1f))
                 FocusMetric("Fluent", snapshot.fluent, Modifier.weight(1f))
             }
+            LessonPhasePreviewRow(phaseSummary)
             if (dueReviewItems.isNotEmpty()) {
                 DueKanaPreviewRow(dueReviewItems.take(10))
             }
@@ -282,6 +284,30 @@ private fun DailyFocusPanel(
                     Icon(Icons.Outlined.Replay, contentDescription = null)
                     Spacer(Modifier.width(8.dp))
                     Text(reviewButtonLabel)
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun LessonPhasePreviewRow(phases: List<LessonPhaseCount>) {
+    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        Text("Lesson mix", style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Bold)
+        LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
+            items(phases) { phase ->
+                Surface(
+                    shape = RoundedCornerShape(14.dp),
+                    color = MaterialTheme.colorScheme.surface.copy(alpha = 0.74f)
+                ) {
+                    Row(
+                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 8.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(6.dp)
+                    ) {
+                        Text(phase.count.toString(), style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Black)
+                        Text(phase.label, style = MaterialTheme.typography.labelSmall)
+                    }
                 }
             }
         }

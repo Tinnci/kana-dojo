@@ -13,7 +13,24 @@ fun buildLessonExercises(lesson: KanaLesson): List<Exercise> {
         .filter { supportsAudioPrompt(it) }
         .map { Exercise(ExerciseKind.SoundToKana, listOf(it)) }
     val pairs = lesson.items.chunked(4).map { Exercise(ExerciseKind.PairMatch, it) }
-    val writingCount = when (lesson.stage) {
+    val writing = lesson.items.take(writingCountFor(lesson)).map { Exercise(ExerciseKind.TraceKana, listOf(it)) }
+    val contrastItems = contrastItemsFor(lesson)
+    val contrast = contrastItems
+        .flatMap { listOf(Exercise(ExerciseKind.RomajiToKana, listOf(it)), Exercise(ExerciseKind.TraceKana, listOf(it))) }
+    return recognition + listening + pairs + writing + contrast
+}
+
+fun lessonPhaseSummaryFor(lesson: KanaLesson): List<LessonPhaseCount> =
+    listOf(
+        LessonPhaseCount("Read", lesson.items.size * 2),
+        LessonPhaseCount("Hear", lesson.items.count { supportsAudioPrompt(it) }),
+        LessonPhaseCount("Match", lesson.items.chunked(4).size),
+        LessonPhaseCount("Write", writingCountFor(lesson)),
+        LessonPhaseCount("Contrast", contrastItemsFor(lesson).size * 2)
+    ).filter { it.count > 0 }
+
+private fun writingCountFor(lesson: KanaLesson): Int =
+    when (lesson.stage) {
         LearningStage.Anchor -> 2
         LearningStage.RegularRows -> 3
         LearningStage.ShapeHeavy -> 4
@@ -23,12 +40,9 @@ fun buildLessonExercises(lesson: KanaLesson): List<Exercise> {
         LearningStage.Special -> lesson.items.size
         LearningStage.Confusable -> lesson.items.size
     }
-    val writing = lesson.items.take(writingCount).map { Exercise(ExerciseKind.TraceKana, listOf(it)) }
-    val contrast = lesson.items
-        .filter { it.confusable.isNotEmpty() }
-        .flatMap { listOf(Exercise(ExerciseKind.RomajiToKana, listOf(it)), Exercise(ExerciseKind.TraceKana, listOf(it))) }
-    return recognition + listening + pairs + writing + contrast
-}
+
+private fun contrastItemsFor(lesson: KanaLesson): List<KanaItem> =
+    lesson.items.filter { it.confusable.isNotEmpty() }
 
 fun supportsAudioPrompt(item: KanaItem): Boolean =
     item.row != "special"

@@ -358,6 +358,26 @@ class KanaCurriculumTest {
     }
 
     @Test
+    fun lessonPhaseSummaryReflectsExerciseMix() {
+        val lesson = lessonsFor(Script.Hiragana).first()
+        val summary = lessonPhaseSummaryFor(lesson).associate { it.label to it.count }
+
+        assertEquals(lesson.items.size * 2, summary["Read"])
+        assertEquals(lesson.items.size, summary["Hear"])
+        assertEquals(lesson.items.chunked(4).size, summary["Match"])
+        assertEquals(2, summary["Write"])
+    }
+
+    @Test
+    fun specialLessonPhaseSummaryOmitsUnavailableListening() {
+        val lesson = lessonsFor(Script.Katakana).last()
+        val labels = lessonPhaseSummaryFor(lesson).map { it.label }
+
+        assertFalse("Hear" in labels)
+        assertTrue("Write" in labels)
+    }
+
+    @Test
     fun confusableLessonKeepsContrastReinforcementAfterCorePractice() {
         val lesson = lessonsFor(Script.Katakana).first { it.stage == LearningStage.Confusable }
         val exercises = buildLessonExercises(lesson)
