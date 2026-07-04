@@ -58,10 +58,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -1409,8 +1407,10 @@ private fun MistakePracticeScreen(
     }
     var currentIndex by remember(selectedMode, practiceItems) { mutableIntStateOf(0) }
     var feedback by remember(selectedMode, practiceItems, currentIndex) { mutableStateOf<AnswerFeedback?>(null) }
-    val current = practiceItems.getOrNull(currentIndex % practiceItems.size)
+    val current = if (practiceItems.isEmpty()) null else practiceItems[currentIndex % practiceItems.size]
     val exercise = current?.let { practiceExerciseFor(it, selectedMode, currentIndex) }
+    val optionItems = if (selectedMode == PracticeMode.Cross) allItems else scriptItems
+    val queueLabel = if (selectedMode == PracticeMode.Cross) "Both scripts" else script.label
 
     if (current == null || exercise == null) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -1428,13 +1428,13 @@ private fun MistakePracticeScreen(
         HeroPanel(selectedMode.title, selectedMode.subtitle)
         PracticeModeTabs(selectedMode = selectedMode, onModeChange = { selectedMode = it })
         Text(
-            "${practiceItems.size} kana in this queue - ${script.label}",
+            "${practiceItems.size} kana in this queue - $queueLabel",
             style = MaterialTheme.typography.labelLarge,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
         ExerciseCard(
             exercise = exercise,
-            allItems = scriptItems,
+            allItems = optionItems,
             onSpeak = onSpeak,
             feedback = feedback,
             onAnswer = { correct ->
@@ -1453,17 +1453,19 @@ private fun MistakePracticeScreen(
 
 @Composable
 private fun PracticeModeTabs(selectedMode: PracticeMode, onModeChange: (PracticeMode) -> Unit) {
-    PrimaryTabRow(
-        selectedTabIndex = PracticeMode.entries.indexOf(selectedMode),
-        containerColor = MaterialTheme.colorScheme.background,
-        contentColor = MaterialTheme.colorScheme.primary
-    ) {
+    LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
         PracticeMode.entries.forEach { mode ->
-            Tab(
-                selected = selectedMode == mode,
-                onClick = { onModeChange(mode) },
-                text = { Text(mode.label, fontWeight = if (selectedMode == mode) FontWeight.Bold else FontWeight.Medium) }
-            )
+            item {
+                AssistChip(
+                    onClick = { onModeChange(mode) },
+                    label = { Text(mode.label, fontWeight = if (selectedMode == mode) FontWeight.Bold else FontWeight.Medium) },
+                    leadingIcon = {
+                        if (selectedMode == mode) {
+                            Icon(Icons.Outlined.CheckCircle, contentDescription = null, modifier = Modifier.size(18.dp))
+                        }
+                    }
+                )
+            }
         }
     }
 }

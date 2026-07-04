@@ -65,6 +65,11 @@ fun practiceItemsFor(
             .ifEmpty { scriptItems.take(8) }
             .shuffled(Random(scriptItems.firstOrNull()?.script?.name.hashCode() + 17))
 
+        PracticeMode.Cross -> allItems
+            .filter { (mastery[it.id] ?: 0) >= 2 }
+            .ifEmpty { allItems.filter { it.lesson <= 2 }.take(12) }
+            .shuffled(Random(41))
+
         PracticeMode.Mixed -> scriptItems
             .filter { (mastery[it.id] ?: 0) >= 2 }
             .ifEmpty { scriptItems.sortedBy { mastery[it.id] ?: 0 }.take(8) }
@@ -84,6 +89,11 @@ fun practiceExerciseFor(item: KanaItem, mode: PracticeMode, index: Int): Exercis
         PracticeMode.Writing -> Exercise(ExerciseKind.TraceKana, listOf(item))
         PracticeMode.Speed -> Exercise(
             kind = if (index % 2 == 0) ExerciseKind.KanaToRomaji else ExerciseKind.RomajiToKana,
+            items = listOf(item)
+        )
+
+        PracticeMode.Cross -> Exercise(
+            kind = if (index % 4 == 3) ExerciseKind.TraceKana else ExerciseKind.KanaToRomaji,
             items = listOf(item)
         )
 

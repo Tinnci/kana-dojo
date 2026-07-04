@@ -9,7 +9,7 @@ The curriculum plan lives in [docs/learning-design.md](docs/learning-design.md).
 - Hiragana and katakana script switcher.
 - Twenty lessons per script: base kana, dakuten/handakuten, and small `ゃ/ゅ/ょ` blends.
 - Lesson path with unlock gates, stage filters, daily focus, progress summary, and completion feedback.
-- Practice modes for weak kana, contrast drills, sound recall, writing reps, speed rounds, and mixed review.
+- Practice modes for weak kana, contrast drills, sound recall, writing reps, speed rounds, both-script review, and mixed review.
 - Exercise types: kana to romaji, romaji to kana, sound to kana, pair matching, and trace writing.
 - Kana chart with row filters, mastery markers, contrast labels, and tap-to-hear speech.
 - Local progress and mistake persistence through SharedPreferences.

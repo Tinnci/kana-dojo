@@ -25,6 +25,7 @@ enum class PracticeMode(val label: String, val title: String, val subtitle: Stri
     Sound("Sound", "Sound recall", "Choose kana from Japanese audio first."),
     Writing("Write", "Writing reps", "Trace symbols until the shape feels familiar."),
     Speed("Speed", "Speed round", "Fast recognition with familiar kana."),
+    Cross("Both", "Both scripts", "Read hiragana and katakana in one queue."),
     Mixed("Mixed", "Mixed recall", "Keep familiar kana fast and automatic.")
 }
 

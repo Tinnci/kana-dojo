@@ -156,6 +156,8 @@ class KanaCurriculumTest {
         assertEquals(ExerciseKind.TraceKana, practiceExerciseFor(item, PracticeMode.Writing, 0).kind)
         assertEquals(ExerciseKind.KanaToRomaji, practiceExerciseFor(item, PracticeMode.Speed, 0).kind)
         assertEquals(ExerciseKind.RomajiToKana, practiceExerciseFor(item, PracticeMode.Speed, 1).kind)
+        assertEquals(ExerciseKind.KanaToRomaji, practiceExerciseFor(item, PracticeMode.Cross, 0).kind)
+        assertEquals(ExerciseKind.TraceKana, practiceExerciseFor(item, PracticeMode.Cross, 3).kind)
     }
 
     @Test
@@ -172,5 +174,25 @@ class KanaCurriculumTest {
         )
 
         assertEquals(seen.keys.toSet(), soundItems.map { it.id }.toSet())
+    }
+
+    @Test
+    fun crossPracticeMixesBothScripts() {
+        val allItems = hiraganaItems + katakanaItems
+        val mastery = mapOf(
+            hiraganaItems.first { it.romaji == "a" }.id to 2,
+            katakanaItems.first { it.romaji == "a" }.id to 2
+        )
+
+        val crossItems = practiceItemsFor(
+            mode = PracticeMode.Cross,
+            scriptItems = itemsFor(Script.Hiragana),
+            mistakeIds = emptyList(),
+            allItems = allItems,
+            mastery = mastery
+        )
+
+        assertTrue(crossItems.any { it.script == Script.Hiragana })
+        assertTrue(crossItems.any { it.script == Script.Katakana })
     }
 }
