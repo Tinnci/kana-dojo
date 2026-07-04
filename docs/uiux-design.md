@@ -127,6 +127,7 @@ Implemented:
 - Mode-aware practice queue panel for weak, contrast, writing, sound, speed, cross-script, and mixed review.
 - Animated trace pad guide, border, background, stroke, and score-panel states.
 - Outcome-aware lesson completion badge and restrained celebration sparks.
+- Lesson-completion recommendations that route to repeat, mistake review, or the path.
 - Shared answer option component for kana, romaji, and sound-choice prompts.
 
 ## Next Polish Pass
@@ -134,6 +135,6 @@ Implemented:
 Implement next:
 
 - More expressive hero status.
-- Stronger lesson-completion recommendation: next lesson, review weak kana, or repeat row.
+- Stronger next-step path preview after clean lesson completions.
 - Trace pad refinement: stroke replay and model comparison.
 - Reduced-motion setting path before adding any looping animation.
