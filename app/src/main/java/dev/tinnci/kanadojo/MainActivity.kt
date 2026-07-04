@@ -1116,8 +1116,8 @@ private fun MatchColumn(
 @Composable
 private fun TraceKanaExercise(item: KanaItem, answered: Boolean, onSpeak: (String) -> Unit, onAnswer: (Boolean) -> Unit) {
     var points by remember(item.id) { mutableStateOf<List<Offset>>(emptyList()) }
-    val pathLength = remember(points) { points.zipWithNext().sumOf { (a, b) -> hypot((a.x - b.x).toDouble(), (a.y - b.y).toDouble()) }.toFloat() }
-    val hasShape = points.size > 12 && pathLength > 220f
+    val traceScore = remember(points) { traceScoreFor(points) }
+    val animatedScore by animateFloatAsState(targetValue = traceScore.progress, label = "traceScore")
 
     Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(14.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -1132,7 +1132,11 @@ private fun TraceKanaExercise(item: KanaItem, answered: Boolean, onSpeak: (Strin
                 .fillMaxWidth()
                 .aspectRatio(1f)
                 .background(Color(0xFFFFFBF3), RoundedCornerShape(26.dp))
-                .border(2.dp, MaterialTheme.colorScheme.outlineVariant, RoundedCornerShape(26.dp))
+                .border(
+                    width = 2.dp,
+                    color = if (traceScore.ready) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outlineVariant,
+                    shape = RoundedCornerShape(26.dp)
+                )
                 .pointerInput(item.id) {
                     detectDragGestures(
                         onDragStart = { points = points + it },
@@ -1165,17 +1169,65 @@ private fun TraceKanaExercise(item: KanaItem, answered: Boolean, onSpeak: (Strin
                 )
             }
         }
-        Text(
-            if (hasShape) "Looks ready to check." else "Trace over the ghost kana. Fill enough of the shape before checking.",
-            style = MaterialTheme.typography.bodyMedium
-        )
+        TraceScorePanel(score = animatedScore, ready = traceScore.ready, message = traceScore.message)
         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
             OutlinedButton(onClick = { points = emptyList() }, modifier = Modifier.weight(1f)) {
                 Text("Clear")
             }
-            Button(onClick = { onAnswer(hasShape) }, enabled = !answered, modifier = Modifier.weight(1f)) {
+            Button(onClick = { onAnswer(traceScore.ready) }, enabled = !answered && points.isNotEmpty(), modifier = Modifier.weight(1f)) {
                 Text("Check")
             }
+        }
+    }
+}
+
+private data class TraceScore(
+    val progress: Float,
+    val ready: Boolean,
+    val message: String
+)
+
+private fun traceScoreFor(points: List<Offset>): TraceScore {
+    if (points.isEmpty()) {
+        return TraceScore(0f, ready = false, message = "Trace over the ghost kana.")
+    }
+    val pathLength = points.zipWithNext().sumOf { (a, b) -> hypot((a.x - b.x).toDouble(), (a.y - b.y).toDouble()) }.toFloat()
+    val minX = points.minOf { it.x }
+    val maxX = points.maxOf { it.x }
+    val minY = points.minOf { it.y }
+    val maxY = points.maxOf { it.y }
+    val spread = ((maxX - minX).coerceAtMost(260f) / 260f) * ((maxY - minY).coerceAtMost(260f) / 260f)
+    val pointScore = (points.size / 34f).coerceIn(0f, 1f)
+    val lengthScore = (pathLength / 460f).coerceIn(0f, 1f)
+    val progress = (pointScore * 0.32f + lengthScore * 0.38f + spread.coerceIn(0f, 1f) * 0.30f).coerceIn(0f, 1f)
+    val ready = progress >= 0.72f && points.size > 12 && pathLength > 220f
+    val message = when {
+        ready -> "Looks ready to check."
+        spread < 0.18f -> "Use more of the ghost shape."
+        lengthScore < 0.55f -> "Add a little more stroke length."
+        else -> "Keep tracing until the score fills."
+    }
+    return TraceScore(progress, ready, message)
+}
+
+@Composable
+private fun TraceScorePanel(score: Float, ready: Boolean, message: String) {
+    Surface(
+        shape = RoundedCornerShape(18.dp),
+        color = if (ready) Color(0xFFDCEBDD) else MaterialTheme.colorScheme.surfaceVariant,
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Column(
+            modifier = Modifier.padding(12.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text("Trace score", style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Bold)
+                Spacer(Modifier.weight(1f))
+                Text("${(score * 100).toInt()}%", style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Black)
+            }
+            LinearProgressIndicator(progress = { score }, modifier = Modifier.fillMaxWidth())
+            Text(message, style = MaterialTheme.typography.bodyMedium)
         }
     }
 }
