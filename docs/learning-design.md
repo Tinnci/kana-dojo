@@ -75,7 +75,19 @@ Run focused contrast drills. These should appear only after the learner has seen
 - Exercises: two-option speed rounds, trace comparison, mistake review
 - Goal: force attention to stroke direction and proportion
 
-### Stage 6: Mixed Fluency
+### Stage 6: Voiced Kana
+
+Add dakuten and handakuten after the base table is stable. These should feel like a transformation of known rows, not a completely separate alphabet.
+
+- g row: ga gi gu ge go
+- z row: za ji zu ze zo
+- d row: da ji zu de do
+- b row: ba bi bu be bo
+- p row: pa pi pu pe po
+- Exercises: listen-first choice, romaji recall, trace every marked kana
+- Goal: recognize sound shifts from marks while separating duplicate romaji pairs like `じ/ぢ` and `ず/づ`
+
+### Stage 7: Mixed Fluency
 
 Mix all learned kana inside one script first, then mix hiragana and katakana later.
 
@@ -86,7 +98,7 @@ Mix all learned kana inside one script first, then mix hiragana and katakana lat
 
 ## Lesson Grouping
 
-Keep the current ten lessons per script as the base map:
+Use fifteen lessons per script: ten base-kana lessons, then five voiced-kana lessons.
 
 | Lesson | Group | Kana Count | Difficulty Note |
 | --- | --- | ---: | --- |
@@ -100,6 +112,11 @@ Keep the current ten lessons per script as the base map:
 | 8 | y row | 3 | shorter confidence lesson |
 | 9 | r row | 5 | sound is hard for English speakers; keep audio frequent |
 | 10 | w/n group | 3 | special symbols `wo` and standalone `n` |
+| 11 | g row | 5 | first dakuten transformation |
+| 12 | z row | 5 | includes `ji` and `zu` |
+| 13 | d row | 5 | contrasts `ぢ/づ` or `ヂ/ヅ` with z-row kana |
+| 14 | b row | 5 | voiced h-row transformation |
+| 15 | p row | 5 | handakuten transformation |
 
 The app should unlock the next lesson when the current lesson average mastery reaches `2`, but it should keep weak kana visible in mistakes until they reach `4`.
 
@@ -128,4 +145,3 @@ A good short session is 3 to 5 minutes:
 - 1 final mistake replay.
 
 Do not add kanji until both hiragana and katakana base tables are stable. Kana fluency should be a separate milestone.
-

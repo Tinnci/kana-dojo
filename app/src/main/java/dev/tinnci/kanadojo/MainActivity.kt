@@ -547,6 +547,7 @@ private fun StageChip(stage: LearningStage) {
             LearningStage.RegularRows -> Color(0xFFFFF1BC)
             LearningStage.ShapeHeavy -> Color(0xFFFFDFD6)
             LearningStage.TailRows -> Color(0xFFE7DEFF)
+            LearningStage.Voiced -> Color(0xFFE2EEF8)
             LearningStage.Confusable -> Color(0xFFE2EEF8)
         }
     ) {

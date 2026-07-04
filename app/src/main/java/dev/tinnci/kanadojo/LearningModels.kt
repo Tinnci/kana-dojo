@@ -33,6 +33,7 @@ enum class LearningStage(val label: String, val description: String) {
     RegularRows("Rows", "regular row rhythm"),
     ShapeHeavy("Shapes", "stroke-heavy symbols"),
     TailRows("Tail", "remaining base kana"),
+    Voiced("Marks", "dakuten and handakuten"),
     Confusable("Contrast", "lookalike separation")
 }
 

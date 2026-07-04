@@ -16,6 +16,7 @@ fun buildLessonExercises(lesson: KanaLesson): List<Exercise> {
         LearningStage.RegularRows -> 3
         LearningStage.ShapeHeavy -> 4
         LearningStage.TailRows -> lesson.items.size
+        LearningStage.Voiced -> lesson.items.size
         LearningStage.Confusable -> lesson.items.size
     }
     val writing = lesson.items.take(writingCount).map { Exercise(ExerciseKind.TraceKana, listOf(it)) }
@@ -138,6 +139,7 @@ fun lessonsFor(script: Script): List<KanaLesson> {
 private fun lessonStage(index: Int, items: List<KanaItem>, allItems: List<KanaItem>): LearningStage =
     when {
         index == 1 -> LearningStage.Anchor
+        index >= 11 -> LearningStage.Voiced
         items.any { item -> item.confusable.any { kana -> (allItems.firstOrNull { it.kana == kana }?.lesson ?: Int.MAX_VALUE) <= index } } ->
             LearningStage.Confusable
         index in 2..5 -> LearningStage.RegularRows
@@ -151,6 +153,7 @@ private fun lessonDifficulty(stage: LearningStage): Int =
         LearningStage.RegularRows -> 2
         LearningStage.ShapeHeavy,
         LearningStage.TailRows,
+        LearningStage.Voiced,
         LearningStage.Confusable -> 3
     }
 
@@ -191,8 +194,9 @@ private fun kana(
     romaji: String,
     row: String,
     lesson: Int,
-    confusable: List<String> = emptyList()
-) = KanaItem("${script.name.lowercase()}-$romaji", script, kana, romaji, row, lesson, confusable)
+    confusable: List<String> = emptyList(),
+    idSuffix: String = romaji
+) = KanaItem("${script.name.lowercase()}-$idSuffix", script, kana, romaji, row, lesson, confusable)
 
 val hiraganaItems = listOf(
     kana(Script.Hiragana, "あ", "a", "vowels", 1),
@@ -240,7 +244,32 @@ val hiraganaItems = listOf(
     kana(Script.Hiragana, "ろ", "ro", "r", 9),
     kana(Script.Hiragana, "わ", "wa", "w", 10),
     kana(Script.Hiragana, "を", "wo", "w", 10),
-    kana(Script.Hiragana, "ん", "n", "w", 10)
+    kana(Script.Hiragana, "ん", "n", "w", 10),
+    kana(Script.Hiragana, "が", "ga", "g", 11),
+    kana(Script.Hiragana, "ぎ", "gi", "g", 11),
+    kana(Script.Hiragana, "ぐ", "gu", "g", 11),
+    kana(Script.Hiragana, "げ", "ge", "g", 11),
+    kana(Script.Hiragana, "ご", "go", "g", 11),
+    kana(Script.Hiragana, "ざ", "za", "z", 12),
+    kana(Script.Hiragana, "じ", "ji", "z", 12, listOf("ぢ")),
+    kana(Script.Hiragana, "ず", "zu", "z", 12, listOf("づ")),
+    kana(Script.Hiragana, "ぜ", "ze", "z", 12),
+    kana(Script.Hiragana, "ぞ", "zo", "z", 12),
+    kana(Script.Hiragana, "だ", "da", "d", 13),
+    kana(Script.Hiragana, "ぢ", "ji", "d", 13, listOf("じ"), idSuffix = "di"),
+    kana(Script.Hiragana, "づ", "zu", "d", 13, listOf("ず"), idSuffix = "du"),
+    kana(Script.Hiragana, "で", "de", "d", 13),
+    kana(Script.Hiragana, "ど", "do", "d", 13),
+    kana(Script.Hiragana, "ば", "ba", "b", 14),
+    kana(Script.Hiragana, "び", "bi", "b", 14),
+    kana(Script.Hiragana, "ぶ", "bu", "b", 14),
+    kana(Script.Hiragana, "べ", "be", "b", 14),
+    kana(Script.Hiragana, "ぼ", "bo", "b", 14),
+    kana(Script.Hiragana, "ぱ", "pa", "p", 15),
+    kana(Script.Hiragana, "ぴ", "pi", "p", 15),
+    kana(Script.Hiragana, "ぷ", "pu", "p", 15),
+    kana(Script.Hiragana, "ぺ", "pe", "p", 15),
+    kana(Script.Hiragana, "ぽ", "po", "p", 15)
 )
 
 val katakanaItems = listOf(
@@ -289,5 +318,30 @@ val katakanaItems = listOf(
     kana(Script.Katakana, "ロ", "ro", "r", 9),
     kana(Script.Katakana, "ワ", "wa", "w", 10),
     kana(Script.Katakana, "ヲ", "wo", "w", 10),
-    kana(Script.Katakana, "ン", "n", "w", 10, listOf("ソ", "シ"))
+    kana(Script.Katakana, "ン", "n", "w", 10, listOf("ソ", "シ")),
+    kana(Script.Katakana, "ガ", "ga", "g", 11),
+    kana(Script.Katakana, "ギ", "gi", "g", 11),
+    kana(Script.Katakana, "グ", "gu", "g", 11),
+    kana(Script.Katakana, "ゲ", "ge", "g", 11),
+    kana(Script.Katakana, "ゴ", "go", "g", 11),
+    kana(Script.Katakana, "ザ", "za", "z", 12),
+    kana(Script.Katakana, "ジ", "ji", "z", 12, listOf("ヂ")),
+    kana(Script.Katakana, "ズ", "zu", "z", 12, listOf("ヅ")),
+    kana(Script.Katakana, "ゼ", "ze", "z", 12),
+    kana(Script.Katakana, "ゾ", "zo", "z", 12),
+    kana(Script.Katakana, "ダ", "da", "d", 13),
+    kana(Script.Katakana, "ヂ", "ji", "d", 13, listOf("ジ"), idSuffix = "di"),
+    kana(Script.Katakana, "ヅ", "zu", "d", 13, listOf("ズ"), idSuffix = "du"),
+    kana(Script.Katakana, "デ", "de", "d", 13),
+    kana(Script.Katakana, "ド", "do", "d", 13),
+    kana(Script.Katakana, "バ", "ba", "b", 14),
+    kana(Script.Katakana, "ビ", "bi", "b", 14),
+    kana(Script.Katakana, "ブ", "bu", "b", 14),
+    kana(Script.Katakana, "ベ", "be", "b", 14),
+    kana(Script.Katakana, "ボ", "bo", "b", 14),
+    kana(Script.Katakana, "パ", "pa", "p", 15),
+    kana(Script.Katakana, "ピ", "pi", "p", 15),
+    kana(Script.Katakana, "プ", "pu", "p", 15),
+    kana(Script.Katakana, "ペ", "pe", "p", 15),
+    kana(Script.Katakana, "ポ", "po", "p", 15)
 )

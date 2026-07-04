@@ -11,13 +11,35 @@ class KanaCurriculumTest {
         val hiraganaLessons = lessonsFor(Script.Hiragana)
         val katakanaLessons = lessonsFor(Script.Katakana)
 
-        assertEquals(10, hiraganaLessons.size)
-        assertEquals(10, katakanaLessons.size)
+        assertEquals(15, hiraganaLessons.size)
+        assertEquals(15, katakanaLessons.size)
         assertEquals(LearningStage.Anchor, hiraganaLessons[0].stage)
         assertEquals(LearningStage.RegularRows, hiraganaLessons[1].stage)
         assertEquals(LearningStage.Confusable, hiraganaLessons[3].stage)
         assertEquals(LearningStage.Confusable, katakanaLessons[3].stage)
+        assertEquals(LearningStage.Voiced, hiraganaLessons[10].stage)
+        assertEquals(LearningStage.Voiced, katakanaLessons[14].stage)
         assertEquals(listOf("a", "i", "u", "e", "o"), hiraganaLessons[0].items.map { it.romaji })
+    }
+
+    @Test
+    fun kanaIdsAreUniqueAcrossDuplicateRomaji() {
+        val allItems = hiraganaItems + katakanaItems
+
+        assertEquals(allItems.size, allItems.map { it.id }.toSet().size)
+        assertTrue(hiraganaItems.any { it.kana == "ぢ" && it.romaji == "ji" })
+        assertTrue(hiraganaItems.any { it.kana == "づ" && it.romaji == "zu" })
+        assertTrue(katakanaItems.any { it.kana == "ヂ" && it.romaji == "ji" })
+        assertTrue(katakanaItems.any { it.kana == "ヅ" && it.romaji == "zu" })
+    }
+
+    @Test
+    fun voicedKanaLessonsCoverDakutenAndHandakuten() {
+        val hiraganaLessons = lessonsFor(Script.Hiragana)
+        val voicedKana = hiraganaLessons.drop(10).flatMap { it.items }.map { it.kana }.toSet()
+
+        assertTrue(setOf("が", "ざ", "だ", "ば", "ぱ").all { it in voicedKana })
+        assertTrue(hiraganaLessons.drop(10).all { it.stage == LearningStage.Voiced })
     }
 
     @Test
