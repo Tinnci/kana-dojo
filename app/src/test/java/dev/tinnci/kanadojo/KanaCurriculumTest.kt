@@ -1166,6 +1166,10 @@ class KanaCurriculumTest {
         assertEquals("Repeat sound recall queue", practiceRepeatActionSemanticLabelFor(PracticeMode.Sound))
         assertEquals("Repeat mixed recall queue", practiceRepeatActionSemanticLabelFor(PracticeMode.Mixed))
         assertEquals("Repeat both scripts queue", practiceRepeatActionSemanticLabelFor(PracticeMode.Cross))
+        assertEquals(
+            "Optional repeat action: Repeat mixed recall queue",
+            practiceActionSemanticLabelWithRoleFor("Optional repeat", practiceRepeatActionSemanticLabelFor(PracticeMode.Mixed))
+        )
     }
 
     @Test

@@ -650,6 +650,9 @@ fun practiceReturnActionLabelFor(compact: Boolean = false): String =
 fun practiceReturnActionSemanticLabelFor(): String =
     "Return to lesson path"
 
+fun practiceActionSemanticLabelWithRoleFor(roleLabel: String, actionSemanticLabel: String): String =
+    "$roleLabel action: $actionSemanticLabel"
+
 fun practiceRepeatActionLabelFor(mode: PracticeMode, compact: Boolean = false): String =
     if (compact) {
         when (mode) {

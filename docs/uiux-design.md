@@ -238,9 +238,10 @@ Implemented:
 - Added tested compact completion action-button semantic labels.
 - Added tested compact completion action-button accessibility state descriptions.
 - Added compact completion action-button accessibility merge audit.
+- Added tested compact completion action-button focus order audit.
 
 ## Next Polish Pass
 
 Implement next:
 
-- Add compact completion action-button focus order audit.
+- Add compact completion action-button accessibility disabled-announcement audit.

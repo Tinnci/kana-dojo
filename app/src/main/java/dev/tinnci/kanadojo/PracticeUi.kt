@@ -51,6 +51,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
@@ -430,7 +431,7 @@ private fun PracticeCompletionActionGroup(
                 enabled = actionAvailability.returnToPathEnabled,
                 shape = RoundedCornerShape(18.dp),
                 modifier = Modifier.practiceCompletionActionButtonTouchTarget(
-                    actionSemanticLabel = returnActionSemanticLabel,
+                    actionSemanticLabel = practiceActionSemanticLabelWithRoleFor(roleLabels[0], returnActionSemanticLabel),
                     stateDescription = practiceCompletionActionStateDescriptionFor(
                         enabled = actionAvailability.returnToPathEnabled,
                         disabledCopy = disabledActionCopy
@@ -447,7 +448,7 @@ private fun PracticeCompletionActionGroup(
                 enabled = actionAvailability.repeatEnabled,
                 shape = RoundedCornerShape(18.dp),
                 modifier = Modifier.practiceCompletionActionButtonTouchTarget(
-                    actionSemanticLabel = repeatActionSemanticLabel,
+                    actionSemanticLabel = practiceActionSemanticLabelWithRoleFor(roleLabels[1], repeatActionSemanticLabel),
                     stateDescription = practiceCompletionActionStateDescriptionFor(
                         enabled = actionAvailability.repeatEnabled,
                         disabledCopy = disabledActionCopy
@@ -502,7 +503,7 @@ private fun PracticeRepeatRequiredActionGroup(
                     contentColor = MaterialTheme.colorScheme.onError
                 ),
                 modifier = Modifier.practiceCompletionActionButtonTouchTarget(
-                    actionSemanticLabel = repeatActionSemanticLabel,
+                    actionSemanticLabel = practiceActionSemanticLabelWithRoleFor(roleLabels.single(), repeatActionSemanticLabel),
                     stateDescription = practiceCompletionActionStateDescriptionFor(
                         enabled = actionAvailability.repeatEnabled,
                         disabledCopy = disabledActionCopy
@@ -564,7 +565,8 @@ private fun PracticeActionButtonLabel(label: String) {
 private fun PracticeActionRoleChip(label: String) {
     Surface(
         shape = RoundedCornerShape(999.dp),
-        color = practiceActionRoleColor(label)
+        color = practiceActionRoleColor(label),
+        modifier = Modifier.clearAndSetSemantics {}
     ) {
         Text(
             label,
