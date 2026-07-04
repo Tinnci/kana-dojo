@@ -141,4 +141,8 @@ Implemented:
 
 Implement next:
 
+- Move motion and sound controls into a compact settings surface before adding more preferences.
+- Add haptic preference controls after the settings surface exists.
+- Continue splitting large screen sections out of `MainActivity.kt`.
+
 - Future haptic preference controls.
