@@ -144,10 +144,10 @@ Implemented:
 - Extracted lesson path UI so journey, daily focus, progress, filters, and lesson nodes can be refined independently.
 - Extracted shared exercise widgets so prompts, feedback, choices, audio, trace, and pair matching can be polished independently.
 - Extracted common metric and stage chips so shared progress indicators stay consistent across path, lesson completion, and practice.
+- Extracted settings and app shell bars so global navigation and preferences can be refined independently.
 
 ## Next Polish Pass
 
 Implement next:
 
-- Continue splitting large screen sections out of `MainActivity.kt`.
-- Extract settings and top-bar shell helpers from `MainActivity.kt`.
+- Polish the app shell and lesson path with more compact controls, clearer active states, and Material 3 Expressive motion details.
