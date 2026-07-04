@@ -149,9 +149,10 @@ Implemented:
 - Extracted settings and app shell bars so global navigation and preferences can be refined independently.
 - Polished the app shell with a compact settings icon and segmented script switch for clearer global controls.
 - Added focused tests for weak queue fallback, confusable options, and sound-practice fallback behavior.
+- Added tested progress policy so mastered kana demote only after repeated misses while weaker kana still repair quickly.
 
 ## Next Polish Pass
 
 Implement next:
 
-- Continue expanding tests around spaced review promotion/demotion once scheduling becomes more detailed.
+- Continue expanding spaced review once calendar-based scheduling is introduced.

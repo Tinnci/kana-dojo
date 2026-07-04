@@ -36,10 +36,20 @@ class ProgressStore(context: Context) {
         val editor = prefs.edit()
         val currentMistakes = loadMistakes().toMutableSet()
         items.forEach { item ->
-            val key = "mastery:${item.id}"
-            val next = (prefs.getInt(key, 0) + if (correct) 1 else -1).coerceIn(0, 5)
-            editor.putInt(key, next)
-            if (correct && next >= 2) currentMistakes.remove(item.id) else if (!correct) currentMistakes.add(item.id)
+            val masteryKey = "mastery:${item.id}"
+            val missStreakKey = "miss_streak:${item.id}"
+            val update = progressUpdateFor(
+                currentMastery = prefs.getInt(masteryKey, 0),
+                currentMissStreak = prefs.getInt(missStreakKey, 0),
+                correct = correct
+            )
+            editor.putInt(masteryKey, update.mastery)
+            editor.putInt(missStreakKey, update.missStreak)
+            if (update.inMistakes) {
+                currentMistakes.add(item.id)
+            } else {
+                currentMistakes.remove(item.id)
+            }
         }
         editor.putStringSet("mistakes", currentMistakes).apply()
     }

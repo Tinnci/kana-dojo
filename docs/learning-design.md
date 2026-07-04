@@ -25,6 +25,8 @@ Use five mastery levels per kana. The existing app already stores mastery as `0.
 
 Mistakes should be heavier than new content. A missed kana should reappear once immediately, once near the end of the lesson, and once in the next review session.
 
+Implementation note: mastered kana are kept at level `5` after the first miss and demoted only after a repeated miss streak. Other non-mastered kana demote immediately on a miss. Any miss enters the mistake queue; correct answers clear the miss streak and leave the mistake queue once the kana reaches recall level `2`.
+
 ## Learning Curve
 
 ### Stage 1: Anchor Sounds
