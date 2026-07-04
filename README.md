@@ -2,7 +2,7 @@
 
 Kana Dojo is a CLI-built Android Compose app for practicing hiragana and katakana with short lesson drills, pair matching, mistake review, speech playback, and trace practice.
 
-The curriculum plan lives in [docs/learning-design.md](docs/learning-design.md).
+The curriculum plan lives in [docs/learning-design.md](docs/learning-design.md). The interface direction lives in [docs/uiux-design.md](docs/uiux-design.md).
 
 ## Toolchain
 

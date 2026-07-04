@@ -7,6 +7,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
@@ -117,6 +118,14 @@ private enum class ExerciseKind {
     TraceKana
 }
 
+private enum class LearningStage(val label: String, val description: String) {
+    Anchor("Anchor", "sound anchors"),
+    RegularRows("Rows", "regular row rhythm"),
+    ShapeHeavy("Shapes", "stroke-heavy symbols"),
+    TailRows("Tail", "remaining base kana"),
+    Confusable("Contrast", "lookalike separation")
+}
+
 private data class KanaItem(
     val id: String,
     val script: Script,
@@ -131,6 +140,8 @@ private data class KanaLesson(
     val index: Int,
     val title: String,
     val subtitle: String,
+    val stage: LearningStage,
+    val difficulty: Int,
     val items: List<KanaItem>
 )
 
@@ -337,18 +348,23 @@ private fun LessonPathScreen(
         verticalArrangement = Arrangement.spacedBy(14.dp)
     ) {
         item {
+            val mastered = itemsFor(script).count { (mastery[it.id] ?: 0) >= 4 }
             HeroPanel(
                 title = "${script.label} path",
-                subtitle = "Tiny lessons. Quick drills. Writing practice before moving on."
+                subtitle = "$mastered mastered. Unlock rows by reaching recall level 2 in the previous lesson."
             )
         }
         items(lessons) { lesson ->
+            val previous = lessons.lastOrNull { it.index == lesson.index - 1 }
+            val unlocked = previous == null || lessonAverageMastery(previous, mastery) >= 2f
             val learned = lesson.items.count { (mastery[it.id] ?: 0) > 0 }
             LessonNode(
                 lesson = lesson,
                 learned = learned,
                 total = lesson.items.size,
-                onStart = { activeLesson = lesson }
+                averageMastery = lessonAverageMastery(lesson, mastery),
+                unlocked = unlocked,
+                onStart = { if (unlocked) activeLesson = lesson }
             )
         }
     }
@@ -386,20 +402,31 @@ private fun HeroPanel(title: String, subtitle: String) {
 }
 
 @Composable
-private fun LessonNode(lesson: KanaLesson, learned: Int, total: Int, onStart: () -> Unit) {
+private fun LessonNode(
+    lesson: KanaLesson,
+    learned: Int,
+    total: Int,
+    averageMastery: Float,
+    unlocked: Boolean,
+    onStart: () -> Unit
+) {
     val progress by animateFloatAsState(
-        targetValue = if (total == 0) 0f else learned / total.toFloat(),
+        targetValue = (averageMastery / 5f).coerceIn(0f, 1f),
         label = "lessonProgress"
     )
     Card(
         onClick = onStart,
+        enabled = unlocked,
         shape = RoundedCornerShape(22.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        colors = CardDefaults.cardColors(
+            containerColor = if (unlocked) MaterialTheme.colorScheme.surface else MaterialTheme.colorScheme.surfaceVariant
+        ),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
+                .animateContentSize()
                 .padding(18.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -414,12 +441,67 @@ private fun LessonNode(lesson: KanaLesson, learned: Int, total: Int, onStart: ()
             Spacer(Modifier.width(16.dp))
             Column(modifier = Modifier.weight(1f)) {
                 Text(lesson.title, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleMedium)
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier = Modifier.padding(top = 4.dp, bottom = 4.dp)
+                ) {
+                    StageChip(lesson.stage)
+                    DifficultyDots(lesson.difficulty)
+                }
                 Text(lesson.subtitle, style = MaterialTheme.typography.bodyMedium)
+                Text(
+                    if (unlocked) "$learned/$total seen - ${masteryLabel(averageMastery)}" else "Reach recall level 2 in the previous row",
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
                 Spacer(Modifier.height(10.dp))
                 LinearProgressIndicator(progress = { progress }, modifier = Modifier.fillMaxWidth())
             }
             Spacer(Modifier.width(16.dp))
-            Text(lesson.items.joinToString(" ") { it.kana }, fontSize = 26.sp, fontWeight = FontWeight.Black)
+            Text(
+                lesson.items.joinToString(" ") { it.kana },
+                fontSize = 26.sp,
+                fontWeight = FontWeight.Black,
+                color = if (unlocked) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
+    }
+}
+
+@Composable
+private fun StageChip(stage: LearningStage) {
+    Surface(
+        shape = RoundedCornerShape(12.dp),
+        color = when (stage) {
+            LearningStage.Anchor -> Color(0xFFDCEBDD)
+            LearningStage.RegularRows -> Color(0xFFFFF1BC)
+            LearningStage.ShapeHeavy -> Color(0xFFFFDFD6)
+            LearningStage.TailRows -> Color(0xFFE7DEFF)
+            LearningStage.Confusable -> Color(0xFFE2EEF8)
+        }
+    ) {
+        Text(
+            stage.label,
+            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+            style = MaterialTheme.typography.labelSmall,
+            fontWeight = FontWeight.Bold
+        )
+    }
+}
+
+@Composable
+private fun DifficultyDots(difficulty: Int) {
+    Row(horizontalArrangement = Arrangement.spacedBy(3.dp)) {
+        repeat(3) { index ->
+            Box(
+                modifier = Modifier
+                    .size(7.dp)
+                    .background(
+                        if (index < difficulty) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outlineVariant,
+                        CircleShape
+                    )
+            )
         }
     }
 }
@@ -884,8 +966,18 @@ private fun buildLessonExercises(lesson: KanaLesson): List<Exercise> {
         )
     }
     val pairs = lesson.items.chunked(4).map { Exercise(ExerciseKind.PairMatch, it) }
-    val writing = lesson.items.take(3).map { Exercise(ExerciseKind.TraceKana, listOf(it)) }
-    return (intro + pairs + writing).shuffled(Random(lesson.index))
+    val writingCount = when (lesson.stage) {
+        LearningStage.Anchor -> 2
+        LearningStage.RegularRows -> 3
+        LearningStage.ShapeHeavy -> 4
+        LearningStage.TailRows -> lesson.items.size
+        LearningStage.Confusable -> lesson.items.size
+    }
+    val writing = lesson.items.take(writingCount).map { Exercise(ExerciseKind.TraceKana, listOf(it)) }
+    val contrast = lesson.items
+        .filter { it.confusable.isNotEmpty() }
+        .flatMap { listOf(Exercise(ExerciseKind.RomajiToKana, listOf(it)), Exercise(ExerciseKind.TraceKana, listOf(it))) }
+    return (intro + pairs + writing + contrast).shuffled(Random(lesson.index))
 }
 
 private fun buildMistakeExercise(item: KanaItem): Exercise =
@@ -908,14 +1000,50 @@ private fun kanaOptions(target: KanaItem, allItems: List<KanaItem>): List<String
         .take(4)
         .shuffled(Random(target.kana.hashCode()))
 
-private fun lessonsFor(script: Script): List<KanaLesson> =
-    itemsFor(script).groupBy { it.lesson }.toSortedMap().map { (index, items) ->
+private fun lessonsFor(script: Script): List<KanaLesson> {
+    val allItems = itemsFor(script)
+    return allItems.groupBy { it.lesson }.toSortedMap().map { (index, items) ->
+        val stage = lessonStage(index, items, allItems)
         KanaLesson(
             index = index,
             title = "Lesson $index",
-            subtitle = "${items.first().row} row: ${items.joinToString(" ") { it.romaji }}",
+            subtitle = "${stage.description}: ${items.joinToString(" ") { it.romaji }}",
+            stage = stage,
+            difficulty = lessonDifficulty(stage),
             items = items
         )
+    }
+}
+
+private fun lessonStage(index: Int, items: List<KanaItem>, allItems: List<KanaItem>): LearningStage =
+    when {
+        index == 1 -> LearningStage.Anchor
+        items.any { item -> item.confusable.any { kana -> (allItems.firstOrNull { it.kana == kana }?.lesson ?: Int.MAX_VALUE) <= index } } ->
+            LearningStage.Confusable
+        index in 2..5 -> LearningStage.RegularRows
+        index in 6..8 -> LearningStage.ShapeHeavy
+        else -> LearningStage.TailRows
+    }
+
+private fun lessonDifficulty(stage: LearningStage): Int =
+    when (stage) {
+        LearningStage.Anchor -> 1
+        LearningStage.RegularRows -> 2
+        LearningStage.ShapeHeavy,
+        LearningStage.TailRows,
+        LearningStage.Confusable -> 3
+    }
+
+private fun lessonAverageMastery(lesson: KanaLesson, mastery: Map<String, Int>): Float =
+    if (lesson.items.isEmpty()) 0f else lesson.items.sumOf { (mastery[it.id] ?: 0).toDouble() }.toFloat() / lesson.items.size
+
+private fun masteryLabel(averageMastery: Float): String =
+    when {
+        averageMastery >= 4f -> "fluent"
+        averageMastery >= 3f -> "contrast"
+        averageMastery >= 2f -> "recall"
+        averageMastery >= 1f -> "familiar"
+        else -> "new"
     }
 
 private fun itemsFor(script: Script): List<KanaItem> =
