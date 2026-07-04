@@ -924,17 +924,13 @@ private fun CompletionActions(
     onRepeat: () -> Unit,
     onReviewMistakes: () -> Unit
 ) {
-    val needsRepeat = stats.accuracy < 0.75f
+    val recommendation = completionRecommendationFor(stats)
+    val needsRepeat = recommendation == CompletionRecommendation.RepeatRow
     val hasMisses = stats.missed > 0
-    val recommendation = when {
-        needsRepeat -> "Recommended: repeat this row while it is fresh."
-        hasMisses -> "Recommended: repair the missed kana next."
-        else -> "Recommended: return to the path for the next lesson."
-    }
 
     Column(verticalArrangement = Arrangement.spacedBy(10.dp), modifier = Modifier.fillMaxWidth()) {
         Text(
-            recommendation,
+            recommendation.message,
             style = MaterialTheme.typography.labelLarge,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center,

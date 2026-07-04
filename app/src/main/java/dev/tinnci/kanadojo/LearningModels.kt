@@ -85,3 +85,16 @@ data class LessonSessionStats(
     val attempts: Int = correct + missed
     val accuracy: Float = if (attempts == 0) 0f else correct / attempts.toFloat()
 }
+
+enum class CompletionRecommendation(val message: String) {
+    RepeatRow("Recommended: repeat this row while it is fresh."),
+    ReviewMisses("Recommended: repair the missed kana next."),
+    BackToPath("Recommended: return to the path for the next lesson.")
+}
+
+fun completionRecommendationFor(stats: LessonSessionStats): CompletionRecommendation =
+    when {
+        stats.accuracy < 0.75f -> CompletionRecommendation.RepeatRow
+        stats.missed > 0 -> CompletionRecommendation.ReviewMisses
+        else -> CompletionRecommendation.BackToPath
+    }

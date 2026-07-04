@@ -275,4 +275,25 @@ class KanaCurriculumTest {
         assertTrue(crossItems.any { it.script == Script.Hiragana })
         assertTrue(crossItems.any { it.script == Script.Katakana })
     }
+
+    @Test
+    fun completionRecommendationReturnsToPathForCleanRuns() {
+        val recommendation = completionRecommendationFor(LessonSessionStats(correct = 8, missed = 0))
+
+        assertEquals(CompletionRecommendation.BackToPath, recommendation)
+    }
+
+    @Test
+    fun completionRecommendationReviewsMissesForGoodPassesWithMisses() {
+        val recommendation = completionRecommendationFor(LessonSessionStats(correct = 8, missed = 2))
+
+        assertEquals(CompletionRecommendation.ReviewMisses, recommendation)
+    }
+
+    @Test
+    fun completionRecommendationRepeatsLowAccuracyRows() {
+        val recommendation = completionRecommendationFor(LessonSessionStats(correct = 2, missed = 2))
+
+        assertEquals(CompletionRecommendation.RepeatRow, recommendation)
+    }
 }
