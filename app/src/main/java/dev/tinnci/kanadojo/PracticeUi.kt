@@ -393,16 +393,18 @@ private fun PracticeCompletionActionGroup(
             .then(animationModifier)
     ) {
         Column(
-            verticalArrangement = Arrangement.spacedBy(8.dp),
+            verticalArrangement = Arrangement.spacedBy(6.dp),
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(8.dp)
         ) {
+            PracticeActionRoleChip("Primary")
             Button(onClick = onReturnToPath, shape = RoundedCornerShape(18.dp), modifier = Modifier.fillMaxWidth()) {
                 Icon(Icons.Outlined.School, contentDescription = null)
                 Spacer(Modifier.width(8.dp))
                 Text("Back to path", fontWeight = FontWeight.Bold)
             }
+            PracticeActionRoleChip("Optional")
             FilledTonalButton(onClick = onRepeat, shape = RoundedCornerShape(18.dp), modifier = Modifier.fillMaxWidth()) {
                 Icon(Icons.Outlined.Replay, contentDescription = null)
                 Spacer(Modifier.width(8.dp))
@@ -430,11 +432,12 @@ private fun PracticeRepeatRequiredActionGroup(
             .then(animationModifier)
     ) {
         Column(
-            verticalArrangement = Arrangement.spacedBy(8.dp),
+            verticalArrangement = Arrangement.spacedBy(6.dp),
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(8.dp)
         ) {
+            PracticeActionRoleChip("Primary")
             Button(
                 onClick = onRepeat,
                 shape = RoundedCornerShape(18.dp),
@@ -449,6 +452,21 @@ private fun PracticeRepeatRequiredActionGroup(
                 Text(repeatActionLabel, fontWeight = FontWeight.Bold)
             }
         }
+    }
+}
+
+@Composable
+private fun PracticeActionRoleChip(label: String) {
+    Surface(
+        shape = RoundedCornerShape(999.dp),
+        color = MaterialTheme.colorScheme.surface.copy(alpha = 0.68f)
+    ) {
+        Text(
+            label,
+            style = MaterialTheme.typography.labelSmall,
+            fontWeight = FontWeight.Black,
+            modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp)
+        )
     }
 }
 
