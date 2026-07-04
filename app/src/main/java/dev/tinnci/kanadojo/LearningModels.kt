@@ -641,7 +641,7 @@ fun practiceCompletionActionStateDescriptionFor(
     if (enabled) {
         "Available"
     } else {
-        disabledCopy?.let { "Unavailable: ${it.title}" } ?: "Unavailable"
+        disabledCopy?.let { "Unavailable: ${it.title}. ${it.message}" } ?: "Unavailable"
     }
 
 fun practiceReturnActionLabelFor(compact: Boolean = false): String =

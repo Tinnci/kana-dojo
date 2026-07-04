@@ -1181,7 +1181,7 @@ class KanaCurriculumTest {
 
         assertEquals("Available", practiceCompletionActionStateDescriptionFor(enabled = true))
         assertEquals(
-            "Unavailable: No repeat queue",
+            "Unavailable: No repeat queue. There are no kana in this queue yet, so repeat is disabled.",
             practiceCompletionActionStateDescriptionFor(enabled = false, disabledCopy = disabledCopy)
         )
         assertEquals("Unavailable", practiceCompletionActionStateDescriptionFor(enabled = false))
