@@ -304,6 +304,20 @@ class KanaCurriculumTest {
     }
 
     @Test
+    fun chartMasteryCopyLabelsReadablePipLevels() {
+        assertEquals("0/5 new", chartMasteryCopyFor(0).label)
+        assertEquals("2/5 recall", chartMasteryCopyFor(2).label)
+        assertEquals("4/5 fluent", chartMasteryCopyFor(4).label)
+        assertEquals("5/5 mastered", chartMasteryCopyFor(5).label)
+    }
+
+    @Test
+    fun chartMasteryCopyClampsOutOfRangeLevels() {
+        assertEquals("0/5 new", chartMasteryCopyFor(-2).label)
+        assertEquals("5/5 mastered", chartMasteryCopyFor(9).label)
+    }
+
+    @Test
     fun nextPathLessonReturnsFirstUnfinishedUnlockedLesson() {
         val lessons = lessonsFor(Script.Hiragana)
         val lessonOneFluent = lessons[0].items.associate { it.id to 4 }

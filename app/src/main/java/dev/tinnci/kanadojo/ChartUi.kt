@@ -96,6 +96,7 @@ fun KanaChartScreen(script: Script, mastery: Map<String, Int>, onSpeak: (String)
         items(visibleItems) { item ->
             val level = mastery[item.id] ?: 0
             val cardTag = chartCardTagFor(item)
+            val masteryCopy = chartMasteryCopyFor(level)
             val selected = tappedItem?.id == item.id
             Card(
                 onClick = {
@@ -137,6 +138,7 @@ fun KanaChartScreen(script: Script, mastery: Map<String, Int>, onSpeak: (String)
                     }
                     Spacer(Modifier.height(8.dp))
                     MasteryPips(level = level)
+                    Text(masteryCopy.label, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
             }
         }

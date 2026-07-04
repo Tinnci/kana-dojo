@@ -188,9 +188,10 @@ Implemented:
 - Added tested compact chart-card tags that distinguish small kana and long marks.
 - Added tested compact chart tap feedback when a reference card is selected for audio.
 - Added a selected chart-card visual state so tapped kana stay anchored in the reference grid.
+- Added tested compact chart-card mastery copy so pips have readable level labels.
 
 ## Next Polish Pass
 
 Implement next:
 
-- Add compact reference-card mastery copy so the pips have a readable label.
+- Add compact reference legend copy that explains mastered versus fluent.

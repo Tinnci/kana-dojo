@@ -468,6 +468,19 @@ fun chartTapFeedbackFor(item: KanaItem): ChartTapFeedback =
         message = "${item.romaji} · ${chartRowLabelFor(item.row)}"
     )
 
+fun chartMasteryCopyFor(level: Int): ChartMasteryCopy {
+    val clamped = level.coerceIn(0, 5)
+    val label = when (clamped) {
+        0 -> "new"
+        1 -> "familiar"
+        2 -> "recall"
+        3 -> "contrast"
+        4 -> "fluent"
+        else -> "mastered"
+    }
+    return ChartMasteryCopy("$clamped/5 $label")
+}
+
 fun nextPathLesson(lessons: List<KanaLesson>, mastery: Map<String, Int>): KanaLesson? =
     lessons.firstOrNull { lesson ->
         isLessonUnlocked(lesson, lessons, mastery) && lessonAverageMastery(lesson, mastery) < 4f

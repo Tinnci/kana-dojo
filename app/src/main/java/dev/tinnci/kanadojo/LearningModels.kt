@@ -112,6 +112,10 @@ data class ChartTapFeedback(
     val message: String
 )
 
+data class ChartMasteryCopy(
+    val label: String
+)
+
 enum class PathFeedbackAction {
     StartLesson,
     OpenPractice
