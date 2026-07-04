@@ -394,7 +394,8 @@ private fun PracticeCompletionActionGroup(
     val roleLabels = practiceActionRoleLabelsInDisplayOrder(ReviewCompletionAction.ReturnToPath)
     Surface(
         shape = RoundedCornerShape(20.dp),
-        color = Color(0xFFDCEBDD).copy(alpha = 0.72f),
+        color = MaterialTheme.colorScheme.secondaryContainer,
+        contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
         modifier = Modifier
             .fillMaxWidth()
             .then(animationModifier)
@@ -443,7 +444,8 @@ private fun PracticeRepeatRequiredActionGroup(
     val roleLabels = practiceActionRoleLabelsInDisplayOrder(ReviewCompletionAction.RepeatQueue)
     Surface(
         shape = RoundedCornerShape(20.dp),
-        color = Color(0xFFFFDFD6).copy(alpha = 0.72f),
+        color = MaterialTheme.colorScheme.errorContainer,
+        contentColor = MaterialTheme.colorScheme.onErrorContainer,
         modifier = Modifier
             .fillMaxWidth()
             .then(animationModifier)
