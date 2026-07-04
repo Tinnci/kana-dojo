@@ -285,6 +285,7 @@ private fun PracticeCompletionPanel(
     val stable = action == ReviewCompletionAction.ReturnToPath
     val nextStep = practiceCompletionNextStepFor(mode, stats)
     val repeatActionLabel = practiceRepeatActionLabelFor(mode)
+    val compactRepeatActionLabel = practiceRepeatActionLabelFor(mode, compact = true)
     val completionMetrics = practiceCompletionMetricsFor(outcomes, queueSize)
     val accuracyTone = practiceAccuracyToneCopyFor(stats)
     val outcomeGuidance = practiceOutcomeGuidanceCopyFor(outcomes)
@@ -360,6 +361,7 @@ private fun PracticeCompletionPanel(
             if (stable) {
                 PracticeCompletionActionGroup(
                     repeatActionLabel = repeatActionLabel,
+                    compactRepeatActionLabel = compactRepeatActionLabel,
                     reduceMotion = reduceMotion,
                     onReturnToPath = onReturnToPath,
                     onRepeat = onRepeat
@@ -367,6 +369,7 @@ private fun PracticeCompletionPanel(
             } else {
                 PracticeRepeatRequiredActionGroup(
                     repeatActionLabel = repeatActionLabel,
+                    compactRepeatActionLabel = compactRepeatActionLabel,
                     reduceMotion = reduceMotion,
                     onRepeat = onRepeat
                 )
@@ -378,6 +381,7 @@ private fun PracticeCompletionPanel(
 @Composable
 private fun PracticeCompletionActionGroup(
     repeatActionLabel: String,
+    compactRepeatActionLabel: String,
     reduceMotion: Boolean,
     onReturnToPath: () -> Unit,
     onRepeat: () -> Unit
@@ -403,13 +407,13 @@ private fun PracticeCompletionActionGroup(
             Button(onClick = onReturnToPath, shape = RoundedCornerShape(18.dp), modifier = Modifier.fillMaxWidth()) {
                 Icon(Icons.Outlined.School, contentDescription = null)
                 Spacer(Modifier.width(8.dp))
-                Text("Back to path", fontWeight = FontWeight.Bold)
+                PracticeActionButtonLabel(practiceReturnActionLabelFor(compact = true))
             }
             PracticeActionRoleChip(practiceActionRoleLabelFor(ReviewCompletionAction.ReturnToPath, optional = true))
             FilledTonalButton(onClick = onRepeat, shape = RoundedCornerShape(18.dp), modifier = Modifier.fillMaxWidth()) {
                 Icon(Icons.Outlined.Replay, contentDescription = null)
                 Spacer(Modifier.width(8.dp))
-                Text(repeatActionLabel, fontWeight = FontWeight.Bold)
+                PracticeActionButtonLabel(compactRepeatActionLabel)
             }
         }
     }
@@ -418,6 +422,7 @@ private fun PracticeCompletionActionGroup(
 @Composable
 private fun PracticeRepeatRequiredActionGroup(
     repeatActionLabel: String,
+    compactRepeatActionLabel: String,
     reduceMotion: Boolean,
     onRepeat: () -> Unit
 ) {
@@ -450,10 +455,20 @@ private fun PracticeRepeatRequiredActionGroup(
             ) {
                 Icon(Icons.Outlined.Replay, contentDescription = null)
                 Spacer(Modifier.width(8.dp))
-                Text(repeatActionLabel, fontWeight = FontWeight.Bold)
+                PracticeActionButtonLabel(compactRepeatActionLabel)
             }
         }
     }
+}
+
+@Composable
+private fun PracticeActionButtonLabel(label: String) {
+    Text(
+        label,
+        fontWeight = FontWeight.Bold,
+        maxLines = 1,
+        overflow = TextOverflow.Ellipsis
+    )
 }
 
 @Composable

@@ -1105,6 +1105,21 @@ class KanaCurriculumTest {
     }
 
     @Test
+    fun practiceCompactActionLabelsFitCompletionButtons() {
+        val labels = PracticeMode.entries.associateWith { practiceRepeatActionLabelFor(it, compact = true) }
+
+        assertEquals("Path", practiceReturnActionLabelFor(compact = true))
+        assertEquals("Back to path", practiceReturnActionLabelFor())
+        assertEquals("Repair again", labels[PracticeMode.Weak])
+        assertEquals("Contrast", labels[PracticeMode.Contrast])
+        assertEquals("Listen", labels[PracticeMode.Sound])
+        assertEquals("Write", labels[PracticeMode.Writing])
+        assertEquals("Speed", labels[PracticeMode.Speed])
+        assertEquals("Both scripts", labels[PracticeMode.Cross])
+        assertEquals("Mixed", labels[PracticeMode.Mixed])
+    }
+
+    @Test
     fun practiceCompletionMetricsAddCompactOutcomeToneLabels() {
         val metrics = practiceCompletionMetricsFor(
             outcomes = ReviewSessionOutcomes(

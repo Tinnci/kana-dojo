@@ -597,15 +597,30 @@ fun reviewCompletionActionFor(stats: LessonSessionStats): ReviewCompletionAction
         ReviewCompletionAction.RepeatQueue
     }
 
-fun practiceRepeatActionLabelFor(mode: PracticeMode): String =
-    when (mode) {
-        PracticeMode.Weak -> "Repeat repair"
-        PracticeMode.Contrast -> "Repeat contrast"
-        PracticeMode.Sound -> "Repeat sound"
-        PracticeMode.Writing -> "Repeat writing"
-        PracticeMode.Speed -> "Repeat speed"
-        PracticeMode.Cross -> "Repeat both scripts"
-        PracticeMode.Mixed -> "Repeat mixed"
+fun practiceReturnActionLabelFor(compact: Boolean = false): String =
+    if (compact) "Path" else "Back to path"
+
+fun practiceRepeatActionLabelFor(mode: PracticeMode, compact: Boolean = false): String =
+    if (compact) {
+        when (mode) {
+            PracticeMode.Weak -> "Repair again"
+            PracticeMode.Contrast -> "Contrast"
+            PracticeMode.Sound -> "Listen"
+            PracticeMode.Writing -> "Write"
+            PracticeMode.Speed -> "Speed"
+            PracticeMode.Cross -> "Both scripts"
+            PracticeMode.Mixed -> "Mixed"
+        }
+    } else {
+        when (mode) {
+            PracticeMode.Weak -> "Repeat repair"
+            PracticeMode.Contrast -> "Repeat contrast"
+            PracticeMode.Sound -> "Repeat sound"
+            PracticeMode.Writing -> "Repeat writing"
+            PracticeMode.Speed -> "Repeat speed"
+            PracticeMode.Cross -> "Repeat both scripts"
+            PracticeMode.Mixed -> "Repeat mixed"
+        }
     }
 
 fun practiceCompletionMetricsFor(outcomes: ReviewSessionOutcomes, queueSize: Int): List<PracticeCompletionMetric> =
