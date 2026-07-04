@@ -7,6 +7,12 @@ import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Canvas
@@ -867,12 +873,20 @@ private fun ExerciseCard(
                     )
                 }
             }
-            AnimatedVisibility(visible = feedback != null) {
+            AnimatedVisibility(
+                visible = feedback != null,
+                enter = fadeIn() + expandVertically(expandFrom = Alignment.Top) + scaleIn(initialScale = 0.96f),
+                exit = fadeOut() + shrinkVertically(shrinkTowards = Alignment.Top) + scaleOut(targetScale = 0.96f)
+            ) {
                 feedback?.let {
                     FeedbackBanner(feedback = it)
                 }
             }
-            AnimatedVisibility(visible = feedback != null) {
+            AnimatedVisibility(
+                visible = feedback != null,
+                enter = fadeIn() + expandVertically(expandFrom = Alignment.Top),
+                exit = fadeOut() + shrinkVertically(shrinkTowards = Alignment.Top)
+            ) {
                 Button(
                     onClick = onContinue,
                     modifier = Modifier
@@ -1428,6 +1442,11 @@ private fun MistakePracticeScreen(
     val exercise = current?.let { practiceExerciseFor(it, selectedMode, currentIndex) }
     val optionItems = if (selectedMode == PracticeMode.Cross) allItems else scriptItems
     val queueLabel = if (selectedMode == PracticeMode.Cross) "Both scripts" else script.label
+    val weakCount = remember(mistakeSnapshot, scriptItems) {
+        val scriptItemIds = scriptItems.map { it.id }.toSet()
+        mistakeSnapshot.count { it in scriptItemIds }
+    }
+    val contrastCount = remember(practiceItems) { practiceItems.count { it.confusable.isNotEmpty() } }
 
     if (current == null || exercise == null) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -1444,10 +1463,12 @@ private fun MistakePracticeScreen(
     ) {
         HeroPanel(selectedMode.title, selectedMode.subtitle)
         PracticeModeTabs(selectedMode = selectedMode, onModeChange = { selectedMode = it })
-        Text(
-            "${practiceItems.size} kana in this queue - $queueLabel",
-            style = MaterialTheme.typography.labelLarge,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
+        PracticeQueuePanel(
+            mode = selectedMode,
+            queueLabel = queueLabel,
+            queueSize = practiceItems.size,
+            weakCount = weakCount,
+            contrastCount = contrastCount
         )
         PracticeSessionPanel(
             stats = sessionStats,
@@ -1477,6 +1498,97 @@ private fun MistakePracticeScreen(
         )
     }
 }
+
+@Composable
+private fun PracticeQueuePanel(
+    mode: PracticeMode,
+    queueLabel: String,
+    queueSize: Int,
+    weakCount: Int,
+    contrastCount: Int
+) {
+    val accentColor = practiceModeColor(mode)
+    val containerColor by animateColorAsState(
+        targetValue = accentColor.copy(alpha = 0.28f),
+        label = "practiceQueueColor"
+    )
+    Surface(
+        shape = RoundedCornerShape(20.dp),
+        color = containerColor,
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(14.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(48.dp)
+                    .background(accentColor, CircleShape),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = when (mode) {
+                        PracticeMode.Weak -> Icons.Outlined.Replay
+                        PracticeMode.Contrast -> Icons.Outlined.GridView
+                        PracticeMode.Writing -> Icons.Outlined.TouchApp
+                        else -> Icons.Outlined.School
+                    },
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.onSurface
+                )
+            }
+            Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(mode.title, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Black)
+                        Text(queueLabel, style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    }
+                    Text(queueSize.toString(), style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Black)
+                }
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
+                    PracticeQueueMetric("Queue", queueSize, Modifier.weight(1f))
+                    PracticeQueueMetric("Weak", weakCount, Modifier.weight(1f))
+                    PracticeQueueMetric("Contrast", contrastCount, Modifier.weight(1f))
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun PracticeQueueMetric(label: String, value: Int, modifier: Modifier = Modifier) {
+    Surface(
+        shape = RoundedCornerShape(12.dp),
+        color = MaterialTheme.colorScheme.surface.copy(alpha = 0.68f),
+        modifier = modifier
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 8.dp, vertical = 6.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(value.toString(), style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Black)
+            Text(label, style = MaterialTheme.typography.labelSmall)
+        }
+    }
+}
+
+@Composable
+private fun practiceModeColor(mode: PracticeMode): Color =
+    when (mode) {
+        PracticeMode.Weak -> Color(0xFFFFDFD6)
+        PracticeMode.Contrast -> Color(0xFFE7DEFF)
+        PracticeMode.Sound -> Color(0xFFE2EEF8)
+        PracticeMode.Writing -> Color(0xFFDCEBDD)
+        PracticeMode.Speed -> Color(0xFFFFF1BC)
+        PracticeMode.Cross -> Color(0xFFE2EEF8)
+        PracticeMode.Mixed -> MaterialTheme.colorScheme.primaryContainer
+    }
 
 @Composable
 private fun PracticeSessionPanel(stats: LessonSessionStats, completed: Int, queueSize: Int) {
