@@ -1214,6 +1214,20 @@ class KanaCurriculumTest {
     }
 
     @Test
+    fun practiceOutcomeGuidanceExplainsNoOutcomeYet() {
+        val copy = practiceOutcomeGuidanceCopyFor(
+            ReviewSessionOutcomes(
+                cleanIds = emptySet(),
+                repairedIds = emptySet(),
+                shakyIds = emptySet()
+            )
+        )
+
+        assertEquals("No outcome yet", copy.title)
+        assertTrue(copy.message.contains("Finish one pass"))
+    }
+
+    @Test
     fun practiceActionRationaleExplainsReturnToPath() {
         val copy = practiceActionRationaleCopyFor(
             action = ReviewCompletionAction.ReturnToPath,

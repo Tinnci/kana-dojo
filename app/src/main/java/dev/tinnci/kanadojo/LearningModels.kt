@@ -643,6 +643,11 @@ fun practiceAccuracyToneCopyFor(stats: LessonSessionStats): PracticeAccuracyTone
 
 fun practiceOutcomeGuidanceCopyFor(outcomes: ReviewSessionOutcomes): PracticeOutcomeGuidanceCopy =
     when {
+        outcomes.cleanIds.isEmpty() && outcomes.repairedIds.isEmpty() && outcomes.shakyIds.isEmpty() -> PracticeOutcomeGuidanceCopy(
+            title = "No outcome yet",
+            message = "Finish one pass so this summary can separate clean, repaired, and shaky kana."
+        )
+
         outcomes.shakyIds.isNotEmpty() && outcomes.repairedIds.isNotEmpty() -> PracticeOutcomeGuidanceCopy(
             title = "Repair split",
             message = "Repaired kana improved in this pass; shaky kana still need one more repeat."

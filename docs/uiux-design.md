@@ -211,9 +211,10 @@ Implemented:
 - Added compact action icon tone for repeat-required completions.
 - Added repeat-required primary action tone to practice completion.
 - Added tested compact secondary repeat rationale for clean completions.
+- Added tested compact action summary for no-attempt practice completions.
 
 ## Next Polish Pass
 
 Implement next:
 
-- Add compact action summary for no-attempt practice completions.
+- Audit practice completion panel density and remove redundant copy.
