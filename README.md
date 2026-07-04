@@ -40,6 +40,8 @@ Use the checked-in Gradle wrapper:
 ./gradlew :app:testDebugUnitTest :app:assembleDebug
 ```
 
+The same command runs in GitHub Actions on pushes and pull requests to `main`.
+
 The debug APK is generated at:
 
 ```text
