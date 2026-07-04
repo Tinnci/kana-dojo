@@ -55,6 +55,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.onClick
+import androidx.compose.ui.semantics.paneTitle
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
@@ -554,7 +555,7 @@ private fun Modifier.practiceCompletionActionButtonTouchTarget(
         }
 
 private fun Modifier.practiceCompletionActionGroupSummary(action: ReviewCompletionAction): Modifier =
-    semantics { contentDescription = practiceCompletionActionGroupSummaryFor(action) }
+    semantics { paneTitle = practiceCompletionActionGroupSummaryFor(action) }
 
 @Composable
 private fun PracticeDisabledActionCopy(copy: PracticeCompletionDisabledActionCopy) {
