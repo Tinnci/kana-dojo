@@ -60,6 +60,7 @@ import androidx.compose.ui.semantics.paneTitle
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
+import androidx.compose.ui.semantics.traversalIndex
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -446,7 +447,8 @@ private fun PracticeCompletionActionGroup(
                         actionSemanticLabel = returnActionSemanticLabel,
                         enabled = actionAvailability.returnToPathEnabled,
                         disabledCopy = disabledActionCopy
-                    )
+                    ),
+                    actionTraversalIndex = 0f
                 )
             ) {
                 Icon(Icons.Outlined.School, contentDescription = null, modifier = Modifier.size(20.dp))
@@ -468,7 +470,8 @@ private fun PracticeCompletionActionGroup(
                         actionSemanticLabel = repeatActionSemanticLabel,
                         enabled = actionAvailability.repeatEnabled,
                         disabledCopy = disabledActionCopy
-                    )
+                    ),
+                    actionTraversalIndex = 1f
                 )
             ) {
                 Icon(Icons.Outlined.Replay, contentDescription = null, modifier = Modifier.size(20.dp))
@@ -529,7 +532,8 @@ private fun PracticeRepeatRequiredActionGroup(
                         actionSemanticLabel = repeatActionSemanticLabel,
                         enabled = actionAvailability.repeatEnabled,
                         disabledCopy = disabledActionCopy
-                    )
+                    ),
+                    actionTraversalIndex = 0f
                 )
             ) {
                 Icon(Icons.Outlined.Replay, contentDescription = null, modifier = Modifier.size(20.dp))
@@ -544,7 +548,8 @@ private fun PracticeRepeatRequiredActionGroup(
 private fun Modifier.practiceCompletionActionButtonTouchTarget(
     actionSemanticLabel: String,
     stateDescription: String,
-    actionHint: String
+    actionHint: String,
+    actionTraversalIndex: Float
 ): Modifier =
     fillMaxWidth()
         .heightIn(min = 48.dp)
@@ -552,6 +557,7 @@ private fun Modifier.practiceCompletionActionButtonTouchTarget(
             contentDescription = actionSemanticLabel
             role = Role.Button
             this.stateDescription = stateDescription
+            traversalIndex = actionTraversalIndex
             onClick(label = actionHint, action = null)
         }
 
