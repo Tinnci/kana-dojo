@@ -35,6 +35,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -44,6 +45,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -198,6 +200,7 @@ fun MistakePracticeScreen(
                 repairedItems = practiceItems.filter { it.id in outcomes.repairedIds },
                 shakyItems = practiceItems.filter { it.id in outcomes.shakyIds },
                 queueSize = practiceItems.size,
+                reduceMotion = reduceMotion,
                 onReturnToPath = onReturnToPath,
                 onRepeat = {
                     currentIndex = 0
@@ -268,6 +271,7 @@ private fun PracticeCompletionPanel(
     repairedItems: List<KanaItem>,
     shakyItems: List<KanaItem>,
     queueSize: Int,
+    reduceMotion: Boolean,
     onReturnToPath: () -> Unit,
     onRepeat: () -> Unit
 ) {
@@ -322,7 +326,12 @@ private fun PracticeCompletionPanel(
             if (shakyItems.isNotEmpty()) {
                 CompletionKanaGroup("Still shaky", shakyItems.take(8))
             }
-            PracticeCompletionNextStepPanel(mode = mode, nextStep = nextStep, repeatRequired = !stable)
+            PracticeCompletionNextStepPanel(
+                mode = mode,
+                nextStep = nextStep,
+                repeatRequired = !stable,
+                reduceMotion = reduceMotion
+            )
             if (stable) {
                 Button(onClick = onReturnToPath, shape = RoundedCornerShape(18.dp), modifier = Modifier.fillMaxWidth()) {
                     Icon(Icons.Outlined.School, contentDescription = null)
@@ -349,8 +358,13 @@ private fun PracticeCompletionPanel(
 private fun PracticeCompletionNextStepPanel(
     mode: PracticeMode,
     nextStep: PracticeCompletionNextStep,
-    repeatRequired: Boolean
+    repeatRequired: Boolean,
+    reduceMotion: Boolean
 ) {
+    var entered by remember(mode, nextStep.title, nextStep.message, repeatRequired) { mutableStateOf(false) }
+    LaunchedEffect(mode, nextStep.title, nextStep.message, repeatRequired) {
+        entered = true
+    }
     val targetContainerColor = if (repeatRequired) {
         MaterialTheme.colorScheme.errorContainer.copy(alpha = 0.76f)
     } else {
@@ -359,11 +373,23 @@ private fun PracticeCompletionNextStepPanel(
     val targetIconColor = if (repeatRequired) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary
     val containerColor by animateColorAsState(targetValue = targetContainerColor, label = "practiceCompletionNextStepTone")
     val iconColor by animateColorAsState(targetValue = targetIconColor, label = "practiceCompletionNextStepIconTone")
+    val panelAlpha by animateFloatAsState(
+        targetValue = if (reduceMotion || entered) 1f else 0f,
+        animationSpec = tween(durationMillis = 220),
+        label = "practiceCompletionNextStepAlpha"
+    )
+    val panelScale by animateFloatAsState(
+        targetValue = if (reduceMotion || entered) 1f else 0.98f,
+        animationSpec = tween(durationMillis = 220),
+        label = "practiceCompletionNextStepScale"
+    )
 
     Surface(
         shape = RoundedCornerShape(16.dp),
         color = containerColor,
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .fillMaxWidth()
+            .graphicsLayer(alpha = panelAlpha, scaleX = panelScale, scaleY = panelScale)
     ) {
         Row(
             modifier = Modifier.padding(12.dp),

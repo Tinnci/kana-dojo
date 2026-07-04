@@ -198,9 +198,10 @@ Implemented:
 - Added tested practice completion next-step copy for clean mixed-review queues.
 - Added mode-aware visual tone to the practice completion next-step panel.
 - Added a compact mode chip to the practice completion next-step panel.
+- Added reduced-motion-aware entrance motion to the practice completion next-step panel.
 
 ## Next Polish Pass
 
 Implement next:
 
-- Add subtle entrance motion to the practice completion next-step panel.
+- Add mode-aware secondary action labels to practice completion.
