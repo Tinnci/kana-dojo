@@ -60,6 +60,13 @@ data class PathStartGuidance(
     val message: String
 )
 
+data class LessonStartPreview(
+    val title: String,
+    val message: String,
+    val firstExerciseLabel: String,
+    val drillCount: Int
+)
+
 data class PracticeQueueExplanation(
     val title: String,
     val message: String

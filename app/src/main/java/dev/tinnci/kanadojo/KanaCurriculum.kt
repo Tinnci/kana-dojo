@@ -20,6 +20,27 @@ fun buildLessonExercises(lesson: KanaLesson): List<Exercise> {
     return recognition + listening + pairs + writing + contrast
 }
 
+fun lessonStartPreviewFor(lesson: KanaLesson): LessonStartPreview {
+    val exercises = buildLessonExercises(lesson)
+    val first = exercises.firstOrNull()
+    val firstItem = first?.items?.firstOrNull() ?: lesson.items.first()
+    val label = first?.kind?.lessonStartLabel().orEmpty()
+    val prompt = when (first?.kind) {
+        ExerciseKind.RomajiToKana -> "choose ${firstItem.kana} for ${firstItem.romaji}"
+        ExerciseKind.KanaToRomaji -> "read ${firstItem.kana} as ${firstItem.romaji}"
+        ExerciseKind.SoundToKana -> "listen for ${firstItem.romaji}"
+        ExerciseKind.PairMatch -> "match ${first.items.size} kana pairs"
+        ExerciseKind.TraceKana -> "trace ${firstItem.kana}"
+        null -> "start the lesson"
+    }
+    return LessonStartPreview(
+        title = "First: $label",
+        message = "Begin with $prompt, then continue through ${exercises.size} short drills.",
+        firstExerciseLabel = label,
+        drillCount = exercises.size
+    )
+}
+
 fun lessonPhaseSummaryFor(lesson: KanaLesson): List<LessonPhaseCount> =
     listOf(
         LessonPhaseCount("Read", lesson.items.size * 2),
@@ -28,6 +49,15 @@ fun lessonPhaseSummaryFor(lesson: KanaLesson): List<LessonPhaseCount> =
         LessonPhaseCount("Write", writingCountFor(lesson)),
         LessonPhaseCount("Contrast", contrastItemsFor(lesson).size * 2)
     ).filter { it.count > 0 }
+
+private fun ExerciseKind.lessonStartLabel(): String =
+    when (this) {
+        ExerciseKind.KanaToRomaji -> "Read it"
+        ExerciseKind.RomajiToKana -> "Find the kana"
+        ExerciseKind.SoundToKana -> "Hear it"
+        ExerciseKind.PairMatch -> "Match pairs"
+        ExerciseKind.TraceKana -> "Write it"
+    }
 
 private fun writingCountFor(lesson: KanaLesson): Int =
     when (lesson.stage) {

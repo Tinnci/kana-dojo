@@ -174,9 +174,10 @@ Implemented:
 - Added reduced-motion-aware crossfade for practice-mode intent changes.
 - Added a persisted, streak-free daily rhythm indicator to reward recent practice without reset pressure.
 - Added a tested first-run path hint that explains why vowel anchors are the right starting point.
+- Added a tested lesson-start preview that names the first exercise type and drill count before opening the runner.
 
 ## Next Polish Pass
 
 Implement next:
 
-- Add a compact lesson-start preview that names the first exercise type before opening the runner.
+- Add path-level resume cues after exiting a lesson mid-session.

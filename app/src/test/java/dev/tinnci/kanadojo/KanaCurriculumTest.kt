@@ -635,6 +635,24 @@ class KanaCurriculumTest {
     }
 
     @Test
+    fun lessonStartPreviewNamesFirstGeneratedExercise() {
+        val lesson = lessonsFor(Script.Hiragana).first()
+        val preview = lessonStartPreviewFor(lesson)
+
+        assertEquals("Find the kana", preview.firstExerciseLabel)
+        assertEquals("First: Find the kana", preview.title)
+        assertTrue(preview.message.contains("choose あ for a"))
+    }
+
+    @Test
+    fun lessonStartPreviewDrillCountMatchesGeneratedQueue() {
+        val lesson = lessonsFor(Script.Katakana).first { it.stage == LearningStage.Confusable }
+        val preview = lessonStartPreviewFor(lesson)
+
+        assertEquals(buildLessonExercises(lesson).size, preview.drillCount)
+    }
+
+    @Test
     fun lessonPhaseSummaryTotalMatchesGeneratedExerciseCount() {
         val lesson = lessonsFor(Script.Katakana).first { it.stage == LearningStage.Confusable }
 

@@ -239,6 +239,7 @@ private fun DailyFocusPanel(
     onReview: (PracticeMode) -> Unit
 ) {
     val phaseSummary = remember(lesson) { lessonPhaseSummaryFor(lesson) }
+    val startPreview = remember(lesson) { lessonStartPreviewFor(lesson) }
     val practiceRecommendation = remember(dueReviewCount, reviewCount, lesson.stage) {
         pathPracticeRecommendationFor(
             dueReviewCount = dueReviewCount,
@@ -288,6 +289,7 @@ private fun DailyFocusPanel(
                 DueKanaPreviewRow(dueReviewItems.take(10))
             }
             PracticeRecommendationPanel(practiceRecommendation)
+            LessonStartPreviewPanel(startPreview)
             Row(horizontalArrangement = Arrangement.spacedBy(10.dp), modifier = Modifier.fillMaxWidth()) {
                 Button(onClick = onStart, shape = RoundedCornerShape(18.dp), modifier = Modifier.weight(1f)) {
                     Icon(Icons.Outlined.PlayArrow, contentDescription = null)
@@ -332,6 +334,39 @@ private fun PracticeRecommendationPanel(recommendation: PracticeRecommendation) 
                 Text(recommendation.title, style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Black)
                 Text(recommendation.message, style = MaterialTheme.typography.bodySmall)
             }
+        }
+    }
+}
+
+@Composable
+private fun LessonStartPreviewPanel(preview: LessonStartPreview) {
+    Surface(
+        shape = RoundedCornerShape(16.dp),
+        color = MaterialTheme.colorScheme.surface.copy(alpha = 0.74f),
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Row(
+            modifier = Modifier.padding(12.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(10.dp)
+        ) {
+            Surface(shape = CircleShape, color = MaterialTheme.colorScheme.primaryContainer) {
+                Icon(
+                    Icons.Outlined.PlayArrow,
+                    contentDescription = null,
+                    modifier = Modifier.padding(7.dp).size(18.dp),
+                    tint = MaterialTheme.colorScheme.onSurface
+                )
+            }
+            Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                Text(preview.title, style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Black)
+                Text(preview.message, style = MaterialTheme.typography.bodySmall)
+            }
+            Text(
+                "${preview.drillCount}",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Black
+            )
         }
     }
 }
