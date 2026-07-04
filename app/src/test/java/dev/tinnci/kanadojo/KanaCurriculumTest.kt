@@ -1109,6 +1109,18 @@ class KanaCurriculumTest {
     }
 
     @Test
+    fun practiceCompletionActionGroupSummariesNameActionSet() {
+        assertEquals(
+            "Completion actions: primary path action, optional repeat.",
+            practiceCompletionActionGroupSummaryFor(ReviewCompletionAction.ReturnToPath)
+        )
+        assertEquals(
+            "Completion actions: repeat is required before continuing.",
+            practiceCompletionActionGroupSummaryFor(ReviewCompletionAction.RepeatQueue)
+        )
+    }
+
+    @Test
     fun practiceCompletionDisabledActionCopyExplainsUnavailableRepeat() {
         val copy = practiceCompletionDisabledActionCopyFor(
             action = ReviewCompletionAction.RepeatQueue,

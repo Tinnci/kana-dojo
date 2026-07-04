@@ -420,6 +420,7 @@ private fun PracticeCompletionActionGroup(
         contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
         modifier = Modifier
             .fillMaxWidth()
+            .practiceCompletionActionGroupSummary(ReviewCompletionAction.ReturnToPath)
             .then(animationModifier)
     ) {
         Column(
@@ -498,6 +499,7 @@ private fun PracticeRepeatRequiredActionGroup(
         contentColor = MaterialTheme.colorScheme.onErrorContainer,
         modifier = Modifier
             .fillMaxWidth()
+            .practiceCompletionActionGroupSummary(ReviewCompletionAction.RepeatQueue)
             .then(animationModifier)
     ) {
         Column(
@@ -550,6 +552,9 @@ private fun Modifier.practiceCompletionActionButtonTouchTarget(
             this.stateDescription = stateDescription
             onClick(label = actionHint, action = null)
         }
+
+private fun Modifier.practiceCompletionActionGroupSummary(action: ReviewCompletionAction): Modifier =
+    semantics { contentDescription = practiceCompletionActionGroupSummaryFor(action) }
 
 @Composable
 private fun PracticeDisabledActionCopy(copy: PracticeCompletionDisabledActionCopy) {
