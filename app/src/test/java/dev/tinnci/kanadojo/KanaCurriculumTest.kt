@@ -318,6 +318,14 @@ class KanaCurriculumTest {
     }
 
     @Test
+    fun chartLegendCopyExplainsFluentVersusMastered() {
+        val copy = chartLegendCopyFor()
+
+        assertTrue(copy.message.contains("Fluent"))
+        assertTrue(copy.message.contains("mastered"))
+    }
+
+    @Test
     fun nextPathLessonReturnsFirstUnfinishedUnlockedLesson() {
         val lessons = lessonsFor(Script.Hiragana)
         val lessonOneFluent = lessons[0].items.associate { it.id to 4 }

@@ -481,6 +481,9 @@ fun chartMasteryCopyFor(level: Int): ChartMasteryCopy {
     return ChartMasteryCopy("$clamped/5 $label")
 }
 
+fun chartLegendCopyFor(): ChartLegendCopy =
+    ChartLegendCopy("Fluent is stable recall; mastered is long-spaced maintenance.")
+
 fun nextPathLesson(lessons: List<KanaLesson>, mastery: Map<String, Int>): KanaLesson? =
     lessons.firstOrNull { lesson ->
         isLessonUnlocked(lesson, lessons, mastery) && lessonAverageMastery(lesson, mastery) < 4f

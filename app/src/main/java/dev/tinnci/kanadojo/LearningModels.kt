@@ -116,6 +116,10 @@ data class ChartMasteryCopy(
     val label: String
 )
 
+data class ChartLegendCopy(
+    val message: String
+)
+
 enum class PathFeedbackAction {
     StartLesson,
     OpenPractice

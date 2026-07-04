@@ -262,17 +262,22 @@ private fun ChartRowFilters(rows: List<String>, selectedRow: String?, onRowChang
 @Composable
 private fun MasteryLegend() {
     Surface(shape = RoundedCornerShape(18.dp), color = MaterialTheme.colorScheme.surfaceVariant, modifier = Modifier.fillMaxWidth()) {
-        LazyRow(
+        Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(12.dp),
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
-            verticalAlignment = Alignment.CenterVertically
+            verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            item { LegendSwatch("new", MaterialTheme.colorScheme.surface) }
-            item { LegendSwatch("learning", Color(0xFFFFF1BC)) }
-            item { LegendSwatch("fluent", Color(0xFFDCEBDD)) }
-            item { LegendSwatch("contrast", Color(0xFFE7DEFF)) }
+            LazyRow(
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                item { LegendSwatch("new", MaterialTheme.colorScheme.surface) }
+                item { LegendSwatch("learning", Color(0xFFFFF1BC)) }
+                item { LegendSwatch("fluent", Color(0xFFDCEBDD)) }
+                item { LegendSwatch("contrast", Color(0xFFE7DEFF)) }
+            }
+            Text(chartLegendCopyFor().message, style = MaterialTheme.typography.bodySmall)
         }
     }
 }
