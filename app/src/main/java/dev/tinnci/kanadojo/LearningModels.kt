@@ -689,6 +689,9 @@ fun practiceActionRationaleCopyFor(action: ReviewCompletionAction, stats: Lesson
         }
     }
 
+fun shouldShowPracticeActionRationale(action: ReviewCompletionAction, stats: LessonSessionStats): Boolean =
+    action == ReviewCompletionAction.ReturnToPath || stats.attempts == 0
+
 fun practiceCompletionNextStepFor(mode: PracticeMode, stats: LessonSessionStats): PracticeCompletionNextStep =
     when {
         stats.missed > 0 -> PracticeCompletionNextStep(

@@ -1262,6 +1262,32 @@ class KanaCurriculumTest {
     }
 
     @Test
+    fun practiceActionRationaleVisibilityKeepsCleanAndNoAttemptSummaries() {
+        assertTrue(
+            shouldShowPracticeActionRationale(
+                action = ReviewCompletionAction.ReturnToPath,
+                stats = LessonSessionStats(correct = 6, missed = 0)
+            )
+        )
+        assertTrue(
+            shouldShowPracticeActionRationale(
+                action = ReviewCompletionAction.RepeatQueue,
+                stats = LessonSessionStats()
+            )
+        )
+    }
+
+    @Test
+    fun practiceActionRationaleVisibilityHidesDuplicateMissedQueueSummary() {
+        assertFalse(
+            shouldShowPracticeActionRationale(
+                action = ReviewCompletionAction.RepeatQueue,
+                stats = LessonSessionStats(correct = 5, missed = 1)
+            )
+        )
+    }
+
+    @Test
     fun practiceCompletionNextStepExplainsCleanWritingQueues() {
         val nextStep = practiceCompletionNextStepFor(
             mode = PracticeMode.Writing,

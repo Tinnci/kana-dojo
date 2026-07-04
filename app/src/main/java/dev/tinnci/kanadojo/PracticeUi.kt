@@ -285,6 +285,7 @@ private fun PracticeCompletionPanel(
     val accuracyTone = practiceAccuracyToneCopyFor(stats)
     val outcomeGuidance = practiceOutcomeGuidanceCopyFor(outcomes)
     val actionRationale = practiceActionRationaleCopyFor(action, stats)
+    val showActionRationale = shouldShowPracticeActionRationale(action, stats)
     Surface(
         shape = RoundedCornerShape(22.dp),
         color = MaterialTheme.colorScheme.primaryContainer,
@@ -347,7 +348,9 @@ private fun PracticeCompletionPanel(
                 repeatRequired = !stable,
                 reduceMotion = reduceMotion
             )
-            PracticeActionRationalePanel(copy = actionRationale, action = action, reduceMotion = reduceMotion)
+            if (showActionRationale) {
+                PracticeActionRationalePanel(copy = actionRationale, action = action, reduceMotion = reduceMotion)
+            }
             if (stable) {
                 Button(onClick = onReturnToPath, shape = RoundedCornerShape(18.dp), modifier = Modifier.fillMaxWidth()) {
                     Icon(Icons.Outlined.School, contentDescription = null)

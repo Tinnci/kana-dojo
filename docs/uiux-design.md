@@ -212,9 +212,10 @@ Implemented:
 - Added repeat-required primary action tone to practice completion.
 - Added tested compact secondary repeat rationale for clean completions.
 - Added tested compact action summary for no-attempt practice completions.
+- Added tested action-rationale visibility so missed queues avoid duplicate repeat copy.
 
 ## Next Polish Pass
 
 Implement next:
 
-- Audit practice completion panel density and remove redundant copy.
+- Audit practice completion panel vertical spacing on small screens.
