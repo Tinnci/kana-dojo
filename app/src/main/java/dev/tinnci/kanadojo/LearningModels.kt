@@ -616,6 +616,14 @@ fun practiceCompletionMetricsFor(outcomes: ReviewSessionOutcomes, queueSize: Int
         PracticeCompletionMetric("Queue", queueSize, "Total")
     )
 
+fun practiceCompletionGroupToneLabelFor(label: String): String =
+    when (label) {
+        "Clean" -> "Stable"
+        "Repaired" -> "Fixed"
+        "Still shaky" -> "Repeat"
+        else -> "Review"
+    }
+
 fun practiceAccuracyToneCopyFor(stats: LessonSessionStats): PracticeAccuracyToneCopy {
     val percent = (stats.accuracy * 100).toInt()
     return when {

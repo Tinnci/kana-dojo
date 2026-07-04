@@ -1127,6 +1127,14 @@ class KanaCurriculumTest {
     }
 
     @Test
+    fun practiceCompletionGroupToneLabelsMatchOutcomeGroups() {
+        assertEquals("Stable", practiceCompletionGroupToneLabelFor("Clean"))
+        assertEquals("Fixed", practiceCompletionGroupToneLabelFor("Repaired"))
+        assertEquals("Repeat", practiceCompletionGroupToneLabelFor("Still shaky"))
+        assertEquals("Review", practiceCompletionGroupToneLabelFor("Other"))
+    }
+
+    @Test
     fun practiceAccuracyToneCopyExplainsCleanCompletions() {
         val copy = practiceAccuracyToneCopyFor(LessonSessionStats(correct = 6, missed = 0))
 

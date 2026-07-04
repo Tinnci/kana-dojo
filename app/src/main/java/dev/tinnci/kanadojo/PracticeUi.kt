@@ -686,6 +686,7 @@ private fun PracticeCompletionModeChip(mode: PracticeMode) {
 private fun CompletionKanaGroup(label: String, items: List<KanaItem>) {
     val previewLimit = 8
     val hiddenCount = (items.size - previewLimit).coerceAtLeast(0)
+    val toneLabel = practiceCompletionGroupToneLabelFor(label)
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -698,6 +699,17 @@ private fun CompletionKanaGroup(label: String, items: List<KanaItem>) {
                 fontWeight = FontWeight.Bold,
                 modifier = Modifier.weight(1f)
             )
+            Surface(
+                shape = RoundedCornerShape(999.dp),
+                color = practiceCompletionMetricToneColor(toneLabel)
+            ) {
+                Text(
+                    toneLabel,
+                    style = MaterialTheme.typography.labelSmall,
+                    fontWeight = FontWeight.Black,
+                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp)
+                )
+            }
             if (hiddenCount > 0) {
                 Surface(
                     shape = RoundedCornerShape(999.dp),
