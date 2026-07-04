@@ -58,6 +58,28 @@ class TraceScoringTest {
     }
 
     @Test
+    fun traceFeedbackStartsWithStartAndDirectionCues() {
+        val cues = traceFeedbackCuesFor(emptyList())
+
+        assertEquals("Start", cues[0].label)
+        assertEquals("Direction", cues[1].label)
+    }
+
+    @Test
+    fun traceFeedbackDescribesDirectionAndCoverage() {
+        val cues = traceFeedbackCuesFor(
+            listOf(
+                TracePoint(20f, 20f),
+                TracePoint(80f, 30f),
+                TracePoint(140f, 40f)
+            )
+        )
+
+        assertTrue(cues.any { it.label == "Direction" && "right" in it.message })
+        assertTrue(cues.any { it.label == "Coverage" && "ghost shape" in it.message })
+    }
+
+    @Test
     fun traceGuidanceCoversConfusableKana() {
         val guidedKana = listOf("シ", "ツ", "ソ", "ン", "さ", "ち", "ぬ", "め")
 

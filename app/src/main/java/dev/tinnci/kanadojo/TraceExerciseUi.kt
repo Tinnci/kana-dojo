@@ -72,6 +72,7 @@ fun TraceKanaExercise(
     var replayNonce by remember(item.id) { mutableIntStateOf(0) }
     val replayProgress = remember(item.id) { Animatable(1f) }
     val traceScore = remember(points) { traceScoreFor(points.map { TracePoint(it.x, it.y) }) }
+    val traceCues = remember(points, traceScore) { traceFeedbackCuesFor(points.map { TracePoint(it.x, it.y) }, traceScore) }
     val animatedScore by animateFloatAsState(targetValue = traceScore.progress, label = "traceScore")
     val guideAlpha by animateFloatAsState(
         targetValue = if (traceScore.ready || answered) 0.28f else 0.14f,
@@ -166,9 +167,24 @@ fun TraceKanaExercise(
                     color = strokeColor,
                     style = Stroke(width = 12.dp.toPx(), cap = StrokeCap.Round)
                 )
+                points.firstOrNull()?.let { start ->
+                    drawCircle(
+                        color = Color(0xFF2F5D50),
+                        radius = 8.dp.toPx(),
+                        center = start
+                    )
+                }
+                if (points.size > 1) {
+                    drawCircle(
+                        color = Color(0xFFFFB84D),
+                        radius = 7.dp.toPx(),
+                        center = points.last()
+                    )
+                }
             }
         }
         TraceScorePanel(score = animatedScore, ready = traceScore.ready, message = traceScore.message)
+        TraceCuePanel(cues = traceCues)
         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
             OutlinedButton(
                 onClick = {
@@ -217,6 +233,27 @@ private fun replayedTracePath(points: List<Offset>, progress: Float): Path {
 }
 
 @Composable
+private fun TraceCuePanel(cues: List<TraceFeedbackCue>) {
+    Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
+        cues.forEach { cue ->
+            Surface(
+                shape = RoundedCornerShape(14.dp),
+                color = MaterialTheme.colorScheme.surfaceVariant,
+                modifier = Modifier.weight(1f)
+            ) {
+                Column(
+                    modifier = Modifier.padding(horizontal = 10.dp, vertical = 8.dp),
+                    verticalArrangement = Arrangement.spacedBy(3.dp)
+                ) {
+                    Text(cue.label, style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Black)
+                    Text(cue.message, style = MaterialTheme.typography.bodySmall)
+                }
+            }
+        }
+    }
+}
+
+@Composable
 private fun TraceComparisonPanel(item: KanaItem, points: List<Offset>, replayProgress: Float) {
     Column(verticalArrangement = Arrangement.spacedBy(10.dp), modifier = Modifier.fillMaxWidth()) {
         Row(horizontalArrangement = Arrangement.spacedBy(10.dp), modifier = Modifier.fillMaxWidth()) {
@@ -225,12 +262,27 @@ private fun TraceComparisonPanel(item: KanaItem, points: List<Offset>, replayPro
             }
             TraceComparisonTile(label = "Yours", modifier = Modifier.weight(1f)) {
                 Canvas(modifier = Modifier.fillMaxSize()) {
-                    val path = replayedTracePath(normalizedTracePoints(points, size.width, size.height), replayProgress)
+                    val normalizedPoints = normalizedTracePoints(points, size.width, size.height)
+                    val path = replayedTracePath(normalizedPoints, replayProgress)
                     drawPath(
                         path = path,
                         color = Color(0xFF2F5D50),
                         style = Stroke(width = 4.dp.toPx(), cap = StrokeCap.Round)
                     )
+                    normalizedPoints.firstOrNull()?.let { start ->
+                        drawCircle(
+                            color = Color(0xFF2F5D50),
+                            radius = 4.dp.toPx(),
+                            center = start
+                        )
+                    }
+                    if (normalizedPoints.size > 1) {
+                        drawCircle(
+                            color = Color(0xFFFFB84D),
+                            radius = 4.dp.toPx(),
+                            center = normalizedPoints.last()
+                        )
+                    }
                 }
             }
         }
