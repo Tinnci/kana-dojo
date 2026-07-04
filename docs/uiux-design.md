@@ -134,10 +134,11 @@ Implemented:
 - Data-driven path hero that previews the next lesson, overall progress, lesson progress, and review pressure.
 - Reduced-motion top-bar toggle that disables trace replay animation while keeping comparison available.
 - Persisted reduced-motion preference.
+- Persisted sound toggle that quiets speech playback without changing lessons.
 - Shared answer option component for kana, romaji, and sound-choice prompts.
 
 ## Next Polish Pass
 
 Implement next:
 
-- Future audio/haptic preference controls.
+- Future haptic preference controls.

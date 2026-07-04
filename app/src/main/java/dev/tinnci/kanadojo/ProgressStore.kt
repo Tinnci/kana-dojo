@@ -18,6 +18,13 @@ class ProgressStore(context: Context) {
         prefs.edit().putBoolean("reduce_motion", enabled).apply()
     }
 
+    fun loadSoundEnabled(): Boolean =
+        prefs.getBoolean("sound_enabled", true)
+
+    fun setSoundEnabled(enabled: Boolean) {
+        prefs.edit().putBoolean("sound_enabled", enabled).apply()
+    }
+
     fun mark(items: List<KanaItem>, correct: Boolean) {
         val editor = prefs.edit()
         val currentMistakes = loadMistakes().toMutableSet()

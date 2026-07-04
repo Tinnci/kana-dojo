@@ -110,6 +110,7 @@ private fun KanaDojoApp() {
     var selectedScript by remember { mutableStateOf(Script.Hiragana) }
     var currentTab by remember { mutableStateOf(ScreenTab.Lessons) }
     var reduceMotion by remember { mutableStateOf(progressStore.loadReduceMotion()) }
+    var soundEnabled by remember { mutableStateOf(progressStore.loadSoundEnabled()) }
 
     LaunchedEffect(Unit) {
         mastery.putAll(progressStore.loadMastery(allItems))
@@ -118,16 +119,26 @@ private fun KanaDojoApp() {
     }
 
     val tts = rememberKanaSpeech()
+    val speakKana: (String) -> Unit = { kana ->
+        if (soundEnabled) {
+            tts.speak(kana)
+        }
+    }
     KanaTheme {
         Scaffold(
             topBar = {
                 KanaTopBar(
                     selectedScript = selectedScript,
                     reduceMotion = reduceMotion,
+                    soundEnabled = soundEnabled,
                     onScriptChange = { selectedScript = it },
                     onReduceMotionChange = {
                         reduceMotion = it
                         progressStore.setReduceMotion(it)
+                    },
+                    onSoundEnabledChange = {
+                        soundEnabled = it
+                        progressStore.setSoundEnabled(it)
                     }
                 )
             },
@@ -166,7 +177,7 @@ private fun KanaDojoApp() {
                         script = selectedScript,
                         mastery = mastery,
                         mistakeIds = mistakes,
-                        onSpeak = tts::speak,
+                        onSpeak = speakKana,
                         reduceMotion = reduceMotion,
                         onOpenPractice = { currentTab = ScreenTab.Mistakes },
                         onResult = { items, correct ->
@@ -180,7 +191,7 @@ private fun KanaDojoApp() {
                     ScreenTab.Chart -> KanaChartScreen(
                         script = selectedScript,
                         mastery = mastery,
-                        onSpeak = tts::speak
+                        onSpeak = speakKana
                     )
 
                     ScreenTab.Mistakes -> MistakePracticeScreen(
@@ -188,7 +199,7 @@ private fun KanaDojoApp() {
                         allItems = allItems,
                         mistakeIds = mistakes,
                         mastery = mastery,
-                        onSpeak = tts::speak,
+                        onSpeak = speakKana,
                         reduceMotion = reduceMotion,
                         onResult = { items, correct ->
                             progressStore.mark(items, correct)
@@ -218,8 +229,10 @@ private fun rememberKanaSpeech(): KanaSpeech {
 private fun KanaTopBar(
     selectedScript: Script,
     reduceMotion: Boolean,
+    soundEnabled: Boolean,
     onScriptChange: (Script) -> Unit,
-    onReduceMotionChange: (Boolean) -> Unit
+    onReduceMotionChange: (Boolean) -> Unit,
+    onSoundEnabledChange: (Boolean) -> Unit
 ) {
     TopAppBar(
         colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background),
@@ -236,6 +249,16 @@ private fun KanaTopBar(
                 label = { Text(if (reduceMotion) "Still" else "Motion") },
                 leadingIcon = {
                     if (reduceMotion) {
+                        Icon(Icons.Outlined.CheckCircle, contentDescription = null, modifier = Modifier.size(18.dp))
+                    }
+                }
+            )
+            AssistChip(
+                modifier = Modifier.padding(end = 8.dp),
+                onClick = { onSoundEnabledChange(!soundEnabled) },
+                label = { Text(if (soundEnabled) "Sound" else "Quiet") },
+                leadingIcon = {
+                    if (soundEnabled) {
                         Icon(Icons.Outlined.CheckCircle, contentDescription = null, modifier = Modifier.size(18.dp))
                     }
                 }
