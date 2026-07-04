@@ -229,9 +229,10 @@ Implemented:
 - Added tested compact action-group role copy for optional clean repeats.
 - Added compact action-role chip text overflow protection.
 - Added tested compact completion action labels for narrow screens.
+- Added compact completion action-button icon spacing for narrow screens.
 
 ## Next Polish Pass
 
 Implement next:
 
-- Add compact completion action-button icon spacing for narrow screens.
+- Add compact completion action-button touch target audit.

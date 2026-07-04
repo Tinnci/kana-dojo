@@ -405,14 +405,14 @@ private fun PracticeCompletionActionGroup(
         ) {
             PracticeActionRoleChip(practiceActionRoleLabelFor(ReviewCompletionAction.ReturnToPath))
             Button(onClick = onReturnToPath, shape = RoundedCornerShape(18.dp), modifier = Modifier.fillMaxWidth()) {
-                Icon(Icons.Outlined.School, contentDescription = null)
-                Spacer(Modifier.width(8.dp))
+                Icon(Icons.Outlined.School, contentDescription = null, modifier = Modifier.size(20.dp))
+                Spacer(Modifier.width(6.dp))
                 PracticeActionButtonLabel(practiceReturnActionLabelFor(compact = true))
             }
             PracticeActionRoleChip(practiceActionRoleLabelFor(ReviewCompletionAction.ReturnToPath, optional = true))
             FilledTonalButton(onClick = onRepeat, shape = RoundedCornerShape(18.dp), modifier = Modifier.fillMaxWidth()) {
-                Icon(Icons.Outlined.Replay, contentDescription = null)
-                Spacer(Modifier.width(8.dp))
+                Icon(Icons.Outlined.Replay, contentDescription = null, modifier = Modifier.size(20.dp))
+                Spacer(Modifier.width(6.dp))
                 PracticeActionButtonLabel(compactRepeatActionLabel)
             }
         }
@@ -453,8 +453,8 @@ private fun PracticeRepeatRequiredActionGroup(
                 ),
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Icon(Icons.Outlined.Replay, contentDescription = null)
-                Spacer(Modifier.width(8.dp))
+                Icon(Icons.Outlined.Replay, contentDescription = null, modifier = Modifier.size(20.dp))
+                Spacer(Modifier.width(6.dp))
                 PracticeActionButtonLabel(compactRepeatActionLabel)
             }
         }
