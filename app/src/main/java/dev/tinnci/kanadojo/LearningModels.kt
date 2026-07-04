@@ -608,6 +608,11 @@ fun practiceCompletionNextStepFor(mode: PracticeMode, stats: LessonSessionStats)
             message = "Return to the path or mixed review while hiragana and katakana are both active."
         )
 
+        mode == PracticeMode.Mixed -> PracticeCompletionNextStep(
+            title = "Recall is flexible",
+            message = "Return to the path; reading, sound, and writing stayed accurate together."
+        )
+
         else -> PracticeCompletionNextStep(
             title = "Ready for path",
             message = "Clean queue. Continue while recall is warm."

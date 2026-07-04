@@ -1167,6 +1167,17 @@ class KanaCurriculumTest {
     }
 
     @Test
+    fun practiceCompletionNextStepExplainsCleanMixedQueues() {
+        val nextStep = practiceCompletionNextStepFor(
+            mode = PracticeMode.Mixed,
+            stats = LessonSessionStats(correct = 6, missed = 0)
+        )
+
+        assertEquals("Recall is flexible", nextStep.title)
+        assertTrue(nextStep.message.contains("reading, sound, and writing"))
+    }
+
+    @Test
     fun reviewSessionOutcomesSeparateCleanRepairedAndShakyKana() {
         val outcomes = reviewSessionOutcomesFor(
             correctCounts = mapOf(
