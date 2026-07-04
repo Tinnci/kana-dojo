@@ -130,6 +130,7 @@ Implemented:
 - Outcome-aware lesson completion badge and restrained celebration sparks.
 - Lesson-completion recommendations that route to repeat, mistake review, or the path.
 - Data-driven path hero that previews the next lesson, overall progress, lesson progress, and review pressure.
+- Reduced-motion top-bar toggle that disables trace replay animation while keeping comparison available.
 - Shared answer option component for kana, romaji, and sound-choice prompts.
 
 ## Next Polish Pass
@@ -138,4 +139,4 @@ Implement next:
 
 - Stronger next-step path preview after clean lesson completions.
 - Trace pad refinement: stroke-order guidance for the most confusable kana.
-- Reduced-motion setting path before adding any looping animation.
+- Persisted accessibility preferences for motion and future audio/haptic controls.

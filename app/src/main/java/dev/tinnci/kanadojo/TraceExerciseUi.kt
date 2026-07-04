@@ -60,7 +60,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
-fun TraceKanaExercise(item: KanaItem, answered: Boolean, onSpeak: (String) -> Unit, onAnswer: (Boolean) -> Unit) {
+fun TraceKanaExercise(
+    item: KanaItem,
+    answered: Boolean,
+    reduceMotion: Boolean,
+    onSpeak: (String) -> Unit,
+    onAnswer: (Boolean) -> Unit
+) {
     var points by remember(item.id) { mutableStateOf<List<Offset>>(emptyList()) }
     var showComparison by remember(item.id) { mutableStateOf(false) }
     var replayNonce by remember(item.id) { mutableIntStateOf(0) }
@@ -104,10 +110,14 @@ fun TraceKanaExercise(item: KanaItem, answered: Boolean, onSpeak: (String) -> Un
         replayProgress.snapTo(1f)
     }
 
-    LaunchedEffect(replayNonce) {
+    LaunchedEffect(replayNonce, reduceMotion) {
         if (replayNonce > 0 && points.size > 1) {
             replayProgress.snapTo(0f)
-            replayProgress.animateTo(1f, animationSpec = tween(durationMillis = 900))
+            if (reduceMotion) {
+                replayProgress.snapTo(1f)
+            } else {
+                replayProgress.animateTo(1f, animationSpec = tween(durationMillis = 900))
+            }
         }
     }
 
@@ -189,7 +199,11 @@ fun TraceKanaExercise(item: KanaItem, answered: Boolean, onSpeak: (String) -> Un
             enter = fadeIn() + expandVertically(expandFrom = Alignment.Top),
             exit = fadeOut() + shrinkVertically(shrinkTowards = Alignment.Top)
         ) {
-            TraceComparisonPanel(item = item, points = points, replayProgress = replayProgress.value)
+            TraceComparisonPanel(
+                item = item,
+                points = points,
+                replayProgress = if (reduceMotion) 1f else replayProgress.value
+            )
         }
     }
 }

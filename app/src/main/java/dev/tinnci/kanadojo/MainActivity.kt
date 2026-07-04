@@ -109,6 +109,7 @@ private fun KanaDojoApp() {
     val mistakes = remember { mutableStateListOf<String>() }
     var selectedScript by remember { mutableStateOf(Script.Hiragana) }
     var currentTab by remember { mutableStateOf(ScreenTab.Lessons) }
+    var reduceMotion by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         mastery.putAll(progressStore.loadMastery(allItems))
@@ -120,7 +121,12 @@ private fun KanaDojoApp() {
     KanaTheme {
         Scaffold(
             topBar = {
-                KanaTopBar(selectedScript = selectedScript, onScriptChange = { selectedScript = it })
+                KanaTopBar(
+                    selectedScript = selectedScript,
+                    reduceMotion = reduceMotion,
+                    onScriptChange = { selectedScript = it },
+                    onReduceMotionChange = { reduceMotion = it }
+                )
             },
             bottomBar = {
                 NavigationBar(containerColor = MaterialTheme.colorScheme.surface) {
@@ -158,6 +164,7 @@ private fun KanaDojoApp() {
                         mastery = mastery,
                         mistakeIds = mistakes,
                         onSpeak = tts::speak,
+                        reduceMotion = reduceMotion,
                         onOpenPractice = { currentTab = ScreenTab.Mistakes },
                         onResult = { items, correct ->
                             progressStore.mark(items, correct)
@@ -179,6 +186,7 @@ private fun KanaDojoApp() {
                         mistakeIds = mistakes,
                         mastery = mastery,
                         onSpeak = tts::speak,
+                        reduceMotion = reduceMotion,
                         onResult = { items, correct ->
                             progressStore.mark(items, correct)
                             mastery.putAll(progressStore.loadMastery(allItems))
@@ -204,7 +212,12 @@ private fun rememberKanaSpeech(): KanaSpeech {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun KanaTopBar(selectedScript: Script, onScriptChange: (Script) -> Unit) {
+private fun KanaTopBar(
+    selectedScript: Script,
+    reduceMotion: Boolean,
+    onScriptChange: (Script) -> Unit,
+    onReduceMotionChange: (Boolean) -> Unit
+) {
     TopAppBar(
         colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background),
         title = {
@@ -214,6 +227,16 @@ private fun KanaTopBar(selectedScript: Script, onScriptChange: (Script) -> Unit)
             }
         },
         actions = {
+            AssistChip(
+                modifier = Modifier.padding(end = 8.dp),
+                onClick = { onReduceMotionChange(!reduceMotion) },
+                label = { Text(if (reduceMotion) "Still" else "Motion") },
+                leadingIcon = {
+                    if (reduceMotion) {
+                        Icon(Icons.Outlined.CheckCircle, contentDescription = null, modifier = Modifier.size(18.dp))
+                    }
+                }
+            )
             Script.entries.forEach { script ->
                 AssistChip(
                     modifier = Modifier.padding(end = 8.dp),
@@ -236,6 +259,7 @@ private fun LessonPathScreen(
     mastery: Map<String, Int>,
     mistakeIds: List<String>,
     onSpeak: (String) -> Unit,
+    reduceMotion: Boolean,
     onOpenPractice: () -> Unit,
     onResult: (List<KanaItem>, Boolean) -> Unit
 ) {
@@ -262,6 +286,7 @@ private fun LessonPathScreen(
             lesson = activeLesson!!,
             allItems = itemsFor(script),
             onSpeak = onSpeak,
+            reduceMotion = reduceMotion,
             onResult = onResult,
             onExit = { activeLesson = null },
             onReviewMistakes = {
@@ -756,6 +781,7 @@ private fun LessonRunner(
     lesson: KanaLesson,
     allItems: List<KanaItem>,
     onSpeak: (String) -> Unit,
+    reduceMotion: Boolean,
     onResult: (List<KanaItem>, Boolean) -> Unit,
     onExit: () -> Unit,
     onReviewMistakes: () -> Unit
@@ -808,6 +834,7 @@ private fun LessonRunner(
                 exercise = current,
                 allItems = allItems,
                 onSpeak = onSpeak,
+                reduceMotion = reduceMotion,
                 feedback = feedback,
                 onAnswer = { correct ->
                     if (feedback == null) {
@@ -1070,6 +1097,7 @@ private fun ExerciseCard(
     exercise: Exercise,
     allItems: List<KanaItem>,
     onSpeak: (String) -> Unit,
+    reduceMotion: Boolean,
     feedback: AnswerFeedback?,
     onAnswer: (Boolean) -> Unit,
     onContinue: () -> Unit
@@ -1122,6 +1150,7 @@ private fun ExerciseCard(
                     ExerciseKind.TraceKana -> TraceKanaExercise(
                         item = exercise.items.first(),
                         answered = feedback != null,
+                        reduceMotion = reduceMotion,
                         onSpeak = onSpeak,
                         onAnswer = onAnswer
                     )
@@ -1583,6 +1612,7 @@ private fun MistakePracticeScreen(
     mistakeIds: List<String>,
     mastery: Map<String, Int>,
     onSpeak: (String) -> Unit,
+    reduceMotion: Boolean,
     onResult: (List<KanaItem>, Boolean) -> Unit
 ) {
     val scriptItems = remember(script) { itemsFor(script) }
@@ -1643,6 +1673,7 @@ private fun MistakePracticeScreen(
             exercise = exercise,
             allItems = optionItems,
             onSpeak = onSpeak,
+            reduceMotion = reduceMotion,
             feedback = feedback,
             onAnswer = { correct ->
                 if (feedback == null) {
