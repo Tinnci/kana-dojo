@@ -283,6 +283,7 @@ private fun PracticeCompletionPanel(
     val completionMetrics = practiceCompletionMetricsFor(outcomes, queueSize)
     val accuracyTone = practiceAccuracyToneCopyFor(stats)
     val outcomeGuidance = practiceOutcomeGuidanceCopyFor(outcomes)
+    val actionRationale = practiceActionRationaleCopyFor(action, stats)
     Surface(
         shape = RoundedCornerShape(22.dp),
         color = MaterialTheme.colorScheme.primaryContainer,
@@ -345,6 +346,7 @@ private fun PracticeCompletionPanel(
                 repeatRequired = !stable,
                 reduceMotion = reduceMotion
             )
+            PracticeActionRationalePanel(copy = actionRationale, action = action)
             if (stable) {
                 Button(onClick = onReturnToPath, shape = RoundedCornerShape(18.dp), modifier = Modifier.fillMaxWidth()) {
                     Icon(Icons.Outlined.School, contentDescription = null)
@@ -362,6 +364,30 @@ private fun PracticeCompletionPanel(
                     Spacer(Modifier.width(8.dp))
                     Text(repeatActionLabel, fontWeight = FontWeight.Bold)
                 }
+            }
+        }
+    }
+}
+
+@Composable
+private fun PracticeActionRationalePanel(copy: PracticeActionRationaleCopy, action: ReviewCompletionAction) {
+    val repeatRequired = action == ReviewCompletionAction.RepeatQueue
+    val icon = if (repeatRequired) Icons.Outlined.Replay else Icons.Outlined.School
+    val tint = if (repeatRequired) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary
+    Surface(
+        shape = RoundedCornerShape(16.dp),
+        color = MaterialTheme.colorScheme.surface.copy(alpha = 0.66f),
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Row(
+            modifier = Modifier.padding(horizontal = 12.dp, vertical = 10.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(10.dp)
+        ) {
+            Icon(icon, contentDescription = null, tint = tint, modifier = Modifier.size(18.dp))
+            Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(1.dp)) {
+                Text(copy.title, style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Black)
+                Text(copy.message, style = MaterialTheme.typography.bodySmall)
             }
         }
     }

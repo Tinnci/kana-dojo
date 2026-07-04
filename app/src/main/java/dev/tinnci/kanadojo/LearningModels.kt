@@ -183,6 +183,11 @@ data class PracticeOutcomeGuidanceCopy(
     val message: String
 )
 
+data class PracticeActionRationaleCopy(
+    val title: String,
+    val message: String
+)
+
 data class PracticeCompletionNextStep(
     val title: String,
     val message: String
@@ -657,6 +662,26 @@ fun practiceOutcomeGuidanceCopyFor(outcomes: ReviewSessionOutcomes): PracticeOut
             title = "Clean set",
             message = "No repair needed. Keep momentum with the path or a mixed queue."
         )
+    }
+
+fun practiceActionRationaleCopyFor(action: ReviewCompletionAction, stats: LessonSessionStats): PracticeActionRationaleCopy =
+    when (action) {
+        ReviewCompletionAction.ReturnToPath -> PracticeActionRationaleCopy(
+            title = "Path is ready",
+            message = "A clean queue means new prompts can build on this recall."
+        )
+
+        ReviewCompletionAction.RepeatQueue -> if (stats.attempts == 0) {
+            PracticeActionRationaleCopy(
+                title = "Measure first",
+                message = "Run the queue once so the app can separate clean and shaky kana."
+            )
+        } else {
+            PracticeActionRationaleCopy(
+                title = "Repeat first",
+                message = "Missed kana are still fresh; one more pass protects the next lesson."
+            )
+        }
     }
 
 fun practiceCompletionNextStepFor(mode: PracticeMode, stats: LessonSessionStats): PracticeCompletionNextStep =

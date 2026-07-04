@@ -1214,6 +1214,39 @@ class KanaCurriculumTest {
     }
 
     @Test
+    fun practiceActionRationaleExplainsReturnToPath() {
+        val copy = practiceActionRationaleCopyFor(
+            action = ReviewCompletionAction.ReturnToPath,
+            stats = LessonSessionStats(correct = 6, missed = 0)
+        )
+
+        assertEquals("Path is ready", copy.title)
+        assertTrue(copy.message.contains("clean queue"))
+    }
+
+    @Test
+    fun practiceActionRationaleExplainsRepeatAfterMisses() {
+        val copy = practiceActionRationaleCopyFor(
+            action = ReviewCompletionAction.RepeatQueue,
+            stats = LessonSessionStats(correct = 5, missed = 1)
+        )
+
+        assertEquals("Repeat first", copy.title)
+        assertTrue(copy.message.contains("protects the next lesson"))
+    }
+
+    @Test
+    fun practiceActionRationaleExplainsNoAttemptRepeat() {
+        val copy = practiceActionRationaleCopyFor(
+            action = ReviewCompletionAction.RepeatQueue,
+            stats = LessonSessionStats()
+        )
+
+        assertEquals("Measure first", copy.title)
+        assertTrue(copy.message.contains("separate clean and shaky"))
+    }
+
+    @Test
     fun practiceCompletionNextStepExplainsCleanWritingQueues() {
         val nextStep = practiceCompletionNextStepFor(
             mode = PracticeMode.Writing,
