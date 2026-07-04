@@ -279,6 +279,7 @@ private fun PracticeCompletionPanel(
     val action = reviewCompletionActionFor(stats)
     val stable = action == ReviewCompletionAction.ReturnToPath
     val nextStep = practiceCompletionNextStepFor(mode, stats)
+    val repeatActionLabel = practiceRepeatActionLabelFor(mode)
     val summary = if (stable) {
         "Clean pass. Continue the path while recall is warm."
     } else {
@@ -341,13 +342,13 @@ private fun PracticeCompletionPanel(
                 FilledTonalButton(onClick = onRepeat, shape = RoundedCornerShape(18.dp), modifier = Modifier.fillMaxWidth()) {
                     Icon(Icons.Outlined.Replay, contentDescription = null)
                     Spacer(Modifier.width(8.dp))
-                    Text("Repeat queue", fontWeight = FontWeight.Bold)
+                    Text(repeatActionLabel, fontWeight = FontWeight.Bold)
                 }
             } else {
                 Button(onClick = onRepeat, shape = RoundedCornerShape(18.dp), modifier = Modifier.fillMaxWidth()) {
                     Icon(Icons.Outlined.Replay, contentDescription = null)
                     Spacer(Modifier.width(8.dp))
-                    Text("Repeat queue", fontWeight = FontWeight.Bold)
+                    Text(repeatActionLabel, fontWeight = FontWeight.Bold)
                 }
             }
         }

@@ -576,6 +576,17 @@ fun reviewCompletionActionFor(stats: LessonSessionStats): ReviewCompletionAction
         ReviewCompletionAction.RepeatQueue
     }
 
+fun practiceRepeatActionLabelFor(mode: PracticeMode): String =
+    when (mode) {
+        PracticeMode.Weak -> "Repeat repair"
+        PracticeMode.Contrast -> "Repeat contrast"
+        PracticeMode.Sound -> "Repeat sound"
+        PracticeMode.Writing -> "Repeat writing"
+        PracticeMode.Speed -> "Repeat speed"
+        PracticeMode.Cross -> "Repeat both scripts"
+        PracticeMode.Mixed -> "Repeat mixed"
+    }
+
 fun practiceCompletionNextStepFor(mode: PracticeMode, stats: LessonSessionStats): PracticeCompletionNextStep =
     when {
         stats.missed > 0 -> PracticeCompletionNextStep(

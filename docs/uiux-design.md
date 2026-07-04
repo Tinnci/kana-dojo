@@ -199,9 +199,10 @@ Implemented:
 - Added mode-aware visual tone to the practice completion next-step panel.
 - Added a compact mode chip to the practice completion next-step panel.
 - Added reduced-motion-aware entrance motion to the practice completion next-step panel.
+- Added tested mode-aware repeat action labels to practice completion.
 
 ## Next Polish Pass
 
 Implement next:
 
-- Add mode-aware secondary action labels to practice completion.
+- Add compact outcome tone labels to practice completion metrics.

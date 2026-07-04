@@ -1092,6 +1092,19 @@ class KanaCurriculumTest {
     }
 
     @Test
+    fun practiceRepeatActionLabelsNameThePracticeMode() {
+        val labels = PracticeMode.entries.associateWith { practiceRepeatActionLabelFor(it) }
+
+        assertEquals("Repeat repair", labels[PracticeMode.Weak])
+        assertEquals("Repeat contrast", labels[PracticeMode.Contrast])
+        assertEquals("Repeat sound", labels[PracticeMode.Sound])
+        assertEquals("Repeat writing", labels[PracticeMode.Writing])
+        assertEquals("Repeat speed", labels[PracticeMode.Speed])
+        assertEquals("Repeat both scripts", labels[PracticeMode.Cross])
+        assertEquals("Repeat mixed", labels[PracticeMode.Mixed])
+    }
+
+    @Test
     fun practiceCompletionNextStepExplainsCleanWritingQueues() {
         val nextStep = practiceCompletionNextStepFor(
             mode = PracticeMode.Writing,
