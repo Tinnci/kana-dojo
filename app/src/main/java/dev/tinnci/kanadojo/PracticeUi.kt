@@ -51,9 +51,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.onClick
+import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.font.FontWeight
@@ -541,6 +543,7 @@ private fun Modifier.practiceCompletionActionButtonTouchTarget(
         .heightIn(min = 48.dp)
         .semantics(mergeDescendants = true) {
             contentDescription = actionSemanticLabel
+            role = Role.Button
             this.stateDescription = stateDescription
             onClick(label = actionHint, action = null)
         }
