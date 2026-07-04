@@ -218,9 +218,10 @@ Implemented:
 - Added compact kana-group count labels to practice completion groups.
 - Added overflow hint copy when practice completion groups preview only part of a long kana list.
 - Added tested compact kana-group tone chips for clean, repaired, and shaky groups.
+- Added compact section tones to practice completion dividers.
 
 ## Next Polish Pass
 
 Implement next:
 
-- Add compact section tones to practice completion dividers.
+- Add compact action-button grouping for clean practice completions.

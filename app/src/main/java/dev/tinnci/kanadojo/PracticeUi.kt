@@ -388,6 +388,7 @@ private fun PracticeCompletionPanel(
 
 @Composable
 private fun PracticeCompletionSectionDivider(label: String) {
+    val toneColor = practiceCompletionSectionToneColor(label)
     Row(
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
@@ -395,7 +396,7 @@ private fun PracticeCompletionSectionDivider(label: String) {
     ) {
         Surface(
             shape = RoundedCornerShape(999.dp),
-            color = MaterialTheme.colorScheme.surface.copy(alpha = 0.66f)
+            color = toneColor
         ) {
             Text(
                 label,
@@ -408,10 +409,18 @@ private fun PracticeCompletionSectionDivider(label: String) {
             modifier = Modifier
                 .weight(1f)
                 .height(1.dp)
-                .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f))
+                .background(toneColor.copy(alpha = 0.72f))
         )
     }
 }
+
+@Composable
+private fun practiceCompletionSectionToneColor(label: String): Color =
+    when (label) {
+        "Outcome" -> Color(0xFFE2EEF8)
+        "Action" -> Color(0xFFDCEBDD)
+        else -> MaterialTheme.colorScheme.surface.copy(alpha = 0.66f)
+    }
 
 @Composable
 private fun PracticeActionRationalePanel(
