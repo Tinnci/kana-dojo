@@ -357,16 +357,11 @@ private fun PracticeCompletionPanel(
                 PracticeActionRationalePanel(copy = actionRationale, action = action, reduceMotion = reduceMotion)
             }
             if (stable) {
-                Button(onClick = onReturnToPath, shape = RoundedCornerShape(18.dp), modifier = Modifier.fillMaxWidth()) {
-                    Icon(Icons.Outlined.School, contentDescription = null)
-                    Spacer(Modifier.width(8.dp))
-                    Text("Back to path", fontWeight = FontWeight.Bold)
-                }
-                FilledTonalButton(onClick = onRepeat, shape = RoundedCornerShape(18.dp), modifier = Modifier.fillMaxWidth()) {
-                    Icon(Icons.Outlined.Replay, contentDescription = null)
-                    Spacer(Modifier.width(8.dp))
-                    Text(repeatActionLabel, fontWeight = FontWeight.Bold)
-                }
+                PracticeCompletionActionGroup(
+                    repeatActionLabel = repeatActionLabel,
+                    onReturnToPath = onReturnToPath,
+                    onRepeat = onRepeat
+                )
             } else {
                 Button(
                     onClick = onRepeat,
@@ -382,6 +377,26 @@ private fun PracticeCompletionPanel(
                     Text(repeatActionLabel, fontWeight = FontWeight.Bold)
                 }
             }
+        }
+    }
+}
+
+@Composable
+private fun PracticeCompletionActionGroup(
+    repeatActionLabel: String,
+    onReturnToPath: () -> Unit,
+    onRepeat: () -> Unit
+) {
+    Column(verticalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
+        Button(onClick = onReturnToPath, shape = RoundedCornerShape(18.dp), modifier = Modifier.fillMaxWidth()) {
+            Icon(Icons.Outlined.School, contentDescription = null)
+            Spacer(Modifier.width(8.dp))
+            Text("Back to path", fontWeight = FontWeight.Bold)
+        }
+        FilledTonalButton(onClick = onRepeat, shape = RoundedCornerShape(18.dp), modifier = Modifier.fillMaxWidth()) {
+            Icon(Icons.Outlined.Replay, contentDescription = null)
+            Spacer(Modifier.width(8.dp))
+            Text(repeatActionLabel, fontWeight = FontWeight.Bold)
         }
     }
 }
