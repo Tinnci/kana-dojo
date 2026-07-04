@@ -96,20 +96,31 @@ fun KanaChartScreen(script: Script, mastery: Map<String, Int>, onSpeak: (String)
         items(visibleItems) { item ->
             val level = mastery[item.id] ?: 0
             val cardTag = chartCardTagFor(item)
+            val selected = tappedItem?.id == item.id
             Card(
                 onClick = {
                     tappedItem = item
                     onSpeak(item.kana)
                 },
                 shape = RoundedCornerShape(20.dp),
-                colors = CardDefaults.cardColors(containerColor = chartTileColor(level, item.confusable.isNotEmpty()))
+                colors = CardDefaults.cardColors(
+                    containerColor = chartTileColor(level, item.confusable.isNotEmpty(), selected)
+                )
             ) {
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
                         .border(
-                            width = if (item.confusable.isNotEmpty()) 1.dp else 0.dp,
-                            color = if (item.confusable.isNotEmpty()) MaterialTheme.colorScheme.tertiary else Color.Transparent,
+                            width = when {
+                                selected -> 2.dp
+                                item.confusable.isNotEmpty() -> 1.dp
+                                else -> 0.dp
+                            },
+                            color = when {
+                                selected -> MaterialTheme.colorScheme.primary
+                                item.confusable.isNotEmpty() -> MaterialTheme.colorScheme.tertiary
+                                else -> Color.Transparent
+                            },
                             shape = RoundedCornerShape(20.dp)
                         )
                         .padding(vertical = 14.dp),
@@ -273,8 +284,9 @@ private fun LegendSwatch(label: String, color: Color) {
 }
 
 @Composable
-private fun chartTileColor(level: Int, confusable: Boolean): Color =
+private fun chartTileColor(level: Int, confusable: Boolean, selected: Boolean): Color =
     when {
+        selected -> MaterialTheme.colorScheme.primaryContainer
         level >= 4 -> Color(0xFFDCEBDD)
         level >= 2 -> Color(0xFFFFF1BC)
         confusable -> Color(0xFFE7DEFF)
