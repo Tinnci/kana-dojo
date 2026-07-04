@@ -1378,6 +1378,7 @@ private fun MistakePracticeScreen(
     }
     var currentIndex by remember(selectedMode, practiceItems) { mutableIntStateOf(0) }
     var feedback by remember(selectedMode, practiceItems, currentIndex) { mutableStateOf<AnswerFeedback?>(null) }
+    var sessionStats by remember(selectedMode, practiceItems) { mutableStateOf(LessonSessionStats()) }
     val current = if (practiceItems.isEmpty()) null else practiceItems[currentIndex % practiceItems.size]
     val exercise = current?.let { practiceExerciseFor(it, selectedMode, currentIndex) }
     val optionItems = if (selectedMode == PracticeMode.Cross) allItems else scriptItems
@@ -1403,6 +1404,11 @@ private fun MistakePracticeScreen(
             style = MaterialTheme.typography.labelLarge,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
+        PracticeSessionPanel(
+            stats = sessionStats,
+            completed = currentIndex,
+            queueSize = practiceItems.size
+        )
         ExerciseCard(
             exercise = exercise,
             allItems = optionItems,
@@ -1411,6 +1417,11 @@ private fun MistakePracticeScreen(
             onAnswer = { correct ->
                 if (feedback == null) {
                     feedback = AnswerFeedback(correct = correct, answer = correctAnswerFor(exercise))
+                    sessionStats = if (correct) {
+                        sessionStats.copy(correct = sessionStats.correct + 1)
+                    } else {
+                        sessionStats.copy(missed = sessionStats.missed + 1)
+                    }
                     onResult(listOf(current), correct)
                 }
             },
@@ -1419,6 +1430,39 @@ private fun MistakePracticeScreen(
                 feedback = null
             }
         )
+    }
+}
+
+@Composable
+private fun PracticeSessionPanel(stats: LessonSessionStats, completed: Int, queueSize: Int) {
+    val accuracy by animateFloatAsState(targetValue = stats.accuracy, label = "practiceAccuracy")
+    Surface(
+        shape = RoundedCornerShape(18.dp),
+        color = MaterialTheme.colorScheme.surfaceVariant,
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(12.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text("Session", style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Bold)
+                Spacer(Modifier.weight(1f))
+                Text(
+                    "${completed % queueSize + 1}/$queueSize",
+                    style = MaterialTheme.typography.labelLarge,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+            LinearProgressIndicator(progress = { accuracy }, modifier = Modifier.fillMaxWidth())
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
+                FocusMetric("Correct", stats.correct, Modifier.weight(1f))
+                FocusMetric("Missed", stats.missed, Modifier.weight(1f))
+                FocusMetric("Acc%", (accuracy * 100).toInt(), Modifier.weight(1f))
+            }
+        }
     }
 }
 
