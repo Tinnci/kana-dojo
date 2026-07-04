@@ -375,35 +375,57 @@ private fun PracticeCompletionActionGroup(
     onReturnToPath: () -> Unit,
     onRepeat: () -> Unit
 ) {
-    Column(verticalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
-        Button(onClick = onReturnToPath, shape = RoundedCornerShape(18.dp), modifier = Modifier.fillMaxWidth()) {
-            Icon(Icons.Outlined.School, contentDescription = null)
-            Spacer(Modifier.width(8.dp))
-            Text("Back to path", fontWeight = FontWeight.Bold)
-        }
-        FilledTonalButton(onClick = onRepeat, shape = RoundedCornerShape(18.dp), modifier = Modifier.fillMaxWidth()) {
-            Icon(Icons.Outlined.Replay, contentDescription = null)
-            Spacer(Modifier.width(8.dp))
-            Text(repeatActionLabel, fontWeight = FontWeight.Bold)
+    Surface(
+        shape = RoundedCornerShape(20.dp),
+        color = Color(0xFFDCEBDD).copy(alpha = 0.72f),
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Column(
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(8.dp)
+        ) {
+            Button(onClick = onReturnToPath, shape = RoundedCornerShape(18.dp), modifier = Modifier.fillMaxWidth()) {
+                Icon(Icons.Outlined.School, contentDescription = null)
+                Spacer(Modifier.width(8.dp))
+                Text("Back to path", fontWeight = FontWeight.Bold)
+            }
+            FilledTonalButton(onClick = onRepeat, shape = RoundedCornerShape(18.dp), modifier = Modifier.fillMaxWidth()) {
+                Icon(Icons.Outlined.Replay, contentDescription = null)
+                Spacer(Modifier.width(8.dp))
+                Text(repeatActionLabel, fontWeight = FontWeight.Bold)
+            }
         }
     }
 }
 
 @Composable
 private fun PracticeRepeatRequiredActionGroup(repeatActionLabel: String, onRepeat: () -> Unit) {
-    Column(verticalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
-        Button(
-            onClick = onRepeat,
-            shape = RoundedCornerShape(18.dp),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = MaterialTheme.colorScheme.error,
-                contentColor = MaterialTheme.colorScheme.onError
-            ),
-            modifier = Modifier.fillMaxWidth()
+    Surface(
+        shape = RoundedCornerShape(20.dp),
+        color = Color(0xFFFFDFD6).copy(alpha = 0.72f),
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Column(
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(8.dp)
         ) {
-            Icon(Icons.Outlined.Replay, contentDescription = null)
-            Spacer(Modifier.width(8.dp))
-            Text(repeatActionLabel, fontWeight = FontWeight.Bold)
+            Button(
+                onClick = onRepeat,
+                shape = RoundedCornerShape(18.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.error,
+                    contentColor = MaterialTheme.colorScheme.onError
+                ),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Icon(Icons.Outlined.Replay, contentDescription = null)
+                Spacer(Modifier.width(8.dp))
+                Text(repeatActionLabel, fontWeight = FontWeight.Bold)
+            }
         }
     }
 }

@@ -221,9 +221,10 @@ Implemented:
 - Added compact section tones to practice completion dividers.
 - Added compact action-button grouping for clean practice completions.
 - Added compact action-button grouping for repeat-required practice completions.
+- Added compact action group tone background for practice completion actions.
 
 ## Next Polish Pass
 
 Implement next:
 
-- Add compact action group tone background for practice completion actions.
+- Add reduced-motion-aware entrance motion to practice completion action groups.
