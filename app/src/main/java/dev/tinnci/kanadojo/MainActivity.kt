@@ -135,7 +135,8 @@ private fun KanaDojoApp() {
                         currentEpochDay = currentEpochDay(),
                         onSpeak = speakKana,
                         reduceMotion = reduceMotion,
-                        onResult = markResult
+                        onResult = markResult,
+                        onReturnToPath = { currentTab = ScreenTab.Lessons }
                     )
                 }
             }

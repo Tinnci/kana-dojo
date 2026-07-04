@@ -156,9 +156,10 @@ Implemented:
 - Added a compact due-kana preview to the daily focus panel before entering practice.
 - Added a tested daily review intro state that explains due recall, mistake repair, or low-mastery repair before practice begins.
 - Added a review-session completion state with accuracy, repaired kana, missed count, and a repeat-queue action.
+- Added a tested stable-review completion action that returns to the path after clean queues while keeping repeat primary for missed queues.
 
 ## Next Polish Pass
 
 Implement next:
 
-- Add a richer review completion next action that can route back to the path when the queue is stable.
+- Show repaired and missed kana groups on review completion so the learner sees exactly what changed.

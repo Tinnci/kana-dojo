@@ -26,6 +26,7 @@ import androidx.compose.material.icons.outlined.School
 import androidx.compose.material.icons.outlined.TouchApp
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Button
+import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
@@ -55,7 +56,8 @@ fun MistakePracticeScreen(
     currentEpochDay: Long,
     onSpeak: (String) -> Unit,
     reduceMotion: Boolean,
-    onResult: (List<KanaItem>, Boolean) -> Unit
+    onResult: (List<KanaItem>, Boolean) -> Unit,
+    onReturnToPath: () -> Unit
 ) {
     val scriptItems = remember(script) { itemsFor(script) }
     var selectedMode by remember(script) { mutableStateOf(PracticeMode.Weak) }
@@ -134,6 +136,7 @@ fun MistakePracticeScreen(
                 stats = sessionStats,
                 repairedCount = repairedIds.size,
                 queueSize = practiceItems.size,
+                onReturnToPath = onReturnToPath,
                 onRepeat = {
                     currentIndex = 0
                     feedback = null
@@ -185,9 +188,17 @@ private fun PracticeCompletionPanel(
     stats: LessonSessionStats,
     repairedCount: Int,
     queueSize: Int,
+    onReturnToPath: () -> Unit,
     onRepeat: () -> Unit
 ) {
     val accuracy by animateFloatAsState(targetValue = stats.accuracy, label = "practiceCompletionAccuracy")
+    val action = reviewCompletionActionFor(stats)
+    val stable = action == ReviewCompletionAction.ReturnToPath
+    val summary = if (stable) {
+        "Clean pass. Continue the path while recall is warm."
+    } else {
+        "Repeat the queue while the missed kana are fresh."
+    }
     Surface(
         shape = RoundedCornerShape(22.dp),
         color = MaterialTheme.colorScheme.primaryContainer,
@@ -211,7 +222,7 @@ private fun PracticeCompletionPanel(
                 }
                 Column(modifier = Modifier.weight(1f)) {
                     Text("Review complete", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Black)
-                    Text("Repeat the queue if any kana still felt slow.", style = MaterialTheme.typography.bodyMedium)
+                    Text(summary, style = MaterialTheme.typography.bodyMedium)
                 }
             }
             LinearProgressIndicator(progress = { accuracy }, modifier = Modifier.fillMaxWidth())
@@ -220,10 +231,23 @@ private fun PracticeCompletionPanel(
                 FocusMetric("Missed", stats.missed, Modifier.weight(1f))
                 FocusMetric("Queue", queueSize, Modifier.weight(1f))
             }
-            Button(onClick = onRepeat, shape = RoundedCornerShape(18.dp), modifier = Modifier.fillMaxWidth()) {
-                Icon(Icons.Outlined.Replay, contentDescription = null)
-                Spacer(Modifier.width(8.dp))
-                Text("Repeat queue", fontWeight = FontWeight.Bold)
+            if (stable) {
+                Button(onClick = onReturnToPath, shape = RoundedCornerShape(18.dp), modifier = Modifier.fillMaxWidth()) {
+                    Icon(Icons.Outlined.School, contentDescription = null)
+                    Spacer(Modifier.width(8.dp))
+                    Text("Back to path", fontWeight = FontWeight.Bold)
+                }
+                FilledTonalButton(onClick = onRepeat, shape = RoundedCornerShape(18.dp), modifier = Modifier.fillMaxWidth()) {
+                    Icon(Icons.Outlined.Replay, contentDescription = null)
+                    Spacer(Modifier.width(8.dp))
+                    Text("Repeat queue", fontWeight = FontWeight.Bold)
+                }
+            } else {
+                Button(onClick = onRepeat, shape = RoundedCornerShape(18.dp), modifier = Modifier.fillMaxWidth()) {
+                    Icon(Icons.Outlined.Replay, contentDescription = null)
+                    Spacer(Modifier.width(8.dp))
+                    Text("Repeat queue", fontWeight = FontWeight.Bold)
+                }
             }
         }
     }

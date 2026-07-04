@@ -434,4 +434,18 @@ class KanaCurriculumTest {
 
         assertEquals(CompletionRecommendation.RepeatRow, recommendation)
     }
+
+    @Test
+    fun reviewCompletionReturnsToPathForStableQueues() {
+        val action = reviewCompletionActionFor(LessonSessionStats(correct = 6, missed = 0))
+
+        assertEquals(ReviewCompletionAction.ReturnToPath, action)
+    }
+
+    @Test
+    fun reviewCompletionRepeatsQueuesWithMisses() {
+        val action = reviewCompletionActionFor(LessonSessionStats(correct = 5, missed = 1))
+
+        assertEquals(ReviewCompletionAction.RepeatQueue, action)
+    }
 }

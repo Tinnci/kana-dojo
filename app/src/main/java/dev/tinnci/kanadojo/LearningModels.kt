@@ -127,9 +127,21 @@ enum class CompletionRecommendation(val message: String) {
     BackToPath("Recommended: return to the path for the next lesson.")
 }
 
+enum class ReviewCompletionAction {
+    ReturnToPath,
+    RepeatQueue
+}
+
 fun completionRecommendationFor(stats: LessonSessionStats): CompletionRecommendation =
     when {
         stats.accuracy < 0.75f -> CompletionRecommendation.RepeatRow
         stats.missed > 0 -> CompletionRecommendation.ReviewMisses
         else -> CompletionRecommendation.BackToPath
+    }
+
+fun reviewCompletionActionFor(stats: LessonSessionStats): ReviewCompletionAction =
+    if (stats.attempts > 0 && stats.missed == 0) {
+        ReviewCompletionAction.ReturnToPath
+    } else {
+        ReviewCompletionAction.RepeatQueue
     }
