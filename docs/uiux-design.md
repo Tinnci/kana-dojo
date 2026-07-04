@@ -204,9 +204,10 @@ Implemented:
 - Added tested compact accuracy tone copy to practice completion.
 - Added tested compact repaired-versus-shaky guidance copy to practice completion.
 - Added reduced-motion-aware entrance motion to practice outcome guidance.
+- Added compact outcome guidance icon tones for repaired and shaky states.
 
 ## Next Polish Pass
 
 Implement next:
 
-- Add compact outcome guidance icon tones for repaired and shaky states.
+- Add compact completion action rationale copy for return-to-path versus repeat.

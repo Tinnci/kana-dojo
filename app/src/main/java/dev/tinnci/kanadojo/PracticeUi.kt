@@ -383,6 +383,9 @@ private fun PracticeOutcomeGuidancePanel(copy: PracticeOutcomeGuidanceCopy, redu
         animationSpec = tween(durationMillis = 200),
         label = "practiceOutcomeGuidanceScale"
     )
+    val needsRepeat = copy.title == "Still shaky" || copy.title == "Repair split"
+    val icon = if (needsRepeat) Icons.Outlined.Replay else Icons.Outlined.CheckCircle
+    val iconTint = if (needsRepeat) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary
 
     Surface(
         shape = RoundedCornerShape(16.dp),
@@ -402,7 +405,7 @@ private fun PracticeOutcomeGuidancePanel(copy: PracticeOutcomeGuidanceCopy, redu
                     .background(practiceOutcomeGuidanceColor(copy.title), CircleShape),
                 contentAlignment = Alignment.Center
             ) {
-                Icon(Icons.Outlined.CheckCircle, contentDescription = null, modifier = Modifier.size(17.dp))
+                Icon(icon, contentDescription = null, tint = iconTint, modifier = Modifier.size(17.dp))
             }
             Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
                 Text(copy.title, style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Black)
