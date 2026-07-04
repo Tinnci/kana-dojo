@@ -1296,6 +1296,13 @@ class KanaCurriculumTest {
     }
 
     @Test
+    fun practiceActionRoleLabelsExplainPrimaryOptionalAndRepeatFirst() {
+        assertEquals("Primary", practiceActionRoleLabelFor(ReviewCompletionAction.ReturnToPath))
+        assertEquals("Optional", practiceActionRoleLabelFor(ReviewCompletionAction.ReturnToPath, optional = true))
+        assertEquals("Repeat first", practiceActionRoleLabelFor(ReviewCompletionAction.RepeatQueue))
+    }
+
+    @Test
     fun practiceCompletionNextStepExplainsCleanWritingQueues() {
         val nextStep = practiceCompletionNextStepFor(
             mode = PracticeMode.Writing,

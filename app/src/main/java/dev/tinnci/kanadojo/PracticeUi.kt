@@ -398,13 +398,13 @@ private fun PracticeCompletionActionGroup(
                 .fillMaxWidth()
                 .padding(8.dp)
         ) {
-            PracticeActionRoleChip("Primary")
+            PracticeActionRoleChip(practiceActionRoleLabelFor(ReviewCompletionAction.ReturnToPath))
             Button(onClick = onReturnToPath, shape = RoundedCornerShape(18.dp), modifier = Modifier.fillMaxWidth()) {
                 Icon(Icons.Outlined.School, contentDescription = null)
                 Spacer(Modifier.width(8.dp))
                 Text("Back to path", fontWeight = FontWeight.Bold)
             }
-            PracticeActionRoleChip("Optional")
+            PracticeActionRoleChip(practiceActionRoleLabelFor(ReviewCompletionAction.ReturnToPath, optional = true))
             FilledTonalButton(onClick = onRepeat, shape = RoundedCornerShape(18.dp), modifier = Modifier.fillMaxWidth()) {
                 Icon(Icons.Outlined.Replay, contentDescription = null)
                 Spacer(Modifier.width(8.dp))
@@ -437,7 +437,7 @@ private fun PracticeRepeatRequiredActionGroup(
                 .fillMaxWidth()
                 .padding(8.dp)
         ) {
-            PracticeActionRoleChip("Primary")
+            PracticeActionRoleChip(practiceActionRoleLabelFor(ReviewCompletionAction.RepeatQueue))
             Button(
                 onClick = onRepeat,
                 shape = RoundedCornerShape(18.dp),
@@ -475,6 +475,7 @@ private fun practiceActionRoleColor(label: String): Color =
     when (label) {
         "Primary" -> Color(0xFFE2EEF8)
         "Optional" -> MaterialTheme.colorScheme.surface.copy(alpha = 0.68f)
+        "Repeat first" -> Color(0xFFFFDFD6)
         else -> MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.78f)
     }
 

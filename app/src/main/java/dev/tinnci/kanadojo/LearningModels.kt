@@ -700,6 +700,13 @@ fun practiceActionRationaleCopyFor(action: ReviewCompletionAction, stats: Lesson
 fun shouldShowPracticeActionRationale(action: ReviewCompletionAction, stats: LessonSessionStats): Boolean =
     action == ReviewCompletionAction.ReturnToPath || stats.attempts == 0
 
+fun practiceActionRoleLabelFor(action: ReviewCompletionAction, optional: Boolean = false): String =
+    when {
+        optional -> "Optional"
+        action == ReviewCompletionAction.RepeatQueue -> "Repeat first"
+        else -> "Primary"
+    }
+
 fun practiceCompletionNextStepFor(mode: PracticeMode, stats: LessonSessionStats): PracticeCompletionNextStep =
     when {
         stats.missed > 0 -> PracticeCompletionNextStep(

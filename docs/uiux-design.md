@@ -225,9 +225,10 @@ Implemented:
 - Added reduced-motion-aware entrance motion to practice completion action groups.
 - Added compact action-group labels for primary versus optional actions.
 - Added compact action-group role tone for primary versus optional actions.
+- Added tested compact action-group role copy for repeat-required actions.
 
 ## Next Polish Pass
 
 Implement next:
 
-- Add compact action-group role copy for repeat-required actions.
+- Add compact action-group role copy for optional clean repeats.
