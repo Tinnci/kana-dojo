@@ -281,11 +281,7 @@ private fun PracticeCompletionPanel(
     val nextStep = practiceCompletionNextStepFor(mode, stats)
     val repeatActionLabel = practiceRepeatActionLabelFor(mode)
     val completionMetrics = practiceCompletionMetricsFor(outcomes, queueSize)
-    val summary = if (stable) {
-        "Clean pass. Continue the path while recall is warm."
-    } else {
-        "Repeat the queue while the missed kana are fresh."
-    }
+    val accuracyTone = practiceAccuracyToneCopyFor(stats)
     Surface(
         shape = RoundedCornerShape(22.dp),
         color = MaterialTheme.colorScheme.primaryContainer,
@@ -308,8 +304,22 @@ private fun PracticeCompletionPanel(
                     Icon(Icons.Outlined.CheckCircle, contentDescription = null, tint = MaterialTheme.colorScheme.onPrimary)
                 }
                 Column(modifier = Modifier.weight(1f)) {
-                    Text("Review complete", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Black)
-                    Text(summary, style = MaterialTheme.typography.bodyMedium)
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text(
+                            "Review complete",
+                            style = MaterialTheme.typography.titleLarge,
+                            fontWeight = FontWeight.Black,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                            modifier = Modifier.weight(1f)
+                        )
+                        PracticeAccuracyToneChip(accuracyTone)
+                    }
+                    Text(accuracyTone.message, style = MaterialTheme.typography.bodyMedium)
                 }
             }
             LinearProgressIndicator(progress = { accuracy }, modifier = Modifier.fillMaxWidth())
@@ -354,6 +364,31 @@ private fun PracticeCompletionPanel(
         }
     }
 }
+
+@Composable
+private fun PracticeAccuracyToneChip(copy: PracticeAccuracyToneCopy) {
+    Surface(
+        shape = RoundedCornerShape(999.dp),
+        color = practiceAccuracyToneColor(copy.label)
+    ) {
+        Text(
+            copy.label,
+            style = MaterialTheme.typography.labelSmall,
+            fontWeight = FontWeight.Black,
+            modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp),
+            maxLines = 1
+        )
+    }
+}
+
+@Composable
+private fun practiceAccuracyToneColor(label: String): Color =
+    when (label) {
+        "Clean" -> Color(0xFFDCEBDD)
+        "Repair" -> Color(0xFFE2EEF8)
+        "Repeat" -> Color(0xFFFFDFD6)
+        else -> MaterialTheme.colorScheme.surface.copy(alpha = 0.72f)
+    }
 
 @Composable
 private fun PracticeCompletionMetricTile(metric: PracticeCompletionMetric, modifier: Modifier = Modifier) {

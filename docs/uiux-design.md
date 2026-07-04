@@ -201,9 +201,10 @@ Implemented:
 - Added reduced-motion-aware entrance motion to the practice completion next-step panel.
 - Added tested mode-aware repeat action labels to practice completion.
 - Added tested compact outcome tone labels to practice completion metrics.
+- Added tested compact accuracy tone copy to practice completion.
 
 ## Next Polish Pass
 
 Implement next:
 
-- Add compact accuracy tone copy to practice completion.
+- Add compact repaired-versus-shaky guidance copy to practice completion.

@@ -1127,6 +1127,37 @@ class KanaCurriculumTest {
     }
 
     @Test
+    fun practiceAccuracyToneCopyExplainsCleanCompletions() {
+        val copy = practiceAccuracyToneCopyFor(LessonSessionStats(correct = 6, missed = 0))
+
+        assertEquals("Clean", copy.label)
+        assertTrue(copy.message.contains("100% accuracy"))
+    }
+
+    @Test
+    fun practiceAccuracyToneCopyExplainsRepairCompletions() {
+        val copy = practiceAccuracyToneCopyFor(LessonSessionStats(correct = 3, missed = 1))
+
+        assertEquals("Repair", copy.label)
+        assertTrue(copy.message.contains("fresh"))
+    }
+
+    @Test
+    fun practiceAccuracyToneCopyExplainsLowAccuracyRepeatCompletions() {
+        val copy = practiceAccuracyToneCopyFor(LessonSessionStats(correct = 2, missed = 2))
+
+        assertEquals("Repeat", copy.label)
+        assertTrue(copy.message.contains("before switching"))
+    }
+
+    @Test
+    fun practiceAccuracyToneCopyHandlesNoAttempts() {
+        val copy = practiceAccuracyToneCopyFor(LessonSessionStats())
+
+        assertEquals("No reps", copy.label)
+    }
+
+    @Test
     fun practiceCompletionNextStepExplainsCleanWritingQueues() {
         val nextStep = practiceCompletionNextStepFor(
             mode = PracticeMode.Writing,

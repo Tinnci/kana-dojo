@@ -173,6 +173,11 @@ data class PracticeCompletionMetric(
     val toneLabel: String
 )
 
+data class PracticeAccuracyToneCopy(
+    val label: String,
+    val message: String
+)
+
 data class PracticeCompletionNextStep(
     val title: String,
     val message: String
@@ -600,6 +605,31 @@ fun practiceCompletionMetricsFor(outcomes: ReviewSessionOutcomes, queueSize: Int
         PracticeCompletionMetric("Shaky", outcomes.shakyIds.size, "Repeat"),
         PracticeCompletionMetric("Queue", queueSize, "Total")
     )
+
+fun practiceAccuracyToneCopyFor(stats: LessonSessionStats): PracticeAccuracyToneCopy {
+    val percent = (stats.accuracy * 100).toInt()
+    return when {
+        stats.attempts == 0 -> PracticeAccuracyToneCopy(
+            label = "No reps",
+            message = "No attempts recorded. Repeat the queue to measure recall."
+        )
+
+        stats.missed == 0 -> PracticeAccuracyToneCopy(
+            label = "Clean",
+            message = "$percent% accuracy. Continue while recall is warm."
+        )
+
+        stats.accuracy >= 0.75f -> PracticeAccuracyToneCopy(
+            label = "Repair",
+            message = "$percent% accuracy. Repeat now while the missed kana are fresh."
+        )
+
+        else -> PracticeAccuracyToneCopy(
+            label = "Repeat",
+            message = "$percent% accuracy. Rerun the queue before switching tasks."
+        )
+    }
+}
 
 fun practiceCompletionNextStepFor(mode: PracticeMode, stats: LessonSessionStats): PracticeCompletionNextStep =
     when {
