@@ -153,14 +153,47 @@ fun lessonsFor(script: Script): List<KanaLesson> {
         val stage = lessonStage(index, items, allItems)
         KanaLesson(
             index = index,
-            title = "Lesson $index",
-            subtitle = "${stage.description}: ${items.joinToString(" ") { it.romaji }}",
+            title = lessonTitle(index, stage, items),
+            subtitle = lessonSubtitle(stage, items),
             stage = stage,
             difficulty = lessonDifficulty(stage),
             items = items
         )
     }
 }
+
+private fun lessonTitle(index: Int, stage: LearningStage, items: List<KanaItem>): String =
+    when (stage) {
+        LearningStage.Anchor -> "Vowels"
+        LearningStage.RegularRows,
+        LearningStage.ShapeHeavy,
+        LearningStage.TailRows,
+        LearningStage.Confusable -> "${rowLabel(items)} row"
+        LearningStage.Voiced -> "Marks: ${rowLabel(items)} row"
+        LearningStage.Combination -> "Blends: ${blendLabel(index, items)}"
+        LearningStage.Special -> "Special marks"
+    }
+
+private fun lessonSubtitle(stage: LearningStage, items: List<KanaItem>): String =
+    "${stage.description}: ${items.joinToString(" ") { it.romaji }}"
+
+private fun rowLabel(items: List<KanaItem>): String =
+    when (val row = items.firstOrNull()?.row.orEmpty()) {
+        "vowels" -> "Vowel"
+        "w" -> "W/N"
+        "special" -> "Special"
+        else -> row.uppercase()
+    }
+
+private fun blendLabel(index: Int, items: List<KanaItem>): String =
+    when (index) {
+        16 -> "K/S"
+        17 -> "T/N"
+        18 -> "H/M"
+        19 -> "R/G"
+        20 -> "J/B/P"
+        else -> rowLabel(items)
+    }
 
 private fun lessonStage(index: Int, items: List<KanaItem>, allItems: List<KanaItem>): LearningStage =
     when {

@@ -38,6 +38,17 @@ class KanaCurriculumTest {
     }
 
     @Test
+    fun lessonsUseReadableProgressionTitles() {
+        val lessons = lessonsFor(Script.Hiragana)
+
+        assertEquals("Vowels", lessons[0].title)
+        assertEquals("K row", lessons[1].title)
+        assertEquals("Marks: G row", lessons[10].title)
+        assertEquals("Blends: K/S", lessons[15].title)
+        assertEquals("Special marks", lessons[20].title)
+    }
+
+    @Test
     fun voicedKanaLessonsCoverDakutenAndHandakuten() {
         val hiraganaLessons = lessonsFor(Script.Hiragana)
         val voicedKana = hiraganaLessons.slice(10..14).flatMap { it.items }.map { it.kana }.toSet()
