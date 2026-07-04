@@ -214,9 +214,10 @@ Implemented:
 - Added tested compact action summary for no-attempt practice completions.
 - Added tested action-rationale visibility so missed queues avoid duplicate repeat copy.
 - Audited practice completion panel density and added vertical scrolling for compact screens.
+- Added compact completion section dividers for long practice summaries.
 
 ## Next Polish Pass
 
 Implement next:
 
-- Add compact completion section dividers for long practice summaries.
+- Add compact kana-group count labels to practice completion groups.

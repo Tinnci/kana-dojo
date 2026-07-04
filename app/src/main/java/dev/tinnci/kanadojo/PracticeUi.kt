@@ -335,6 +335,7 @@ private fun PracticeCompletionPanel(
                     PracticeCompletionMetricTile(metric, Modifier.weight(1f))
                 }
             }
+            PracticeCompletionSectionDivider("Outcome")
             PracticeOutcomeGuidancePanel(copy = outcomeGuidance, reduceMotion = reduceMotion)
             if (cleanItems.isNotEmpty()) {
                 CompletionKanaGroup("Clean", cleanItems.take(8))
@@ -351,6 +352,7 @@ private fun PracticeCompletionPanel(
                 repeatRequired = !stable,
                 reduceMotion = reduceMotion
             )
+            PracticeCompletionSectionDivider("Action")
             if (showActionRationale) {
                 PracticeActionRationalePanel(copy = actionRationale, action = action, reduceMotion = reduceMotion)
             }
@@ -381,6 +383,33 @@ private fun PracticeCompletionPanel(
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun PracticeCompletionSectionDivider(label: String) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        Surface(
+            shape = RoundedCornerShape(999.dp),
+            color = MaterialTheme.colorScheme.surface.copy(alpha = 0.66f)
+        ) {
+            Text(
+                label,
+                style = MaterialTheme.typography.labelSmall,
+                fontWeight = FontWeight.Black,
+                modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp)
+            )
+        }
+        Box(
+            modifier = Modifier
+                .weight(1f)
+                .height(1.dp)
+                .background(MaterialTheme.colorScheme.onSurface.copy(alpha = 0.12f))
+        )
     }
 }
 
