@@ -123,6 +123,9 @@ Implemented:
 - Animated lesson progress.
 - Stronger active next-lesson state with animated card color, elevation, and node scale.
 - Animated answer feedback color and scale for choice exercises.
+- Feedback banner and continue button enter/exit motion.
+- Mode-aware practice queue panel for weak, contrast, writing, sound, speed, cross-script, and mixed review.
+- Animated trace pad guide, border, background, stroke, and score-panel states.
 - Shared answer option component for kana, romaji, and sound-choice prompts.
 
 ## Next Polish Pass
@@ -130,7 +133,6 @@ Implemented:
 Implement next:
 
 - More expressive hero status.
-- Feedback banner enter/exit motion.
-- Stronger mistake/contrast visual language.
-- Trace pad refinement: clearer guide state, stroke replay, and model comparison.
+- Stronger lesson-completion celebration.
+- Trace pad refinement: stroke replay and model comparison.
 - Reduced-motion setting path before adding any looping animation.
