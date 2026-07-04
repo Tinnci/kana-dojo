@@ -409,7 +409,7 @@ fun chartProgressCopyFor(
 ): ChartProgressCopy {
     val visibleItems = selectedRow?.let { row -> items.filter { it.row == row } } ?: items
     val fluentCount = visibleItems.count { (mastery[it.id] ?: 0) >= 4 }
-    val label = selectedRow ?: "All"
+    val label = selectedRow?.let { chartRowLabelFor(it) } ?: "All"
     return ChartProgressCopy(message = "$label $fluentCount/${visibleItems.size} fluent")
 }
 
@@ -421,8 +421,9 @@ fun chartRowGuidanceCopyFor(
     val row = selectedRow ?: return null
     val rowItems = items.filter { it.row == row }
     if (rowItems.isEmpty() || rowItems.any { (mastery[it.id] ?: 0) >= 4 }) return null
+    val label = chartRowLabelFor(row).lowercase()
     return ChartRowGuidanceCopy(
-        title = "No fluent $row kana yet",
+        title = "No fluent $label yet",
         message = "Use this row as reference, then return to lessons when you want it to count as recall."
     )
 }
@@ -431,12 +432,24 @@ fun chartContrastSummaryCopyFor(selectedRow: String?, items: List<KanaItem>): Ch
     val visibleItems = selectedRow?.let { row -> items.filter { it.row == row } } ?: items
     val contrastCount = visibleItems.count { it.confusable.isNotEmpty() }
     if (contrastCount == 0) return null
-    val label = selectedRow ?: "chart"
+    val label = selectedRow?.let { chartRowLabelFor(it).lowercase() } ?: "chart"
     return ChartContrastSummaryCopy(
         title = "$contrastCount contrast kana",
         message = "Outlined $label tiles have known lookalikes; compare shape and stroke direction."
     )
 }
+
+fun chartRowLabelFor(row: String): String =
+    when (row) {
+        "vowels" -> "Vowels"
+        "w" -> "W/N row"
+        "special" -> "Special marks"
+        else -> if (row.endsWith("-y")) {
+            "${row.substringBefore("-").uppercase()} blends"
+        } else {
+            "${row.uppercase()} row"
+        }
+    }
 
 fun nextPathLesson(lessons: List<KanaLesson>, mastery: Map<String, Int>): KanaLesson? =
     lessons.firstOrNull { lesson ->

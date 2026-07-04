@@ -184,9 +184,10 @@ Implemented:
 - Added tested chart filter progress copy so reference browsing mirrors path-stage clarity.
 - Added tested compact chart row guidance for filtered rows with no fluent kana yet.
 - Added tested compact chart contrast summaries for lookalike-heavy chart views.
+- Added tested chart row labels so filters and special-symbol rows avoid raw row IDs.
 
 ## Next Polish Pass
 
 Implement next:
 
-- Add compact chart row labels that explain special-symbol rows without relying on raw row IDs.
+- Add compact reference-card labels that distinguish small kana and long marks.

@@ -212,7 +212,14 @@ class KanaCurriculumTest {
             mastery = mastery
         )
 
-        assertEquals("vowels 2/${rowItems.size} fluent", copy.message)
+        assertEquals("Vowels 2/${rowItems.size} fluent", copy.message)
+    }
+
+    @Test
+    fun chartRowLabelsExplainSpecialAndBlendRows() {
+        assertEquals("Special marks", chartRowLabelFor("special"))
+        assertEquals("K blends", chartRowLabelFor("k-y"))
+        assertEquals("W/N row", chartRowLabelFor("w"))
     }
 
     @Test
@@ -225,7 +232,7 @@ class KanaCurriculumTest {
             mastery = emptyMap()
         )
 
-        assertEquals("No fluent vowels kana yet", copy?.title)
+        assertEquals("No fluent vowels yet", copy?.title)
     }
 
     @Test
@@ -253,7 +260,7 @@ class KanaCurriculumTest {
         val copy = chartContrastSummaryCopyFor("s", items)
 
         assertEquals("$contrastCount contrast kana", copy?.title)
-        assertTrue(copy?.message.orEmpty().contains("s tiles"))
+        assertTrue(copy?.message.orEmpty().contains("s row tiles"))
     }
 
     @Test

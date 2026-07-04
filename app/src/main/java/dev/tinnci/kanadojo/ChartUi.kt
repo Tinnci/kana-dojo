@@ -99,7 +99,7 @@ fun KanaChartScreen(script: Script, mastery: Map<String, Int>, onSpeak: (String)
                 ) {
                     Text(item.kana, fontSize = 42.sp, fontWeight = FontWeight.Black)
                     Text(item.romaji, style = MaterialTheme.typography.labelLarge)
-                    Text(item.row, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Text(chartRowLabelFor(item.row), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     if (item.confusable.isNotEmpty()) {
                         Text("contrast", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.tertiary)
                     }
@@ -195,7 +195,7 @@ private fun ChartRowFilters(rows: List<String>, selectedRow: String?, onRowChang
         items(rows) { row ->
             AssistChip(
                 onClick = { onRowChange(row) },
-                label = { Text(row) },
+                label = { Text(chartRowLabelFor(row)) },
                 leadingIcon = {
                     if (selectedRow == row) Icon(Icons.Outlined.CheckCircle, contentDescription = null, modifier = Modifier.size(18.dp))
                 }
