@@ -555,7 +555,9 @@ private fun Modifier.practiceCompletionActionButtonTouchTarget(
 private fun PracticeDisabledActionCopy(copy: PracticeCompletionDisabledActionCopy) {
     Column(
         verticalArrangement = Arrangement.spacedBy(2.dp),
-        modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp)
+        modifier = Modifier
+            .clearAndSetSemantics {}
+            .padding(horizontal = 8.dp, vertical = 2.dp)
     ) {
         Text(
             copy.title,
