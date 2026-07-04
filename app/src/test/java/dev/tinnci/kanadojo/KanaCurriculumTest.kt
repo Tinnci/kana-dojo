@@ -1175,7 +1175,7 @@ class KanaCurriculumTest {
     @Test
     fun practiceCompletionActionHintsNameEnabledActions() {
         assertEquals(
-            "Return to lesson path",
+            "Activate Return to lesson path",
             practiceCompletionActionHintFor(practiceReturnActionSemanticLabelFor(), enabled = true)
         )
         assertEquals(
