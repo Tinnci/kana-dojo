@@ -42,6 +42,11 @@ data class PracticeRecommendation(
     val actionLabel: String
 )
 
+data class PracticeQueueExplanation(
+    val title: String,
+    val message: String
+)
+
 data class ReviewSessionOutcomes(
     val cleanIds: Set<String>,
     val repairedIds: Set<String>,
@@ -87,6 +92,76 @@ fun pathPracticeRecommendationFor(
             title = "Sound recall",
             message = "Listen first so kana map directly to Japanese sound.",
             actionLabel = "Listen"
+        )
+    }
+
+fun practiceQueueExplanationFor(
+    mode: PracticeMode,
+    queueSize: Int,
+    dueCount: Int,
+    weakCount: Int,
+    contrastCount: Int,
+    soundReadyCount: Int
+): PracticeQueueExplanation =
+    when {
+        queueSize == 0 -> PracticeQueueExplanation(
+            title = "Nothing queued",
+            message = "Start or finish a lesson first, then practice will have kana to work with."
+        )
+
+        mode == PracticeMode.Weak && dueCount > 0 -> PracticeQueueExplanation(
+            title = "Due recall first",
+            message = "This queue mixes due spaced-review kana with any recent mistakes."
+        )
+
+        mode == PracticeMode.Weak && weakCount > 0 -> PracticeQueueExplanation(
+            title = "Mistake repair",
+            message = "This queue starts from recent misses, then keeps low-mastery kana warm."
+        )
+
+        mode == PracticeMode.Weak -> PracticeQueueExplanation(
+            title = "Low-mastery fallback",
+            message = "No due or missed kana, so this queue uses the lowest-mastery symbols."
+        )
+
+        mode == PracticeMode.Sound && soundReadyCount > 0 -> PracticeQueueExplanation(
+            title = "Seen kana audio",
+            message = "Sound recall uses kana you have already seen at least once."
+        )
+
+        mode == PracticeMode.Sound -> PracticeQueueExplanation(
+            title = "Sound-safe fallback",
+            message = "No seen kana yet, so this queue previews kana that support audio prompts."
+        )
+
+        mode == PracticeMode.Contrast && contrastCount > 0 -> PracticeQueueExplanation(
+            title = "Lookalike focus",
+            message = "This queue targets kana with known visual confusions."
+        )
+
+        mode == PracticeMode.Contrast -> PracticeQueueExplanation(
+            title = "Contrast fallback",
+            message = "No lookalikes are available here, so this queue uses low-mastery kana."
+        )
+
+        mode == PracticeMode.Writing -> PracticeQueueExplanation(
+            title = "Writing priority",
+            message = "Trace practice starts with the least stable kana first."
+        )
+
+        mode == PracticeMode.Speed -> PracticeQueueExplanation(
+            title = "Fast recall",
+            message = "Speed rounds prefer recall-ready kana, with early kana as fallback."
+        )
+
+        mode == PracticeMode.Cross -> PracticeQueueExplanation(
+            title = "Both scripts",
+            message = "Cross-script practice mixes recall-ready hiragana and katakana."
+        )
+
+        else -> PracticeQueueExplanation(
+            title = "Mixed recall",
+            message = "Mixed practice rotates reading, sound, and writing prompts."
         )
     }
 

@@ -166,9 +166,10 @@ Implemented:
 - Added a lesson phase mix preview to the daily focus panel so learners see read, hear, match, write, and contrast counts before starting.
 - Added compact lesson-node phase totals so the full path communicates each lesson's exercise load at a glance.
 - Added a tested path practice recommendation that opens the recommended mode based on due review, weak kana, and lesson stage.
+- Added tested practice queue explanations so weak, sound, contrast, writing, and empty fallback states are explicit.
 
 ## Next Polish Pass
 
 Implement next:
 
-- Add stronger practice-mode empty states so recommended sound, writing, or contrast queues explain their fallback clearly.
+- Add a compact kana preview to practice queue intros for fallback modes so learners see why those symbols were selected.

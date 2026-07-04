@@ -95,6 +95,19 @@ fun MistakePracticeScreen(
     val dueCount = remember(scriptItems, dueSnapshot, currentEpochDay, masterySnapshot) {
         dueReviewCountFor(scriptItems, dueSnapshot, currentEpochDay, masterySnapshot)
     }
+    val soundReadyCount = remember(scriptItems, masterySnapshot) {
+        scriptItems.count { supportsAudioPrompt(it) && (masterySnapshot[it.id] ?: 0) >= 1 }
+    }
+    val queueExplanation = remember(selectedMode, practiceItems, dueCount, weakCount, contrastCount, soundReadyCount) {
+        practiceQueueExplanationFor(
+            mode = selectedMode,
+            queueSize = practiceItems.size,
+            dueCount = dueCount,
+            weakCount = weakCount,
+            contrastCount = contrastCount,
+            soundReadyCount = soundReadyCount
+        )
+    }
     var showIntro by remember(selectedMode, queueSignature) { mutableStateOf(true) }
     val intro = reviewIntroCopyFor(
         mode = selectedMode,
@@ -103,8 +116,8 @@ fun MistakePracticeScreen(
     )
 
     if (practiceItems.isEmpty()) {
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            Text("No kana to review yet.")
+        Box(modifier = Modifier.fillMaxSize().padding(20.dp), contentAlignment = Alignment.Center) {
+            PracticeEmptyState(explanation = queueExplanation)
         }
         return
     }
@@ -123,7 +136,8 @@ fun MistakePracticeScreen(
             queueSize = practiceItems.size,
             weakCount = weakCount,
             dueCount = dueCount,
-            contrastCount = contrastCount
+            contrastCount = contrastCount,
+            explanation = queueExplanation
         )
         if (showIntro) {
             PracticeIntroPanel(
@@ -380,7 +394,8 @@ private fun PracticeQueuePanel(
     queueSize: Int,
     weakCount: Int,
     dueCount: Int,
-    contrastCount: Int
+    contrastCount: Int,
+    explanation: PracticeQueueExplanation
 ) {
     val accentColor = practiceModeColor(mode)
     val containerColor by animateColorAsState(
@@ -430,7 +445,44 @@ private fun PracticeQueuePanel(
                     PracticeQueueMetric("Due", dueCount, Modifier.weight(1f))
                     PracticeQueueMetric("Contrast", contrastCount, Modifier.weight(1f))
                 }
+                PracticeQueueExplanationPanel(explanation)
             }
+        }
+    }
+}
+
+@Composable
+private fun PracticeQueueExplanationPanel(explanation: PracticeQueueExplanation) {
+    Surface(
+        shape = RoundedCornerShape(12.dp),
+        color = MaterialTheme.colorScheme.surface.copy(alpha = 0.72f),
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Column(
+            modifier = Modifier.padding(horizontal = 10.dp, vertical = 8.dp),
+            verticalArrangement = Arrangement.spacedBy(2.dp)
+        ) {
+            Text(explanation.title, style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Black)
+            Text(explanation.message, style = MaterialTheme.typography.bodySmall)
+        }
+    }
+}
+
+@Composable
+private fun PracticeEmptyState(explanation: PracticeQueueExplanation) {
+    Surface(
+        shape = RoundedCornerShape(22.dp),
+        color = MaterialTheme.colorScheme.surfaceVariant,
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Column(
+            modifier = Modifier.padding(18.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Icon(Icons.Outlined.School, contentDescription = null)
+            Text(explanation.title, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Black)
+            Text(explanation.message, style = MaterialTheme.typography.bodyMedium)
         }
     }
 }

@@ -180,6 +180,48 @@ class KanaCurriculumTest {
     }
 
     @Test
+    fun practiceQueueExplanationCallsOutWeakFallback() {
+        val explanation = practiceQueueExplanationFor(
+            mode = PracticeMode.Weak,
+            queueSize = 6,
+            dueCount = 0,
+            weakCount = 0,
+            contrastCount = 0,
+            soundReadyCount = 0
+        )
+
+        assertEquals("Low-mastery fallback", explanation.title)
+    }
+
+    @Test
+    fun practiceQueueExplanationCallsOutSoundFallback() {
+        val explanation = practiceQueueExplanationFor(
+            mode = PracticeMode.Sound,
+            queueSize = 6,
+            dueCount = 0,
+            weakCount = 0,
+            contrastCount = 0,
+            soundReadyCount = 0
+        )
+
+        assertEquals("Sound-safe fallback", explanation.title)
+    }
+
+    @Test
+    fun practiceQueueExplanationCallsOutContrastFallback() {
+        val explanation = practiceQueueExplanationFor(
+            mode = PracticeMode.Contrast,
+            queueSize = 6,
+            dueCount = 0,
+            weakCount = 0,
+            contrastCount = 0,
+            soundReadyCount = 0
+        )
+
+        assertEquals("Contrast fallback", explanation.title)
+    }
+
+    @Test
     fun weakPracticeFiltersMistakesToSelectedScript() {
         val allItems = hiraganaItems + katakanaItems
         val hiraganaMistake = hiraganaItems.first { it.romaji == "a" }
