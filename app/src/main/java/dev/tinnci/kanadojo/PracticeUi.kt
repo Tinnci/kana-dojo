@@ -329,7 +329,7 @@ private fun PracticeCompletionPanel(
                     PracticeCompletionMetricTile(metric, Modifier.weight(1f))
                 }
             }
-            PracticeOutcomeGuidancePanel(outcomeGuidance)
+            PracticeOutcomeGuidancePanel(copy = outcomeGuidance, reduceMotion = reduceMotion)
             if (cleanItems.isNotEmpty()) {
                 CompletionKanaGroup("Clean", cleanItems.take(8))
             }
@@ -368,11 +368,28 @@ private fun PracticeCompletionPanel(
 }
 
 @Composable
-private fun PracticeOutcomeGuidancePanel(copy: PracticeOutcomeGuidanceCopy) {
+private fun PracticeOutcomeGuidancePanel(copy: PracticeOutcomeGuidanceCopy, reduceMotion: Boolean) {
+    var entered by remember(copy.title, copy.message) { mutableStateOf(false) }
+    LaunchedEffect(copy.title, copy.message) {
+        entered = true
+    }
+    val panelAlpha by animateFloatAsState(
+        targetValue = if (reduceMotion || entered) 1f else 0f,
+        animationSpec = tween(durationMillis = 200),
+        label = "practiceOutcomeGuidanceAlpha"
+    )
+    val panelScale by animateFloatAsState(
+        targetValue = if (reduceMotion || entered) 1f else 0.98f,
+        animationSpec = tween(durationMillis = 200),
+        label = "practiceOutcomeGuidanceScale"
+    )
+
     Surface(
         shape = RoundedCornerShape(16.dp),
         color = MaterialTheme.colorScheme.surface.copy(alpha = 0.72f),
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .fillMaxWidth()
+            .graphicsLayer(alpha = panelAlpha, scaleX = panelScale, scaleY = panelScale)
     ) {
         Row(
             modifier = Modifier.padding(12.dp),
