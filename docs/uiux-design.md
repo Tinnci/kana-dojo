@@ -240,9 +240,10 @@ Implemented:
 - Added compact completion action-button accessibility merge audit.
 - Added tested compact completion action-button focus order audit.
 - Added tested compact completion action-button accessibility disabled-announcement audit.
+- Added tested compact completion action-button accessibility hint audit.
 
 ## Next Polish Pass
 
 Implement next:
 
-- Add compact completion action-button accessibility hint audit.
+- Add compact completion action-button accessibility role audit.

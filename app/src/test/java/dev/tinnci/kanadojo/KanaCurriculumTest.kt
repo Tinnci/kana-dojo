@@ -1173,6 +1173,18 @@ class KanaCurriculumTest {
     }
 
     @Test
+    fun practiceCompletionActionHintsNameEnabledActions() {
+        assertEquals(
+            "Return to lesson path",
+            practiceCompletionActionHintFor(practiceReturnActionSemanticLabelFor(), enabled = true)
+        )
+        assertEquals(
+            "Action unavailable",
+            practiceCompletionActionHintFor(practiceRepeatActionSemanticLabelFor(PracticeMode.Mixed), enabled = false)
+        )
+    }
+
+    @Test
     fun practiceCompletionActionStateDescriptionsExplainAvailability() {
         val disabledCopy = PracticeCompletionDisabledActionCopy(
             title = "No repeat queue",

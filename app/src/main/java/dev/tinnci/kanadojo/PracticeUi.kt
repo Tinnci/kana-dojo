@@ -53,6 +53,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.onClick
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.font.FontWeight
@@ -435,6 +436,10 @@ private fun PracticeCompletionActionGroup(
                     stateDescription = practiceCompletionActionStateDescriptionFor(
                         enabled = actionAvailability.returnToPathEnabled,
                         disabledCopy = disabledActionCopy
+                    ),
+                    actionHint = practiceCompletionActionHintFor(
+                        actionSemanticLabel = returnActionSemanticLabel,
+                        enabled = actionAvailability.returnToPathEnabled
                     )
                 )
             ) {
@@ -452,6 +457,10 @@ private fun PracticeCompletionActionGroup(
                     stateDescription = practiceCompletionActionStateDescriptionFor(
                         enabled = actionAvailability.repeatEnabled,
                         disabledCopy = disabledActionCopy
+                    ),
+                    actionHint = practiceCompletionActionHintFor(
+                        actionSemanticLabel = repeatActionSemanticLabel,
+                        enabled = actionAvailability.repeatEnabled
                     )
                 )
             ) {
@@ -507,6 +516,10 @@ private fun PracticeRepeatRequiredActionGroup(
                     stateDescription = practiceCompletionActionStateDescriptionFor(
                         enabled = actionAvailability.repeatEnabled,
                         disabledCopy = disabledActionCopy
+                    ),
+                    actionHint = practiceCompletionActionHintFor(
+                        actionSemanticLabel = repeatActionSemanticLabel,
+                        enabled = actionAvailability.repeatEnabled
                     )
                 )
             ) {
@@ -521,13 +534,15 @@ private fun PracticeRepeatRequiredActionGroup(
 
 private fun Modifier.practiceCompletionActionButtonTouchTarget(
     actionSemanticLabel: String,
-    stateDescription: String
+    stateDescription: String,
+    actionHint: String
 ): Modifier =
     fillMaxWidth()
         .heightIn(min = 48.dp)
         .semantics(mergeDescendants = true) {
             contentDescription = actionSemanticLabel
             this.stateDescription = stateDescription
+            onClick(label = actionHint, action = null)
         }
 
 @Composable
