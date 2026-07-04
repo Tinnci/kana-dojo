@@ -107,6 +107,11 @@ data class ChartCardTag(
     val label: String
 )
 
+data class ChartTapFeedback(
+    val title: String,
+    val message: String
+)
+
 enum class PathFeedbackAction {
     StartLesson,
     OpenPractice

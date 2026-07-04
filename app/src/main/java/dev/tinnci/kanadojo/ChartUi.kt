@@ -47,12 +47,14 @@ fun KanaChartScreen(script: Script, mastery: Map<String, Int>, onSpeak: (String)
     val items = remember(script) { itemsFor(script) }
     val rows = remember(items) { items.map { it.row }.distinct() }
     var selectedRow by remember(script) { mutableStateOf<String?>(null) }
+    var tappedItem by remember(script) { mutableStateOf<KanaItem?>(null) }
     val visibleItems = remember(items, selectedRow) {
         selectedRow?.let { row -> items.filter { it.row == row } } ?: items
     }
     val progressCopy = chartProgressCopyFor(selectedRow, items, mastery)
     val rowGuidance = chartRowGuidanceCopyFor(selectedRow, items, mastery)
     val contrastSummary = chartContrastSummaryCopyFor(selectedRow, items)
+    val tapFeedback = tappedItem?.let { chartTapFeedbackFor(it) }
     LazyVerticalGrid(
         columns = GridCells.Adaptive(minSize = 86.dp),
         contentPadding = PaddingValues(16.dp),
@@ -64,7 +66,19 @@ fun KanaChartScreen(script: Script, mastery: Map<String, Int>, onSpeak: (String)
             ChartHeader(script = script, progressCopy = progressCopy)
         }
         item(span = { GridItemSpan(maxLineSpan) }) {
-            ChartRowFilters(rows = rows, selectedRow = selectedRow, onRowChange = { selectedRow = it })
+            ChartRowFilters(
+                rows = rows,
+                selectedRow = selectedRow,
+                onRowChange = {
+                    selectedRow = it
+                    tappedItem = null
+                }
+            )
+        }
+        tapFeedback?.let { feedback ->
+            item(span = { GridItemSpan(maxLineSpan) }) {
+                ChartTapFeedbackPanel(feedback)
+            }
         }
         rowGuidance?.let { copy ->
             item(span = { GridItemSpan(maxLineSpan) }) {
@@ -83,7 +97,10 @@ fun KanaChartScreen(script: Script, mastery: Map<String, Int>, onSpeak: (String)
             val level = mastery[item.id] ?: 0
             val cardTag = chartCardTagFor(item)
             Card(
-                onClick = { onSpeak(item.kana) },
+                onClick = {
+                    tappedItem = item
+                    onSpeak(item.kana)
+                },
                 shape = RoundedCornerShape(20.dp),
                 colors = CardDefaults.cardColors(containerColor = chartTileColor(level, item.confusable.isNotEmpty()))
             ) {
@@ -110,6 +127,27 @@ fun KanaChartScreen(script: Script, mastery: Map<String, Int>, onSpeak: (String)
                     Spacer(Modifier.height(8.dp))
                     MasteryPips(level = level)
                 }
+            }
+        }
+    }
+}
+
+@Composable
+private fun ChartTapFeedbackPanel(feedback: ChartTapFeedback) {
+    Surface(
+        shape = RoundedCornerShape(18.dp),
+        color = MaterialTheme.colorScheme.primaryContainer,
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Row(
+            modifier = Modifier.padding(14.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(10.dp)
+        ) {
+            Icon(Icons.Outlined.CheckCircle, contentDescription = null, modifier = Modifier.size(18.dp))
+            Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                Text(feedback.title, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Black)
+                Text(feedback.message, style = MaterialTheme.typography.bodySmall)
             }
         }
     }

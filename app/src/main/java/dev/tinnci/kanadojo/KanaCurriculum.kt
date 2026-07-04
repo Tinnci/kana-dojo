@@ -462,6 +462,12 @@ fun chartCardTagFor(item: KanaItem): ChartCardTag? {
     )
 }
 
+fun chartTapFeedbackFor(item: KanaItem): ChartTapFeedback =
+    ChartTapFeedback(
+        title = "Audio cue: ${item.kana}",
+        message = "${item.romaji} · ${chartRowLabelFor(item.row)}"
+    )
+
 fun nextPathLesson(lessons: List<KanaLesson>, mastery: Map<String, Int>): KanaLesson? =
     lessons.firstOrNull { lesson ->
         isLessonUnlocked(lesson, lessons, mastery) && lessonAverageMastery(lesson, mastery) < 4f

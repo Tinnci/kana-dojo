@@ -186,9 +186,10 @@ Implemented:
 - Added tested compact chart contrast summaries for lookalike-heavy chart views.
 - Added tested chart row labels so filters and special-symbol rows avoid raw row IDs.
 - Added tested compact chart-card tags that distinguish small kana and long marks.
+- Added tested compact chart tap feedback when a reference card is selected for audio.
 
 ## Next Polish Pass
 
 Implement next:
 
-- Add compact reference-card action feedback when a kana is tapped for audio.
+- Add compact reference-card selected state so the tapped kana stays visually anchored in the grid.

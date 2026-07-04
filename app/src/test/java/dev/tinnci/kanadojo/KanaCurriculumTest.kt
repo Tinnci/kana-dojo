@@ -287,6 +287,23 @@ class KanaCurriculumTest {
     }
 
     @Test
+    fun chartTapFeedbackNamesKanaAndRowContext() {
+        val item = itemsFor(Script.Hiragana).first { it.romaji == "a" }
+        val feedback = chartTapFeedbackFor(item)
+
+        assertEquals("Audio cue: あ", feedback.title)
+        assertEquals("a · Vowels", feedback.message)
+    }
+
+    @Test
+    fun chartTapFeedbackUsesSpecialMarkLabel() {
+        val item = itemsFor(Script.Katakana).first { it.romaji == "long mark" }
+        val feedback = chartTapFeedbackFor(item)
+
+        assertEquals("long mark · Special marks", feedback.message)
+    }
+
+    @Test
     fun nextPathLessonReturnsFirstUnfinishedUnlockedLesson() {
         val lessons = lessonsFor(Script.Hiragana)
         val lessonOneFluent = lessons[0].items.associate { it.id to 4 }
