@@ -54,6 +54,7 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.isTraversalGroup
 import androidx.compose.ui.semantics.onClick
 import androidx.compose.ui.semantics.paneTitle
 import androidx.compose.ui.semantics.role
@@ -555,7 +556,10 @@ private fun Modifier.practiceCompletionActionButtonTouchTarget(
         }
 
 private fun Modifier.practiceCompletionActionGroupSummary(action: ReviewCompletionAction): Modifier =
-    semantics { paneTitle = practiceCompletionActionGroupSummaryFor(action) }
+    semantics {
+        paneTitle = practiceCompletionActionGroupSummaryFor(action)
+        isTraversalGroup = true
+    }
 
 @Composable
 private fun PracticeDisabledActionCopy(copy: PracticeCompletionDisabledActionCopy) {
