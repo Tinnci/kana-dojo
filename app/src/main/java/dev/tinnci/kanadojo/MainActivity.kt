@@ -13,8 +13,10 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
 import androidx.compose.animation.shrinkVertically
+import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -1431,6 +1433,9 @@ private fun MatchColumn(
 @Composable
 private fun TraceKanaExercise(item: KanaItem, answered: Boolean, onSpeak: (String) -> Unit, onAnswer: (Boolean) -> Unit) {
     var points by remember(item.id) { mutableStateOf<List<Offset>>(emptyList()) }
+    var showComparison by remember(item.id) { mutableStateOf(false) }
+    var replayNonce by remember(item.id) { mutableIntStateOf(0) }
+    val replayProgress = remember(item.id) { Animatable(1f) }
     val traceScore = remember(points) { traceScoreFor(points.map { TracePoint(it.x, it.y) }) }
     val animatedScore by animateFloatAsState(targetValue = traceScore.progress, label = "traceScore")
     val guideAlpha by animateFloatAsState(
@@ -1465,6 +1470,17 @@ private fun TraceKanaExercise(item: KanaItem, answered: Boolean, onSpeak: (Strin
         targetValue = if (traceScore.ready || answered) 3.dp else 2.dp,
         label = "traceBorderWidth"
     )
+
+    LaunchedEffect(points.size) {
+        replayProgress.snapTo(1f)
+    }
+
+    LaunchedEffect(replayNonce) {
+        if (replayNonce > 0 && points.size > 1) {
+            replayProgress.snapTo(0f)
+            replayProgress.animateTo(1f, animationSpec = tween(durationMillis = 900))
+        }
+    }
 
     Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(14.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -1506,11 +1522,8 @@ private fun TraceKanaExercise(item: KanaItem, answered: Boolean, onSpeak: (Strin
                     end = Offset(size.width * 0.5f, size.height * 0.82f),
                     strokeWidth = 2.dp.toPx()
                 )
-                val path = Path()
-                points.firstOrNull()?.let { path.moveTo(it.x, it.y) }
-                points.drop(1).forEach { path.lineTo(it.x, it.y) }
                 drawPath(
-                    path = path,
+                    path = replayedTracePath(points, replayProgress.value),
                     color = strokeColor,
                     style = Stroke(width = 12.dp.toPx(), cap = StrokeCap.Round)
                 )
@@ -1518,11 +1531,101 @@ private fun TraceKanaExercise(item: KanaItem, answered: Boolean, onSpeak: (Strin
         }
         TraceScorePanel(score = animatedScore, ready = traceScore.ready, message = traceScore.message)
         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            OutlinedButton(onClick = { points = emptyList() }, modifier = Modifier.weight(1f)) {
+            OutlinedButton(
+                onClick = {
+                    points = emptyList()
+                    showComparison = false
+                },
+                modifier = Modifier.weight(1f)
+            ) {
                 Text("Clear")
+            }
+            OutlinedButton(
+                onClick = {
+                    val next = !showComparison
+                    showComparison = next
+                    if (next && points.size > 1) replayNonce += 1
+                },
+                enabled = points.isNotEmpty(),
+                modifier = Modifier.weight(1f)
+            ) {
+                Text(if (showComparison) "Hide" else "Compare")
             }
             Button(onClick = { onAnswer(traceScore.ready) }, enabled = !answered && points.isNotEmpty(), modifier = Modifier.weight(1f)) {
                 Text("Check")
+            }
+        }
+        AnimatedVisibility(
+            visible = showComparison && points.isNotEmpty(),
+            enter = fadeIn() + expandVertically(expandFrom = Alignment.Top),
+            exit = fadeOut() + shrinkVertically(shrinkTowards = Alignment.Top)
+        ) {
+            TraceComparisonPanel(item = item, points = points, replayProgress = replayProgress.value)
+        }
+    }
+}
+
+private fun replayedTracePath(points: List<Offset>, progress: Float): Path {
+    val path = Path()
+    val visibleCount = (points.size * progress).toInt().coerceIn(0, points.size)
+    points.take(visibleCount).firstOrNull()?.let { path.moveTo(it.x, it.y) }
+    points.take(visibleCount).drop(1).forEach { path.lineTo(it.x, it.y) }
+    return path
+}
+
+@Composable
+private fun TraceComparisonPanel(item: KanaItem, points: List<Offset>, replayProgress: Float) {
+    Row(horizontalArrangement = Arrangement.spacedBy(10.dp), modifier = Modifier.fillMaxWidth()) {
+        TraceComparisonTile(label = "Model", modifier = Modifier.weight(1f)) {
+            Text(item.kana, fontSize = 64.sp, color = Color(0x882F5D50), fontWeight = FontWeight.Black)
+        }
+        TraceComparisonTile(label = "Yours", modifier = Modifier.weight(1f)) {
+            Canvas(modifier = Modifier.fillMaxSize()) {
+                val path = replayedTracePath(normalizedTracePoints(points, size.width, size.height), replayProgress)
+                drawPath(
+                    path = path,
+                    color = Color(0xFF2F5D50),
+                    style = Stroke(width = 4.dp.toPx(), cap = StrokeCap.Round)
+                )
+            }
+        }
+    }
+}
+
+private fun normalizedTracePoints(points: List<Offset>, width: Float, height: Float): List<Offset> {
+    if (points.isEmpty()) return emptyList()
+    val minX = points.minOf { it.x }
+    val maxX = points.maxOf { it.x }
+    val minY = points.minOf { it.y }
+    val maxY = points.maxOf { it.y }
+    val sourceWidth = (maxX - minX).coerceAtLeast(1f)
+    val sourceHeight = (maxY - minY).coerceAtLeast(1f)
+    val scale = minOf(width * 0.72f / sourceWidth, height * 0.72f / sourceHeight)
+    val offsetX = (width - sourceWidth * scale) / 2f
+    val offsetY = (height - sourceHeight * scale) / 2f
+    return points.map { point ->
+        Offset(
+            x = offsetX + (point.x - minX) * scale,
+            y = offsetY + (point.y - minY) * scale
+        )
+    }
+}
+
+@Composable
+private fun TraceComparisonTile(label: String, modifier: Modifier = Modifier, content: @Composable () -> Unit) {
+    Surface(
+        shape = RoundedCornerShape(16.dp),
+        color = MaterialTheme.colorScheme.surfaceVariant,
+        modifier = modifier.height(104.dp)
+    ) {
+        Column(
+            modifier = Modifier.padding(10.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(6.dp)
+        ) {
+            Text(label, style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Bold)
+            Box(modifier = Modifier.weight(1f).fillMaxWidth(), contentAlignment = Alignment.Center) {
+                content()
             }
         }
     }
