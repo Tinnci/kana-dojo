@@ -233,9 +233,10 @@ Implemented:
 - Added compact completion action-button touch target audit.
 - Added tested compact completion action-button role ordering audit.
 - Added compact completion action-button color contrast audit.
+- Added tested compact completion action-button disabled-state audit.
 
 ## Next Polish Pass
 
 Implement next:
 
-- Add compact completion action-button disabled-state audit.
+- Add compact completion action-button disabled-state copy.

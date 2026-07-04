@@ -288,6 +288,7 @@ private fun PracticeCompletionPanel(
     val repeatActionLabel = practiceRepeatActionLabelFor(mode)
     val compactRepeatActionLabel = practiceRepeatActionLabelFor(mode, compact = true)
     val completionMetrics = practiceCompletionMetricsFor(outcomes, queueSize)
+    val actionAvailability = practiceCompletionActionAvailabilityFor(action, queueSize)
     val accuracyTone = practiceAccuracyToneCopyFor(stats)
     val outcomeGuidance = practiceOutcomeGuidanceCopyFor(outcomes)
     val actionRationale = practiceActionRationaleCopyFor(action, stats)
@@ -363,6 +364,7 @@ private fun PracticeCompletionPanel(
                 PracticeCompletionActionGroup(
                     repeatActionLabel = repeatActionLabel,
                     compactRepeatActionLabel = compactRepeatActionLabel,
+                    actionAvailability = actionAvailability,
                     reduceMotion = reduceMotion,
                     onReturnToPath = onReturnToPath,
                     onRepeat = onRepeat
@@ -371,6 +373,7 @@ private fun PracticeCompletionPanel(
                 PracticeRepeatRequiredActionGroup(
                     repeatActionLabel = repeatActionLabel,
                     compactRepeatActionLabel = compactRepeatActionLabel,
+                    actionAvailability = actionAvailability,
                     reduceMotion = reduceMotion,
                     onRepeat = onRepeat
                 )
@@ -383,6 +386,7 @@ private fun PracticeCompletionPanel(
 private fun PracticeCompletionActionGroup(
     repeatActionLabel: String,
     compactRepeatActionLabel: String,
+    actionAvailability: PracticeCompletionActionAvailability,
     reduceMotion: Boolean,
     onReturnToPath: () -> Unit,
     onRepeat: () -> Unit
@@ -409,6 +413,7 @@ private fun PracticeCompletionActionGroup(
             PracticeActionRoleChip(roleLabels[0])
             Button(
                 onClick = onReturnToPath,
+                enabled = actionAvailability.returnToPathEnabled,
                 shape = RoundedCornerShape(18.dp),
                 modifier = Modifier.practiceCompletionActionButtonTouchTarget()
             ) {
@@ -419,6 +424,7 @@ private fun PracticeCompletionActionGroup(
             PracticeActionRoleChip(roleLabels[1])
             FilledTonalButton(
                 onClick = onRepeat,
+                enabled = actionAvailability.repeatEnabled,
                 shape = RoundedCornerShape(18.dp),
                 modifier = Modifier.practiceCompletionActionButtonTouchTarget()
             ) {
@@ -434,6 +440,7 @@ private fun PracticeCompletionActionGroup(
 private fun PracticeRepeatRequiredActionGroup(
     repeatActionLabel: String,
     compactRepeatActionLabel: String,
+    actionAvailability: PracticeCompletionActionAvailability,
     reduceMotion: Boolean,
     onRepeat: () -> Unit
 ) {
@@ -459,6 +466,7 @@ private fun PracticeRepeatRequiredActionGroup(
             PracticeActionRoleChip(roleLabels.single())
             Button(
                 onClick = onRepeat,
+                enabled = actionAvailability.repeatEnabled,
                 shape = RoundedCornerShape(18.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.error,

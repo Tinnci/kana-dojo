@@ -188,6 +188,11 @@ data class PracticeActionRationaleCopy(
     val message: String
 )
 
+data class PracticeCompletionActionAvailability(
+    val returnToPathEnabled: Boolean,
+    val repeatEnabled: Boolean
+)
+
 data class PracticeCompletionNextStep(
     val title: String,
     val message: String
@@ -596,6 +601,15 @@ fun reviewCompletionActionFor(stats: LessonSessionStats): ReviewCompletionAction
     } else {
         ReviewCompletionAction.RepeatQueue
     }
+
+fun practiceCompletionActionAvailabilityFor(
+    action: ReviewCompletionAction,
+    queueSize: Int
+): PracticeCompletionActionAvailability =
+    PracticeCompletionActionAvailability(
+        returnToPathEnabled = action == ReviewCompletionAction.ReturnToPath,
+        repeatEnabled = queueSize > 0
+    )
 
 fun practiceReturnActionLabelFor(compact: Boolean = false): String =
     if (compact) "Path" else "Back to path"

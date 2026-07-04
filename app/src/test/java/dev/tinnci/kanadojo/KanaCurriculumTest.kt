@@ -1092,6 +1092,22 @@ class KanaCurriculumTest {
     }
 
     @Test
+    fun practiceCompletionActionAvailabilityDisablesImpossibleActions() {
+        assertEquals(
+            PracticeCompletionActionAvailability(returnToPathEnabled = true, repeatEnabled = true),
+            practiceCompletionActionAvailabilityFor(ReviewCompletionAction.ReturnToPath, queueSize = 6)
+        )
+        assertEquals(
+            PracticeCompletionActionAvailability(returnToPathEnabled = false, repeatEnabled = true),
+            practiceCompletionActionAvailabilityFor(ReviewCompletionAction.RepeatQueue, queueSize = 6)
+        )
+        assertEquals(
+            PracticeCompletionActionAvailability(returnToPathEnabled = false, repeatEnabled = false),
+            practiceCompletionActionAvailabilityFor(ReviewCompletionAction.RepeatQueue, queueSize = 0)
+        )
+    }
+
+    @Test
     fun practiceRepeatActionLabelsNameThePracticeMode() {
         val labels = PracticeMode.entries.associateWith { practiceRepeatActionLabelFor(it) }
 
