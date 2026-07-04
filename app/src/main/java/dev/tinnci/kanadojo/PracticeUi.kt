@@ -346,7 +346,7 @@ private fun PracticeCompletionPanel(
                 repeatRequired = !stable,
                 reduceMotion = reduceMotion
             )
-            PracticeActionRationalePanel(copy = actionRationale, action = action)
+            PracticeActionRationalePanel(copy = actionRationale, action = action, reduceMotion = reduceMotion)
             if (stable) {
                 Button(onClick = onReturnToPath, shape = RoundedCornerShape(18.dp), modifier = Modifier.fillMaxWidth()) {
                     Icon(Icons.Outlined.School, contentDescription = null)
@@ -370,14 +370,34 @@ private fun PracticeCompletionPanel(
 }
 
 @Composable
-private fun PracticeActionRationalePanel(copy: PracticeActionRationaleCopy, action: ReviewCompletionAction) {
+private fun PracticeActionRationalePanel(
+    copy: PracticeActionRationaleCopy,
+    action: ReviewCompletionAction,
+    reduceMotion: Boolean
+) {
+    var entered by remember(copy.title, copy.message, action) { mutableStateOf(false) }
+    LaunchedEffect(copy.title, copy.message, action) {
+        entered = true
+    }
     val repeatRequired = action == ReviewCompletionAction.RepeatQueue
     val icon = if (repeatRequired) Icons.Outlined.Replay else Icons.Outlined.School
     val tint = if (repeatRequired) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary
+    val panelAlpha by animateFloatAsState(
+        targetValue = if (reduceMotion || entered) 1f else 0f,
+        animationSpec = tween(durationMillis = 200),
+        label = "practiceActionRationaleAlpha"
+    )
+    val panelScale by animateFloatAsState(
+        targetValue = if (reduceMotion || entered) 1f else 0.98f,
+        animationSpec = tween(durationMillis = 200),
+        label = "practiceActionRationaleScale"
+    )
     Surface(
         shape = RoundedCornerShape(16.dp),
         color = MaterialTheme.colorScheme.surface.copy(alpha = 0.66f),
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .fillMaxWidth()
+            .graphicsLayer(alpha = panelAlpha, scaleX = panelScale, scaleY = panelScale)
     ) {
         Row(
             modifier = Modifier.padding(horizontal = 12.dp, vertical = 10.dp),

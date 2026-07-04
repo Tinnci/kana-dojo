@@ -206,9 +206,10 @@ Implemented:
 - Added reduced-motion-aware entrance motion to practice outcome guidance.
 - Added compact outcome guidance icon tones for repaired and shaky states.
 - Added tested compact completion action rationale copy for return-to-path versus repeat.
+- Added reduced-motion-aware entrance motion to practice action rationale.
 
 ## Next Polish Pass
 
 Implement next:
 
-- Add reduced-motion-aware entrance motion to practice action rationale.
+- Add compact action icon tone for clean return-to-path completions.
