@@ -156,6 +156,15 @@ private data class AnswerFeedback(
     val answer: String
 )
 
+private data class ProgressSnapshot(
+    val seen: Int,
+    val recall: Int,
+    val fluent: Int,
+    val total: Int
+) {
+    val overall: Float = if (total == 0) 0f else fluent / total.toFloat()
+}
+
 private class ProgressStore(context: Context) {
     private val prefs = context.getSharedPreferences("kana_progress", Context.MODE_PRIVATE)
 
@@ -335,6 +344,8 @@ private fun LessonPathScreen(
     onResult: (List<KanaItem>, Boolean) -> Unit
 ) {
     val lessons = remember(script) { lessonsFor(script) }
+    val scriptItems = remember(script) { itemsFor(script) }
+    val snapshot = progressSnapshot(scriptItems, mastery)
     var activeLesson by remember(script) { mutableStateOf<KanaLesson?>(null) }
 
     if (activeLesson != null) {
@@ -354,11 +365,13 @@ private fun LessonPathScreen(
         verticalArrangement = Arrangement.spacedBy(14.dp)
     ) {
         item {
-            val mastered = itemsFor(script).count { (mastery[it.id] ?: 0) >= 4 }
             HeroPanel(
                 title = "${script.label} path",
-                subtitle = "$mastered mastered. Unlock rows by reaching recall level 2 in the previous lesson."
+                subtitle = "${snapshot.fluent} fluent. Build recall first, then separate lookalikes."
             )
+        }
+        item {
+            ProgressSummaryPanel(snapshot = snapshot)
         }
         item {
             val nextLesson = lessons.firstOrNull { lesson ->
@@ -412,6 +425,48 @@ private fun NextLessonPanel(lesson: KanaLesson, averageMastery: Float, onStart: 
                 Spacer(Modifier.width(8.dp))
                 Text("Start")
             }
+        }
+    }
+}
+
+@Composable
+private fun ProgressSummaryPanel(snapshot: ProgressSnapshot) {
+    val overall by animateFloatAsState(targetValue = snapshot.overall, label = "overallProgress")
+    Surface(
+        shape = RoundedCornerShape(22.dp),
+        color = MaterialTheme.colorScheme.surface,
+        tonalElevation = 2.dp,
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(18.dp),
+            verticalArrangement = Arrangement.spacedBy(14.dp)
+        ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Column(modifier = Modifier.weight(1f)) {
+                    Text("Today status", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Black)
+                    Text("Fluency grows when recall survives review.", style = MaterialTheme.typography.bodyMedium)
+                }
+                Text("${snapshot.fluent}/${snapshot.total}", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Black)
+            }
+            LinearProgressIndicator(progress = { overall }, modifier = Modifier.fillMaxWidth())
+            Row(horizontalArrangement = Arrangement.spacedBy(10.dp), modifier = Modifier.fillMaxWidth()) {
+                ProgressStat("Seen", snapshot.seen, Color(0xFFE2EEF8), Modifier.weight(1f))
+                ProgressStat("Recall", snapshot.recall, Color(0xFFFFF1BC), Modifier.weight(1f))
+                ProgressStat("Fluent", snapshot.fluent, Color(0xFFDCEBDD), Modifier.weight(1f))
+            }
+        }
+    }
+}
+
+@Composable
+private fun ProgressStat(label: String, value: Int, color: Color, modifier: Modifier = Modifier) {
+    Surface(shape = RoundedCornerShape(16.dp), color = color, modifier = modifier) {
+        Column(modifier = Modifier.padding(12.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+            Text(value.toString(), style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Black)
+            Text(label, style = MaterialTheme.typography.labelMedium)
         }
     }
 }
@@ -614,13 +669,15 @@ private fun LessonRunner(
 @Composable
 private fun LessonComplete(lesson: KanaLesson, onContinue: () -> Unit) {
     Column(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(20.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
         Box(
             modifier = Modifier
-                .size(110.dp)
+                .size(118.dp)
                 .background(MaterialTheme.colorScheme.primaryContainer, CircleShape),
             contentAlignment = Alignment.Center
         ) {
@@ -628,9 +685,33 @@ private fun LessonComplete(lesson: KanaLesson, onContinue: () -> Unit) {
         }
         Spacer(Modifier.height(20.dp))
         Text("Lesson complete", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Black)
-        Text(lesson.items.joinToString("  ") { "${it.kana} ${it.romaji}" }, style = MaterialTheme.typography.titleMedium)
+        Spacer(Modifier.height(8.dp))
+        StageChip(lesson.stage)
+        Spacer(Modifier.height(18.dp))
+        Surface(
+            shape = RoundedCornerShape(22.dp),
+            color = MaterialTheme.colorScheme.surface,
+            tonalElevation = 2.dp,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Column(
+                modifier = Modifier.padding(18.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(10.dp)
+            ) {
+                Text(lesson.items.joinToString(" ") { it.kana }, fontSize = 34.sp, fontWeight = FontWeight.Black)
+                Text(lesson.items.joinToString("  ") { it.romaji }, style = MaterialTheme.typography.titleMedium)
+                Text("These will stay in review until they feel automatic.", style = MaterialTheme.typography.bodyMedium, textAlign = TextAlign.Center)
+            }
+        }
         Spacer(Modifier.height(24.dp))
-        Button(onClick = onContinue) {
+        Button(
+            onClick = onContinue,
+            shape = RoundedCornerShape(18.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(56.dp)
+        ) {
             Text("Continue")
         }
     }
@@ -990,8 +1071,26 @@ private fun KanaChartScreen(script: Script, mastery: Map<String, Int>, onSpeak: 
                     Text(item.kana, fontSize = 42.sp, fontWeight = FontWeight.Black)
                     Text(item.romaji, style = MaterialTheme.typography.labelLarge)
                     Text(item.row, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Spacer(Modifier.height(8.dp))
+                    MasteryPips(level = level)
                 }
             }
+        }
+    }
+}
+
+@Composable
+private fun MasteryPips(level: Int) {
+    Row(horizontalArrangement = Arrangement.spacedBy(3.dp)) {
+        repeat(5) { index ->
+            Box(
+                modifier = Modifier
+                    .size(6.dp)
+                    .background(
+                        if (index < level) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outlineVariant,
+                        CircleShape
+                    )
+            )
         }
     }
 }
@@ -1152,6 +1251,14 @@ private fun lessonDifficulty(stage: LearningStage): Int =
 
 private fun lessonAverageMastery(lesson: KanaLesson, mastery: Map<String, Int>): Float =
     if (lesson.items.isEmpty()) 0f else lesson.items.sumOf { (mastery[it.id] ?: 0).toDouble() }.toFloat() / lesson.items.size
+
+private fun progressSnapshot(items: List<KanaItem>, mastery: Map<String, Int>): ProgressSnapshot =
+    ProgressSnapshot(
+        seen = items.count { (mastery[it.id] ?: 0) >= 1 },
+        recall = items.count { (mastery[it.id] ?: 0) >= 2 },
+        fluent = items.count { (mastery[it.id] ?: 0) >= 4 },
+        total = items.size
+    )
 
 private fun isLessonUnlocked(lesson: KanaLesson, lessons: List<KanaLesson>, mastery: Map<String, Int>): Boolean {
     val previous = lessons.lastOrNull { it.index == lesson.index - 1 }
