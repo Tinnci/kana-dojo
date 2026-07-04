@@ -142,10 +142,11 @@ Implemented:
 - Extracted chart/reference UI so kana browsing and mastery visualization can evolve separately from the app shell.
 - Extracted practice review UI so weak, contrast, writing, sound, speed, cross-script, and mixed queues can be refined independently.
 - Extracted lesson path UI so journey, daily focus, progress, filters, and lesson nodes can be refined independently.
+- Extracted shared exercise widgets so prompts, feedback, choices, audio, trace, and pair matching can be polished independently.
 
 ## Next Polish Pass
 
 Implement next:
 
 - Continue splitting large screen sections out of `MainActivity.kt`.
-- Extract shared exercise widgets and common metric chips from `MainActivity.kt`.
+- Extract common metric chips and settings shell helpers from `MainActivity.kt`.
