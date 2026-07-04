@@ -88,7 +88,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -115,6 +117,7 @@ private fun KanaDojoApp() {
     var currentTab by remember { mutableStateOf(ScreenTab.Lessons) }
     var reduceMotion by remember { mutableStateOf(progressStore.loadReduceMotion()) }
     var soundEnabled by remember { mutableStateOf(progressStore.loadSoundEnabled()) }
+    var hapticsEnabled by remember { mutableStateOf(progressStore.loadHapticsEnabled()) }
 
     LaunchedEffect(Unit) {
         mastery.putAll(progressStore.loadMastery(allItems))
@@ -123,10 +126,20 @@ private fun KanaDojoApp() {
     }
 
     val tts = rememberKanaSpeech()
+    val haptic = LocalHapticFeedback.current
     val speakKana: (String) -> Unit = { kana ->
         if (soundEnabled) {
             tts.speak(kana)
         }
+    }
+    val markResult: (List<KanaItem>, Boolean) -> Unit = { items, correct ->
+        if (hapticsEnabled) {
+            haptic.performHapticFeedback(if (correct) HapticFeedbackType.Confirm else HapticFeedbackType.Reject)
+        }
+        progressStore.mark(items, correct)
+        mastery.putAll(progressStore.loadMastery(allItems))
+        mistakes.clear()
+        mistakes.addAll(progressStore.loadMistakes())
     }
     KanaTheme {
         Scaffold(
@@ -135,6 +148,7 @@ private fun KanaDojoApp() {
                     selectedScript = selectedScript,
                     reduceMotion = reduceMotion,
                     soundEnabled = soundEnabled,
+                    hapticsEnabled = hapticsEnabled,
                     onScriptChange = { selectedScript = it },
                     onReduceMotionChange = {
                         reduceMotion = it
@@ -143,6 +157,10 @@ private fun KanaDojoApp() {
                     onSoundEnabledChange = {
                         soundEnabled = it
                         progressStore.setSoundEnabled(it)
+                    },
+                    onHapticsEnabledChange = {
+                        hapticsEnabled = it
+                        progressStore.setHapticsEnabled(it)
                     }
                 )
             },
@@ -184,12 +202,7 @@ private fun KanaDojoApp() {
                         onSpeak = speakKana,
                         reduceMotion = reduceMotion,
                         onOpenPractice = { currentTab = ScreenTab.Mistakes },
-                        onResult = { items, correct ->
-                            progressStore.mark(items, correct)
-                            mastery.putAll(progressStore.loadMastery(allItems))
-                            mistakes.clear()
-                            mistakes.addAll(progressStore.loadMistakes())
-                        }
+                        onResult = markResult
                     )
 
                     ScreenTab.Chart -> KanaChartScreen(
@@ -205,12 +218,7 @@ private fun KanaDojoApp() {
                         mastery = mastery,
                         onSpeak = speakKana,
                         reduceMotion = reduceMotion,
-                        onResult = { items, correct ->
-                            progressStore.mark(items, correct)
-                            mastery.putAll(progressStore.loadMastery(allItems))
-                            mistakes.clear()
-                            mistakes.addAll(progressStore.loadMistakes())
-                        }
+                        onResult = markResult
                     )
                 }
             }
@@ -234,9 +242,11 @@ private fun KanaTopBar(
     selectedScript: Script,
     reduceMotion: Boolean,
     soundEnabled: Boolean,
+    hapticsEnabled: Boolean,
     onScriptChange: (Script) -> Unit,
     onReduceMotionChange: (Boolean) -> Unit,
-    onSoundEnabledChange: (Boolean) -> Unit
+    onSoundEnabledChange: (Boolean) -> Unit,
+    onHapticsEnabledChange: (Boolean) -> Unit
 ) {
     var settingsOpen by remember { mutableStateOf(false) }
 
@@ -271,6 +281,13 @@ private fun KanaTopBar(
                         onClick = { onReduceMotionChange(!reduceMotion) },
                         trailingIcon = {
                             Switch(checked = reduceMotion, onCheckedChange = onReduceMotionChange)
+                        }
+                    )
+                    DropdownMenuItem(
+                        text = { Text("Haptics") },
+                        onClick = { onHapticsEnabledChange(!hapticsEnabled) },
+                        trailingIcon = {
+                            Switch(checked = hapticsEnabled, onCheckedChange = onHapticsEnabledChange)
                         }
                     )
                 }

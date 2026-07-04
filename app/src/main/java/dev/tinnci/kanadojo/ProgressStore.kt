@@ -25,6 +25,13 @@ class ProgressStore(context: Context) {
         prefs.edit().putBoolean("sound_enabled", enabled).apply()
     }
 
+    fun loadHapticsEnabled(): Boolean =
+        prefs.getBoolean("haptics_enabled", true)
+
+    fun setHapticsEnabled(enabled: Boolean) {
+        prefs.edit().putBoolean("haptics_enabled", enabled).apply()
+    }
+
     fun mark(items: List<KanaItem>, correct: Boolean) {
         val editor = prefs.edit()
         val currentMistakes = loadMistakes().toMutableSet()
