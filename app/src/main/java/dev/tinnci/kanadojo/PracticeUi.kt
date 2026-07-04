@@ -53,6 +53,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -428,7 +429,13 @@ private fun PracticeCompletionActionGroup(
                 onClick = onReturnToPath,
                 enabled = actionAvailability.returnToPathEnabled,
                 shape = RoundedCornerShape(18.dp),
-                modifier = Modifier.practiceCompletionActionButtonTouchTarget(returnActionSemanticLabel)
+                modifier = Modifier.practiceCompletionActionButtonTouchTarget(
+                    actionSemanticLabel = returnActionSemanticLabel,
+                    stateDescription = practiceCompletionActionStateDescriptionFor(
+                        enabled = actionAvailability.returnToPathEnabled,
+                        disabledCopy = disabledActionCopy
+                    )
+                )
             ) {
                 Icon(Icons.Outlined.School, contentDescription = null, modifier = Modifier.size(20.dp))
                 Spacer(Modifier.width(6.dp))
@@ -439,7 +446,13 @@ private fun PracticeCompletionActionGroup(
                 onClick = onRepeat,
                 enabled = actionAvailability.repeatEnabled,
                 shape = RoundedCornerShape(18.dp),
-                modifier = Modifier.practiceCompletionActionButtonTouchTarget(repeatActionSemanticLabel)
+                modifier = Modifier.practiceCompletionActionButtonTouchTarget(
+                    actionSemanticLabel = repeatActionSemanticLabel,
+                    stateDescription = practiceCompletionActionStateDescriptionFor(
+                        enabled = actionAvailability.repeatEnabled,
+                        disabledCopy = disabledActionCopy
+                    )
+                )
             ) {
                 Icon(Icons.Outlined.Replay, contentDescription = null, modifier = Modifier.size(20.dp))
                 Spacer(Modifier.width(6.dp))
@@ -488,7 +501,13 @@ private fun PracticeRepeatRequiredActionGroup(
                     containerColor = MaterialTheme.colorScheme.error,
                     contentColor = MaterialTheme.colorScheme.onError
                 ),
-                modifier = Modifier.practiceCompletionActionButtonTouchTarget(repeatActionSemanticLabel)
+                modifier = Modifier.practiceCompletionActionButtonTouchTarget(
+                    actionSemanticLabel = repeatActionSemanticLabel,
+                    stateDescription = practiceCompletionActionStateDescriptionFor(
+                        enabled = actionAvailability.repeatEnabled,
+                        disabledCopy = disabledActionCopy
+                    )
+                )
             ) {
                 Icon(Icons.Outlined.Replay, contentDescription = null, modifier = Modifier.size(20.dp))
                 Spacer(Modifier.width(6.dp))
@@ -499,10 +518,16 @@ private fun PracticeRepeatRequiredActionGroup(
     }
 }
 
-private fun Modifier.practiceCompletionActionButtonTouchTarget(actionSemanticLabel: String): Modifier =
+private fun Modifier.practiceCompletionActionButtonTouchTarget(
+    actionSemanticLabel: String,
+    stateDescription: String
+): Modifier =
     fillMaxWidth()
         .heightIn(min = 48.dp)
-        .semantics { contentDescription = actionSemanticLabel }
+        .semantics {
+            contentDescription = actionSemanticLabel
+            this.stateDescription = stateDescription
+        }
 
 @Composable
 private fun PracticeDisabledActionCopy(copy: PracticeCompletionDisabledActionCopy) {

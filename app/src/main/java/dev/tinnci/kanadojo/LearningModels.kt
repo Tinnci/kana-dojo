@@ -634,6 +634,16 @@ fun practiceCompletionDisabledActionCopyFor(
         else -> null
     }
 
+fun practiceCompletionActionStateDescriptionFor(
+    enabled: Boolean,
+    disabledCopy: PracticeCompletionDisabledActionCopy? = null
+): String =
+    if (enabled) {
+        "Available"
+    } else {
+        disabledCopy?.let { "Unavailable: ${it.title}" } ?: "Unavailable"
+    }
+
 fun practiceReturnActionLabelFor(compact: Boolean = false): String =
     if (compact) "Path" else "Back to path"
 

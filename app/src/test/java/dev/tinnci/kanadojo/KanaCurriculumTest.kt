@@ -1169,6 +1169,21 @@ class KanaCurriculumTest {
     }
 
     @Test
+    fun practiceCompletionActionStateDescriptionsExplainAvailability() {
+        val disabledCopy = PracticeCompletionDisabledActionCopy(
+            title = "No repeat queue",
+            message = "There are no kana in this queue yet, so repeat is disabled."
+        )
+
+        assertEquals("Available", practiceCompletionActionStateDescriptionFor(enabled = true))
+        assertEquals(
+            "Unavailable: No repeat queue",
+            practiceCompletionActionStateDescriptionFor(enabled = false, disabledCopy = disabledCopy)
+        )
+        assertEquals("Unavailable", practiceCompletionActionStateDescriptionFor(enabled = false))
+    }
+
+    @Test
     fun practiceCompletionMetricsAddCompactOutcomeToneLabels() {
         val metrics = practiceCompletionMetricsFor(
             outcomes = ReviewSessionOutcomes(
