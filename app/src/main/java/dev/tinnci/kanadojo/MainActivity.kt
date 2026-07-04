@@ -244,9 +244,14 @@ private fun LessonPathScreen(
     val scriptItems = remember(script) { itemsFor(script) }
     val snapshot = progressSnapshot(scriptItems, mastery)
     var activeLesson by remember(script) { mutableStateOf<KanaLesson?>(null) }
+    var selectedStage by remember(script) { mutableStateOf<LearningStage?>(null) }
     val nextLesson = lessons.firstOrNull { lesson ->
         isLessonUnlocked(lesson, lessons, mastery) && lessonAverageMastery(lesson, mastery) < 4f
     } ?: lessons.first()
+    val lessonStages = remember(lessons) { lessons.map { it.stage }.distinct() }
+    val visibleLessons = remember(lessons, selectedStage) {
+        selectedStage?.let { stage -> lessons.filter { it.stage == stage } } ?: lessons
+    }
     val scriptItemIds = remember(scriptItems) { scriptItems.map { it.id }.toSet() }
     val reviewCount = remember(scriptItemIds, scriptItems, mistakeIds, mastery) {
         (
@@ -290,7 +295,16 @@ private fun LessonPathScreen(
         item {
             ProgressSummaryPanel(snapshot = snapshot)
         }
-        items(lessons) { lesson ->
+        item {
+            StageFilterRow(
+                stages = lessonStages,
+                selectedStage = selectedStage,
+                visibleCount = visibleLessons.size,
+                totalCount = lessons.size,
+                onStageChange = { selectedStage = it }
+            )
+        }
+        items(visibleLessons, key = { it.index }) { lesson ->
             val unlocked = isLessonUnlocked(lesson, lessons, mastery)
             val learned = lesson.items.count { (mastery[it.id] ?: 0) > 0 }
             LessonNode(
@@ -303,6 +317,64 @@ private fun LessonPathScreen(
             )
         }
     }
+}
+
+@Composable
+private fun StageFilterRow(
+    stages: List<LearningStage>,
+    selectedStage: LearningStage?,
+    visibleCount: Int,
+    totalCount: Int,
+    onStageChange: (LearningStage?) -> Unit
+) {
+    Surface(
+        shape = RoundedCornerShape(22.dp),
+        color = MaterialTheme.colorScheme.surface,
+        tonalElevation = 1.dp,
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(14.dp),
+            verticalArrangement = Arrangement.spacedBy(10.dp)
+        ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text("Journey", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Black)
+                Spacer(Modifier.weight(1f))
+                Text("$visibleCount/$totalCount", style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            }
+            LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
+                item {
+                    StageFilterChip(
+                        label = "All",
+                        selected = selectedStage == null,
+                        onClick = { onStageChange(null) }
+                    )
+                }
+                items(stages) { stage ->
+                    StageFilterChip(
+                        label = stage.label,
+                        selected = selectedStage == stage,
+                        onClick = { onStageChange(stage) }
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun StageFilterChip(label: String, selected: Boolean, onClick: () -> Unit) {
+    AssistChip(
+        onClick = onClick,
+        label = { Text(label) },
+        leadingIcon = {
+            if (selected) {
+                Icon(Icons.Outlined.CheckCircle, contentDescription = null, modifier = Modifier.size(18.dp))
+            }
+        }
+    )
 }
 
 @Composable
