@@ -1,0 +1,31 @@
+# Gradle
+.gradle/
+build/
+**/build/
+
+# Android local state
+local.properties
+captures/
+.externalNativeBuild/
+.cxx/
+
+# IDE
+.idea/
+*.iml
+
+# Generated packages and signing material
+*.apk
+*.ap_
+*.aab
+*.jks
+*.keystore
+
+# Runtime dumps and logs
+*.hprof
+*.log
+hs_err_pid*
+replay_pid*
+
+# OS files
+.DS_Store
+Thumbs.db
