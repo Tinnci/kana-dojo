@@ -75,6 +75,20 @@ data class LessonResumeCue(
     val progress: Float
 )
 
+enum class PathFeedbackAction {
+    StartLesson,
+    OpenPractice
+}
+
+data class PathCompletionFeedback(
+    val title: String,
+    val message: String,
+    val actionLabel: String,
+    val action: PathFeedbackAction,
+    val targetLessonIndex: Int? = null,
+    val practiceMode: PracticeMode? = null
+)
+
 data class PracticeQueueExplanation(
     val title: String,
     val message: String

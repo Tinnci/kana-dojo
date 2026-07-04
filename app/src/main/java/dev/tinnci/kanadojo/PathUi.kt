@@ -70,6 +70,7 @@ fun LessonPathScreen(
     val snapshot = progressSnapshot(scriptItems, mastery)
     var activeLesson by remember(script) { mutableStateOf<KanaLesson?>(null) }
     var resumeCue by remember(script) { mutableStateOf<LessonResumeCue?>(null) }
+    var completedLessonResult by remember(script) { mutableStateOf<CompletedLessonResult?>(null) }
     var selectedStage by remember(script) { mutableStateOf<LearningStage?>(null) }
     val nextLesson = nextPathLesson(lessons, mastery) ?: lessons.first()
     val lessonStages = remember(lessons) { lessons.map { it.stage }.distinct() }
@@ -92,10 +93,28 @@ fun LessonPathScreen(
     val startGuidance = remember(snapshot.seen, nextLesson.stage) {
         pathStartGuidanceFor(snapshot.seen, nextLesson.stage)
     }
+    val practiceRecommendation = remember(dueReviewCount, reviewCount, nextLesson.stage) {
+        pathPracticeRecommendationFor(
+            dueReviewCount = dueReviewCount,
+            weakCount = reviewCount,
+            stage = nextLesson.stage
+        )
+    }
+    val completionFeedback = remember(completedLessonResult, nextLesson, practiceRecommendation) {
+        completedLessonResult?.let { result ->
+            pathCompletionFeedbackFor(
+                completedLesson = result.lesson,
+                stats = result.stats,
+                nextLesson = nextLesson,
+                practiceRecommendation = practiceRecommendation
+            )
+        }
+    }
 
     if (activeLesson != null) {
+        val runningLesson = activeLesson!!
         LessonRunner(
-            lesson = activeLesson!!,
+            lesson = runningLesson,
             allItems = itemsFor(script),
             lessons = lessons,
             mastery = mastery,
@@ -106,8 +125,14 @@ fun LessonPathScreen(
                 resumeCue = cue
                 activeLesson = null
             },
+            onLessonComplete = { stats ->
+                resumeCue = null
+                completedLessonResult = CompletedLessonResult(runningLesson, stats)
+                activeLesson = null
+            },
             onReviewMistakes = {
                 resumeCue = null
+                completedLessonResult = null
                 activeLesson = null
                 onOpenPractice(PracticeMode.Weak)
             }
@@ -130,6 +155,27 @@ fun LessonPathScreen(
                 dueReviewCount = dueReviewCount
             )
         }
+        completionFeedback?.let { feedback ->
+            item {
+                PathCompletionFeedbackPanel(
+                    feedback = feedback,
+                    onAction = {
+                        completedLessonResult = null
+                        when (feedback.action) {
+                            PathFeedbackAction.StartLesson -> {
+                                feedback.targetLessonIndex
+                                    ?.let { index -> lessons.firstOrNull { it.index == index } }
+                                    ?.let { activeLesson = it }
+                            }
+
+                            PathFeedbackAction.OpenPractice -> {
+                                onOpenPractice(feedback.practiceMode ?: PracticeMode.Weak)
+                            }
+                        }
+                    }
+                )
+            }
+        }
         resumeCue?.let { cue ->
             item {
                 PathResumeCuePanel(
@@ -137,6 +183,7 @@ fun LessonPathScreen(
                     onResume = {
                         lessons.firstOrNull { it.index == cue.lessonIndex }?.let { lesson ->
                             resumeCue = null
+                            completedLessonResult = null
                             activeLesson = lesson
                         }
                     }
@@ -153,11 +200,16 @@ fun LessonPathScreen(
                 dueReviewItems = dueReviewItems,
                 dailyRhythm = dailyRhythm,
                 startGuidance = startGuidance,
+                practiceRecommendation = practiceRecommendation,
                 onStart = {
                     resumeCue = null
+                    completedLessonResult = null
                     activeLesson = nextLesson
                 },
-                onReview = onOpenPractice
+                onReview = {
+                    completedLessonResult = null
+                    onOpenPractice(it)
+                }
             )
         }
         item {
@@ -185,6 +237,7 @@ fun LessonPathScreen(
                 onStart = {
                     if (unlocked) {
                         resumeCue = null
+                        completedLessonResult = null
                         activeLesson = lesson
                     }
                 }
@@ -192,6 +245,11 @@ fun LessonPathScreen(
         }
     }
 }
+
+private data class CompletedLessonResult(
+    val lesson: KanaLesson,
+    val stats: LessonSessionStats
+)
 
 @Composable
 private fun StageFilterRow(
@@ -261,18 +319,12 @@ private fun DailyFocusPanel(
     dueReviewItems: List<KanaItem>,
     dailyRhythm: DailyRhythm,
     startGuidance: PathStartGuidance?,
+    practiceRecommendation: PracticeRecommendation,
     onStart: () -> Unit,
     onReview: (PracticeMode) -> Unit
 ) {
     val phaseSummary = remember(lesson) { lessonPhaseSummaryFor(lesson) }
     val startPreview = remember(lesson) { lessonStartPreviewFor(lesson) }
-    val practiceRecommendation = remember(dueReviewCount, reviewCount, lesson.stage) {
-        pathPracticeRecommendationFor(
-            dueReviewCount = dueReviewCount,
-            weakCount = reviewCount,
-            stage = lesson.stage
-        )
-    }
     Surface(
         shape = RoundedCornerShape(22.dp),
         color = MaterialTheme.colorScheme.tertiaryContainer,
@@ -634,6 +686,38 @@ private fun HeroMetric(label: String, value: String, modifier: Modifier = Modifi
         ) {
             Text(value, style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Black)
             Text(label, style = MaterialTheme.typography.labelSmall)
+        }
+    }
+}
+
+@Composable
+private fun PathCompletionFeedbackPanel(feedback: PathCompletionFeedback, onAction: () -> Unit) {
+    Surface(
+        shape = RoundedCornerShape(20.dp),
+        color = MaterialTheme.colorScheme.primaryContainer,
+        tonalElevation = 2.dp,
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Row(
+            modifier = Modifier.padding(14.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(10.dp)
+        ) {
+            Surface(shape = CircleShape, color = MaterialTheme.colorScheme.surface) {
+                Icon(
+                    Icons.Outlined.CheckCircle,
+                    contentDescription = null,
+                    modifier = Modifier.padding(7.dp).size(18.dp),
+                    tint = MaterialTheme.colorScheme.onSurface
+                )
+            }
+            Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                Text(feedback.title, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Black)
+                Text(feedback.message, style = MaterialTheme.typography.bodySmall)
+            }
+            Button(onClick = onAction, shape = RoundedCornerShape(16.dp)) {
+                Text(feedback.actionLabel, fontWeight = FontWeight.Bold)
+            }
         }
     }
 }

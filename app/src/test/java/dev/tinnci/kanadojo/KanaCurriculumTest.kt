@@ -672,6 +672,46 @@ class KanaCurriculumTest {
     }
 
     @Test
+    fun pathCompletionFeedbackSendsMissedLessonsToPractice() {
+        val lessons = lessonsFor(Script.Hiragana)
+        val feedback = pathCompletionFeedbackFor(
+            completedLesson = lessons[0],
+            stats = LessonSessionStats(correct = 8, missed = 2),
+            nextLesson = lessons[1],
+            practiceRecommendation = PracticeRecommendation(
+                mode = PracticeMode.Weak,
+                title = "Repair weak kana",
+                message = "2 kana need a quick repair pass.",
+                actionLabel = "Repair"
+            )
+        )
+
+        assertEquals(PathFeedbackAction.OpenPractice, feedback.action)
+        assertEquals(PracticeMode.Weak, feedback.practiceMode)
+        assertEquals("Misses queued", feedback.title)
+    }
+
+    @Test
+    fun pathCompletionFeedbackPointsCleanLessonsToNextLesson() {
+        val lessons = lessonsFor(Script.Hiragana)
+        val feedback = pathCompletionFeedbackFor(
+            completedLesson = lessons[0],
+            stats = LessonSessionStats(correct = 10, missed = 0),
+            nextLesson = lessons[1],
+            practiceRecommendation = PracticeRecommendation(
+                mode = PracticeMode.Sound,
+                title = "Sound recall",
+                message = "Listen first so kana map directly to Japanese sound.",
+                actionLabel = "Listen"
+            )
+        )
+
+        assertEquals(PathFeedbackAction.StartLesson, feedback.action)
+        assertEquals(lessons[1].index, feedback.targetLessonIndex)
+        assertEquals("Start next", feedback.actionLabel)
+    }
+
+    @Test
     fun lessonPhaseSummaryTotalMatchesGeneratedExerciseCount() {
         val lesson = lessonsFor(Script.Katakana).first { it.stage == LearningStage.Confusable }
 

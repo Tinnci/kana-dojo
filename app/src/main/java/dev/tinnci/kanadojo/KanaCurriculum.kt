@@ -54,6 +54,34 @@ fun lessonResumeCueFor(lesson: KanaLesson, completed: Int, total: Int): LessonRe
     )
 }
 
+fun pathCompletionFeedbackFor(
+    completedLesson: KanaLesson,
+    stats: LessonSessionStats,
+    nextLesson: KanaLesson,
+    practiceRecommendation: PracticeRecommendation
+): PathCompletionFeedback =
+    if (stats.missed > 0 || practiceRecommendation.mode == PracticeMode.Weak) {
+        PathCompletionFeedback(
+            title = if (stats.missed > 0) "Misses queued" else practiceRecommendation.title,
+            message = if (stats.missed > 0) {
+                "${stats.missed} misses changed the next action to ${practiceRecommendation.title.lowercase()}."
+            } else {
+                "Review moved ahead of the path so recall stays stable."
+            },
+            actionLabel = practiceRecommendation.actionLabel,
+            action = PathFeedbackAction.OpenPractice,
+            practiceMode = practiceRecommendation.mode
+        )
+    } else {
+        PathCompletionFeedback(
+            title = "Next lesson ready",
+            message = "${completedLesson.title} is warm. The path now points to ${nextLesson.title}.",
+            actionLabel = "Start next",
+            action = PathFeedbackAction.StartLesson,
+            targetLessonIndex = nextLesson.index
+        )
+    }
+
 fun lessonPhaseSummaryFor(lesson: KanaLesson): List<LessonPhaseCount> =
     listOf(
         LessonPhaseCount("Read", lesson.items.size * 2),

@@ -54,6 +54,7 @@ fun LessonRunner(
     reduceMotion: Boolean,
     onResult: (List<KanaItem>, Boolean) -> Unit,
     onExit: (LessonResumeCue?) -> Unit,
+    onLessonComplete: (LessonSessionStats) -> Unit,
     onReviewMistakes: () -> Unit
 ) {
     val queue = remember(lesson) { mutableStateListOf<Exercise>().apply { addAll(buildLessonExercises(lesson)) } }
@@ -98,7 +99,7 @@ fun LessonRunner(
                 nextLesson = nextPreview,
                 stats = sessionStats,
                 reduceMotion = reduceMotion,
-                onContinue = { onExit(null) },
+                onContinue = { onLessonComplete(sessionStats) },
                 onRepeat = {
                     queue.clear()
                     queue.addAll(buildLessonExercises(lesson))
