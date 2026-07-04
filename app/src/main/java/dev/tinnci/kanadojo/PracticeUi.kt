@@ -80,6 +80,7 @@ fun MistakePracticeScreen(
     var feedback by remember(selectedMode, practiceItems, currentIndex) { mutableStateOf<AnswerFeedback?>(null) }
     var sessionStats by remember(selectedMode, queueSignature) { mutableStateOf(LessonSessionStats()) }
     var repairedIds by remember(selectedMode, queueSignature) { mutableStateOf(emptySet<String>()) }
+    var missedIds by remember(selectedMode, queueSignature) { mutableStateOf(emptySet<String>()) }
     val queueComplete = currentIndex >= practiceItems.size
     val current = if (practiceItems.isEmpty() || queueComplete) null else practiceItems[currentIndex]
     val exercise = current?.let { practiceExerciseFor(it, selectedMode, currentIndex) }
@@ -135,6 +136,8 @@ fun MistakePracticeScreen(
             PracticeCompletionPanel(
                 stats = sessionStats,
                 repairedCount = repairedIds.size,
+                repairedItems = practiceItems.filter { it.id in repairedIds },
+                missedItems = practiceItems.filter { it.id in missedIds },
                 queueSize = practiceItems.size,
                 onReturnToPath = onReturnToPath,
                 onRepeat = {
@@ -142,6 +145,7 @@ fun MistakePracticeScreen(
                     feedback = null
                     sessionStats = LessonSessionStats()
                     repairedIds = emptySet()
+                    missedIds = emptySet()
                     showIntro = true
                 }
             )
@@ -171,6 +175,8 @@ fun MistakePracticeScreen(
                     }
                     if (correct) {
                         repairedIds = repairedIds + current.id
+                    } else {
+                        missedIds = missedIds + current.id
                     }
                     onResult(listOf(current), correct)
                 }
@@ -187,6 +193,8 @@ fun MistakePracticeScreen(
 private fun PracticeCompletionPanel(
     stats: LessonSessionStats,
     repairedCount: Int,
+    repairedItems: List<KanaItem>,
+    missedItems: List<KanaItem>,
     queueSize: Int,
     onReturnToPath: () -> Unit,
     onRepeat: () -> Unit
@@ -231,6 +239,12 @@ private fun PracticeCompletionPanel(
                 FocusMetric("Missed", stats.missed, Modifier.weight(1f))
                 FocusMetric("Queue", queueSize, Modifier.weight(1f))
             }
+            if (repairedItems.isNotEmpty()) {
+                CompletionKanaGroup("Repaired", repairedItems.take(8))
+            }
+            if (missedItems.isNotEmpty()) {
+                CompletionKanaGroup("Missed", missedItems.take(8))
+            }
             if (stable) {
                 Button(onClick = onReturnToPath, shape = RoundedCornerShape(18.dp), modifier = Modifier.fillMaxWidth()) {
                     Icon(Icons.Outlined.School, contentDescription = null)
@@ -247,6 +261,28 @@ private fun PracticeCompletionPanel(
                     Icon(Icons.Outlined.Replay, contentDescription = null)
                     Spacer(Modifier.width(8.dp))
                     Text("Repeat queue", fontWeight = FontWeight.Bold)
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun CompletionKanaGroup(label: String, items: List<KanaItem>) {
+    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        Text(label, style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Bold)
+        LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
+            items(items, key = { it.id }) { item ->
+                Surface(
+                    shape = RoundedCornerShape(14.dp),
+                    color = MaterialTheme.colorScheme.surface.copy(alpha = 0.74f)
+                ) {
+                    Text(
+                        item.kana,
+                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
+                        fontSize = 24.sp,
+                        fontWeight = FontWeight.Black
+                    )
                 }
             }
         }

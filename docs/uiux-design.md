@@ -157,9 +157,10 @@ Implemented:
 - Added a tested daily review intro state that explains due recall, mistake repair, or low-mastery repair before practice begins.
 - Added a review-session completion state with accuracy, repaired kana, missed count, and a repeat-queue action.
 - Added a tested stable-review completion action that returns to the path after clean queues while keeping repeat primary for missed queues.
+- Added repaired and missed kana groups to review completion so learners can see exactly what changed in the queue.
 
 ## Next Polish Pass
 
 Implement next:
 
-- Show repaired and missed kana groups on review completion so the learner sees exactly what changed.
+- Track per-kana review streaks in the session so completion can distinguish clean, repaired, and still-shaky kana.
