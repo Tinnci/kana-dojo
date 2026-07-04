@@ -216,6 +216,35 @@ class KanaCurriculumTest {
     }
 
     @Test
+    fun chartRowGuidanceAppearsForSelectedRowWithNoFluentKana() {
+        val items = itemsFor(Script.Hiragana)
+
+        val copy = chartRowGuidanceCopyFor(
+            selectedRow = "vowels",
+            items = items,
+            mastery = emptyMap()
+        )
+
+        assertEquals("No fluent vowels kana yet", copy?.title)
+    }
+
+    @Test
+    fun chartRowGuidanceSkipsAllAndFluentRows() {
+        val items = itemsFor(Script.Hiragana)
+        val rowItem = items.first { it.row == "vowels" }
+
+        assertEquals(null, chartRowGuidanceCopyFor(null, items, emptyMap()))
+        assertEquals(
+            null,
+            chartRowGuidanceCopyFor(
+                selectedRow = "vowels",
+                items = items,
+                mastery = mapOf(rowItem.id to 4)
+            )
+        )
+    }
+
+    @Test
     fun nextPathLessonReturnsFirstUnfinishedUnlockedLesson() {
         val lessons = lessonsFor(Script.Hiragana)
         val lessonOneFluent = lessons[0].items.associate { it.id to 4 }

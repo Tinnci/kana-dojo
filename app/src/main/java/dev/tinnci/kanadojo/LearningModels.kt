@@ -93,6 +93,11 @@ data class ChartProgressCopy(
     val message: String
 )
 
+data class ChartRowGuidanceCopy(
+    val title: String,
+    val message: String
+)
+
 enum class PathFeedbackAction {
     StartLesson,
     OpenPractice

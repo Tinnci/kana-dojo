@@ -413,6 +413,20 @@ fun chartProgressCopyFor(
     return ChartProgressCopy(message = "$label $fluentCount/${visibleItems.size} fluent")
 }
 
+fun chartRowGuidanceCopyFor(
+    selectedRow: String?,
+    items: List<KanaItem>,
+    mastery: Map<String, Int>
+): ChartRowGuidanceCopy? {
+    val row = selectedRow ?: return null
+    val rowItems = items.filter { it.row == row }
+    if (rowItems.isEmpty() || rowItems.any { (mastery[it.id] ?: 0) >= 4 }) return null
+    return ChartRowGuidanceCopy(
+        title = "No fluent $row kana yet",
+        message = "Use this row as reference, then return to lessons when you want it to count as recall."
+    )
+}
+
 fun nextPathLesson(lessons: List<KanaLesson>, mastery: Map<String, Int>): KanaLesson? =
     lessons.firstOrNull { lesson ->
         isLessonUnlocked(lesson, lessons, mastery) && lessonAverageMastery(lesson, mastery) < 4f

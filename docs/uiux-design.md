@@ -182,9 +182,10 @@ Implemented:
 - Added tested path-stage progress copy so filtered lesson groups show stage fluency in the existing journey header.
 - Added tested compact path-stage empty states when a filter has no actionable lesson.
 - Added tested chart filter progress copy so reference browsing mirrors path-stage clarity.
+- Added tested compact chart row guidance for filtered rows with no fluent kana yet.
 
 ## Next Polish Pass
 
 Implement next:
 
-- Add compact chart empty guidance for rows with no fluent kana yet.
+- Add compact chart contrast summary copy so lookalike-heavy rows are easier to scan.

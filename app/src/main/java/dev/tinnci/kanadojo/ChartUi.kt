@@ -51,6 +51,7 @@ fun KanaChartScreen(script: Script, mastery: Map<String, Int>, onSpeak: (String)
         selectedRow?.let { row -> items.filter { it.row == row } } ?: items
     }
     val progressCopy = chartProgressCopyFor(selectedRow, items, mastery)
+    val rowGuidance = chartRowGuidanceCopyFor(selectedRow, items, mastery)
     LazyVerticalGrid(
         columns = GridCells.Adaptive(minSize = 86.dp),
         contentPadding = PaddingValues(16.dp),
@@ -63,6 +64,11 @@ fun KanaChartScreen(script: Script, mastery: Map<String, Int>, onSpeak: (String)
         }
         item(span = { GridItemSpan(maxLineSpan) }) {
             ChartRowFilters(rows = rows, selectedRow = selectedRow, onRowChange = { selectedRow = it })
+        }
+        rowGuidance?.let { copy ->
+            item(span = { GridItemSpan(maxLineSpan) }) {
+                ChartRowGuidancePanel(copy)
+            }
         }
         item(span = { GridItemSpan(maxLineSpan) }) {
             MasteryLegend()
@@ -94,6 +100,27 @@ fun KanaChartScreen(script: Script, mastery: Map<String, Int>, onSpeak: (String)
                     Spacer(Modifier.height(8.dp))
                     MasteryPips(level = level)
                 }
+            }
+        }
+    }
+}
+
+@Composable
+private fun ChartRowGuidancePanel(copy: ChartRowGuidanceCopy) {
+    Surface(
+        shape = RoundedCornerShape(18.dp),
+        color = MaterialTheme.colorScheme.surfaceVariant,
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Row(
+            modifier = Modifier.padding(14.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(10.dp)
+        ) {
+            Icon(Icons.Outlined.CheckCircle, contentDescription = null, modifier = Modifier.size(18.dp))
+            Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                Text(copy.title, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Black)
+                Text(copy.message, style = MaterialTheme.typography.bodySmall)
             }
         }
     }
