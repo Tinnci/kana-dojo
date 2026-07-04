@@ -145,9 +145,10 @@ Implemented:
 - Extracted shared exercise widgets so prompts, feedback, choices, audio, trace, and pair matching can be polished independently.
 - Extracted common metric and stage chips so shared progress indicators stay consistent across path, lesson completion, and practice.
 - Extracted settings and app shell bars so global navigation and preferences can be refined independently.
+- Polished the app shell with a compact settings icon and segmented script switch for clearer global controls.
 
 ## Next Polish Pass
 
 Implement next:
 
-- Polish the app shell and lesson path with more compact controls, clearer active states, and Material 3 Expressive motion details.
+- Polish the lesson path with clearer active states and Material 3 Expressive motion details.

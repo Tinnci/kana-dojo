@@ -1,23 +1,26 @@
 package dev.tinnci.kanadojo
 
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.CheckCircle
 import androidx.compose.material.icons.outlined.GridView
 import androidx.compose.material.icons.outlined.Replay
 import androidx.compose.material.icons.outlined.School
 import androidx.compose.material.icons.outlined.Settings
-import androidx.compose.material3.AssistChip
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.SegmentedButton
+import androidx.compose.material3.SegmentedButtonDefaults
+import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -54,15 +57,10 @@ fun KanaTopBar(
             }
         },
         actions = {
-            Box {
-                AssistChip(
-                    modifier = Modifier.padding(end = 8.dp),
-                    onClick = { settingsOpen = true },
-                    label = { Text("Settings") },
-                    leadingIcon = {
-                        Icon(Icons.Outlined.Settings, contentDescription = null, modifier = Modifier.size(18.dp))
-                    }
-                )
+            Row(modifier = Modifier.padding(end = 8.dp)) {
+                IconButton(onClick = { settingsOpen = true }) {
+                    Icon(Icons.Outlined.Settings, contentDescription = "Settings")
+                }
                 DropdownMenu(expanded = settingsOpen, onDismissRequest = { settingsOpen = false }) {
                     DropdownMenuItem(
                         text = { Text("Sound") },
@@ -87,17 +85,23 @@ fun KanaTopBar(
                     )
                 }
             }
-            Script.entries.forEach { script ->
-                AssistChip(
-                    modifier = Modifier.padding(end = 8.dp),
-                    onClick = { onScriptChange(script) },
-                    label = { Text(script.label) },
-                    leadingIcon = {
-                        if (script == selectedScript) {
-                            Icon(Icons.Outlined.CheckCircle, contentDescription = null, modifier = Modifier.size(18.dp))
+            Spacer(Modifier.width(4.dp))
+            SingleChoiceSegmentedButtonRow(modifier = Modifier.padding(end = 8.dp)) {
+                Script.entries.forEachIndexed { index, script ->
+                    SegmentedButton(
+                        selected = script == selectedScript,
+                        onClick = { onScriptChange(script) },
+                        shape = SegmentedButtonDefaults.itemShape(index = index, count = Script.entries.size),
+                        label = {
+                            Text(
+                                when (script) {
+                                    Script.Hiragana -> "Hira"
+                                    Script.Katakana -> "Kata"
+                                }
+                            )
                         }
-                    }
-                )
+                    )
+                }
             }
         }
     )
