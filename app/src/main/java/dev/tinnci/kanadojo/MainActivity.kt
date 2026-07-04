@@ -285,9 +285,12 @@ private fun LessonPathScreen(
         verticalArrangement = Arrangement.spacedBy(14.dp)
     ) {
         item {
-            HeroPanel(
-                title = "${script.label} path",
-                subtitle = "${snapshot.fluent} fluent. Build recall first, then separate lookalikes."
+            PathHeroPanel(
+                script = script,
+                nextLesson = nextLesson,
+                nextLessonMastery = lessonAverageMastery(nextLesson, mastery),
+                snapshot = snapshot,
+                reviewCount = reviewCount
             )
         }
         item {
@@ -500,6 +503,80 @@ private fun ProgressStat(label: String, value: Int, color: Color, modifier: Modi
         Column(modifier = Modifier.padding(12.dp), horizontalAlignment = Alignment.CenterHorizontally) {
             Text(value.toString(), style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Black)
             Text(label, style = MaterialTheme.typography.labelMedium)
+        }
+    }
+}
+
+@Composable
+private fun PathHeroPanel(
+    script: Script,
+    nextLesson: KanaLesson,
+    nextLessonMastery: Float,
+    snapshot: ProgressSnapshot,
+    reviewCount: Int
+) {
+    val overall by animateFloatAsState(targetValue = snapshot.overall, label = "pathHeroOverall")
+    val lessonProgress by animateFloatAsState(targetValue = (nextLessonMastery / 5f).coerceIn(0f, 1f), label = "pathHeroLesson")
+    val heroColor by animateColorAsState(
+        targetValue = if (reviewCount > 0) Color(0xFFFFF1BC) else MaterialTheme.colorScheme.primaryContainer,
+        label = "pathHeroColor"
+    )
+    Surface(
+        shape = RoundedCornerShape(24.dp),
+        tonalElevation = 4.dp,
+        color = heroColor,
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Column(
+            modifier = Modifier
+                .background(Brush.horizontalGradient(listOf(heroColor, Color(0xFFE2EEF8))))
+                .padding(20.dp),
+            verticalArrangement = Arrangement.spacedBy(14.dp)
+        ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Box(
+                    modifier = Modifier
+                        .size(72.dp)
+                        .background(MaterialTheme.colorScheme.surface, CircleShape),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(nextLesson.items.firstOrNull()?.kana.orEmpty(), fontSize = 38.sp, fontWeight = FontWeight.Black)
+                }
+                Spacer(Modifier.width(16.dp))
+                Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                    Text("${script.label} path", style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Bold)
+                    Text(nextLesson.title, style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Black)
+                    Text(
+                        "Next: ${nextLesson.items.joinToString(" ") { it.kana }}",
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                }
+            }
+            LinearProgressIndicator(progress = { overall }, modifier = Modifier.fillMaxWidth())
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
+                HeroMetric("Lesson", "${(lessonProgress * 100).toInt()}%", Modifier.weight(1f))
+                HeroMetric("Fluent", "${snapshot.fluent}/${snapshot.total}", Modifier.weight(1f))
+                HeroMetric("Review", reviewCount.toString(), Modifier.weight(1f))
+            }
+        }
+    }
+}
+
+@Composable
+private fun HeroMetric(label: String, value: String, modifier: Modifier = Modifier) {
+    Surface(
+        shape = RoundedCornerShape(14.dp),
+        color = MaterialTheme.colorScheme.surface.copy(alpha = 0.68f),
+        modifier = modifier
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 8.dp, vertical = 8.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(value, style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Black)
+            Text(label, style = MaterialTheme.typography.labelSmall)
         }
     }
 }
