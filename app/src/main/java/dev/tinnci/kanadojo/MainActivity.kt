@@ -1172,6 +1172,38 @@ private fun TraceKanaExercise(item: KanaItem, answered: Boolean, onSpeak: (Strin
     var points by remember(item.id) { mutableStateOf<List<Offset>>(emptyList()) }
     val traceScore = remember(points) { traceScoreFor(points.map { TracePoint(it.x, it.y) }) }
     val animatedScore by animateFloatAsState(targetValue = traceScore.progress, label = "traceScore")
+    val guideAlpha by animateFloatAsState(
+        targetValue = if (traceScore.ready || answered) 0.28f else 0.14f,
+        label = "traceGuideAlpha"
+    )
+    val guideLineAlpha by animateFloatAsState(
+        targetValue = if (traceScore.ready || answered) 0.24f else 0.13f,
+        label = "traceGuideLineAlpha"
+    )
+    val padBorderColor by animateColorAsState(
+        targetValue = when {
+            answered && !traceScore.ready -> Color(0xFF9B2D20)
+            traceScore.ready -> MaterialTheme.colorScheme.primary
+            else -> MaterialTheme.colorScheme.outlineVariant
+        },
+        label = "tracePadBorder"
+    )
+    val padBackgroundColor by animateColorAsState(
+        targetValue = when {
+            answered && !traceScore.ready -> Color(0xFFFFF4F0)
+            traceScore.ready -> Color(0xFFF2FAF1)
+            else -> Color(0xFFFFFBF3)
+        },
+        label = "tracePadBackground"
+    )
+    val strokeColor by animateColorAsState(
+        targetValue = if (answered && !traceScore.ready) Color(0xFF9B2D20) else Color(0xFF2F5D50),
+        label = "traceStroke"
+    )
+    val borderWidth by animateDpAsState(
+        targetValue = if (traceScore.ready || answered) 3.dp else 2.dp,
+        label = "traceBorderWidth"
+    )
 
     Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(14.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -1185,10 +1217,10 @@ private fun TraceKanaExercise(item: KanaItem, answered: Boolean, onSpeak: (Strin
             modifier = Modifier
                 .fillMaxWidth()
                 .aspectRatio(1f)
-                .background(Color(0xFFFFFBF3), RoundedCornerShape(26.dp))
+                .background(padBackgroundColor, RoundedCornerShape(26.dp))
                 .border(
-                    width = 2.dp,
-                    color = if (traceScore.ready) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outlineVariant,
+                    width = borderWidth,
+                    color = padBorderColor,
                     shape = RoundedCornerShape(26.dp)
                 )
                 .pointerInput(item.id) {
@@ -1199,16 +1231,16 @@ private fun TraceKanaExercise(item: KanaItem, answered: Boolean, onSpeak: (Strin
                 },
             contentAlignment = Alignment.Center
         ) {
-            Text(item.kana, fontSize = 190.sp, color = Color(0x242F5D50), fontWeight = FontWeight.Black)
+            Text(item.kana, fontSize = 190.sp, color = Color(0xFF2F5D50).copy(alpha = guideAlpha), fontWeight = FontWeight.Black)
             Canvas(modifier = Modifier.fillMaxSize()) {
                 drawLine(
-                    color = Color(0x22A66A5A),
+                    color = Color(0xFFA66A5A).copy(alpha = guideLineAlpha),
                     start = Offset(size.width * 0.18f, size.height * 0.5f),
                     end = Offset(size.width * 0.82f, size.height * 0.5f),
                     strokeWidth = 2.dp.toPx()
                 )
                 drawLine(
-                    color = Color(0x22A66A5A),
+                    color = Color(0xFFA66A5A).copy(alpha = guideLineAlpha),
                     start = Offset(size.width * 0.5f, size.height * 0.18f),
                     end = Offset(size.width * 0.5f, size.height * 0.82f),
                     strokeWidth = 2.dp.toPx()
@@ -1218,7 +1250,7 @@ private fun TraceKanaExercise(item: KanaItem, answered: Boolean, onSpeak: (Strin
                 points.drop(1).forEach { path.lineTo(it.x, it.y) }
                 drawPath(
                     path = path,
-                    color = Color(0xFF2F5D50),
+                    color = strokeColor,
                     style = Stroke(width = 12.dp.toPx(), cap = StrokeCap.Round)
                 )
             }
@@ -1237,9 +1269,13 @@ private fun TraceKanaExercise(item: KanaItem, answered: Boolean, onSpeak: (Strin
 
 @Composable
 private fun TraceScorePanel(score: Float, ready: Boolean, message: String) {
+    val panelColor by animateColorAsState(
+        targetValue = if (ready) Color(0xFFDCEBDD) else MaterialTheme.colorScheme.surfaceVariant,
+        label = "tracePanelColor"
+    )
     Surface(
         shape = RoundedCornerShape(18.dp),
-        color = if (ready) Color(0xFFDCEBDD) else MaterialTheme.colorScheme.surfaceVariant,
+        color = panelColor,
         modifier = Modifier.fillMaxWidth()
     ) {
         Column(
@@ -1247,6 +1283,13 @@ private fun TraceScorePanel(score: Float, ready: Boolean, message: String) {
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(
+                    imageVector = if (ready) Icons.Outlined.CheckCircle else Icons.Outlined.TouchApp,
+                    contentDescription = null,
+                    modifier = Modifier.size(18.dp),
+                    tint = if (ready) Color(0xFF2F5D50) else MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                Spacer(Modifier.width(8.dp))
                 Text("Trace score", style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Bold)
                 Spacer(Modifier.weight(1f))
                 Text("${(score * 100).toInt()}%", style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Black)
