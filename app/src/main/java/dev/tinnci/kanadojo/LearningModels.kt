@@ -178,6 +178,11 @@ data class PracticeAccuracyToneCopy(
     val message: String
 )
 
+data class PracticeOutcomeGuidanceCopy(
+    val title: String,
+    val message: String
+)
+
 data class PracticeCompletionNextStep(
     val title: String,
     val message: String
@@ -630,6 +635,29 @@ fun practiceAccuracyToneCopyFor(stats: LessonSessionStats): PracticeAccuracyTone
         )
     }
 }
+
+fun practiceOutcomeGuidanceCopyFor(outcomes: ReviewSessionOutcomes): PracticeOutcomeGuidanceCopy =
+    when {
+        outcomes.shakyIds.isNotEmpty() && outcomes.repairedIds.isNotEmpty() -> PracticeOutcomeGuidanceCopy(
+            title = "Repair split",
+            message = "Repaired kana improved in this pass; shaky kana still need one more repeat."
+        )
+
+        outcomes.shakyIds.isNotEmpty() -> PracticeOutcomeGuidanceCopy(
+            title = "Still shaky",
+            message = "These kana missed without a clean answer. Repeat before adding new material."
+        )
+
+        outcomes.repairedIds.isNotEmpty() -> PracticeOutcomeGuidanceCopy(
+            title = "Repair held",
+            message = "Missed kana came back correctly. Review them later instead of drilling now."
+        )
+
+        else -> PracticeOutcomeGuidanceCopy(
+            title = "Clean set",
+            message = "No repair needed. Keep momentum with the path or a mixed queue."
+        )
+    }
 
 fun practiceCompletionNextStepFor(mode: PracticeMode, stats: LessonSessionStats): PracticeCompletionNextStep =
     when {

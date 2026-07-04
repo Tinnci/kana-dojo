@@ -282,6 +282,7 @@ private fun PracticeCompletionPanel(
     val repeatActionLabel = practiceRepeatActionLabelFor(mode)
     val completionMetrics = practiceCompletionMetricsFor(outcomes, queueSize)
     val accuracyTone = practiceAccuracyToneCopyFor(stats)
+    val outcomeGuidance = practiceOutcomeGuidanceCopyFor(outcomes)
     Surface(
         shape = RoundedCornerShape(22.dp),
         color = MaterialTheme.colorScheme.primaryContainer,
@@ -328,6 +329,7 @@ private fun PracticeCompletionPanel(
                     PracticeCompletionMetricTile(metric, Modifier.weight(1f))
                 }
             }
+            PracticeOutcomeGuidancePanel(outcomeGuidance)
             if (cleanItems.isNotEmpty()) {
                 CompletionKanaGroup("Clean", cleanItems.take(8))
             }
@@ -364,6 +366,43 @@ private fun PracticeCompletionPanel(
         }
     }
 }
+
+@Composable
+private fun PracticeOutcomeGuidancePanel(copy: PracticeOutcomeGuidanceCopy) {
+    Surface(
+        shape = RoundedCornerShape(16.dp),
+        color = MaterialTheme.colorScheme.surface.copy(alpha = 0.72f),
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Row(
+            modifier = Modifier.padding(12.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(10.dp)
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(28.dp)
+                    .background(practiceOutcomeGuidanceColor(copy.title), CircleShape),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(Icons.Outlined.CheckCircle, contentDescription = null, modifier = Modifier.size(17.dp))
+            }
+            Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                Text(copy.title, style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Black)
+                Text(copy.message, style = MaterialTheme.typography.bodySmall)
+            }
+        }
+    }
+}
+
+@Composable
+private fun practiceOutcomeGuidanceColor(title: String): Color =
+    when (title) {
+        "Clean set" -> Color(0xFFDCEBDD)
+        "Repair held" -> Color(0xFFE2EEF8)
+        "Still shaky", "Repair split" -> Color(0xFFFFDFD6)
+        else -> MaterialTheme.colorScheme.surfaceVariant
+    }
 
 @Composable
 private fun PracticeAccuracyToneChip(copy: PracticeAccuracyToneCopy) {

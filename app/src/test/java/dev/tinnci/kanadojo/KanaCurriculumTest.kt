@@ -1158,6 +1158,62 @@ class KanaCurriculumTest {
     }
 
     @Test
+    fun practiceOutcomeGuidanceExplainsMixedRepairedAndShakyOutcomes() {
+        val copy = practiceOutcomeGuidanceCopyFor(
+            ReviewSessionOutcomes(
+                cleanIds = emptySet(),
+                repairedIds = setOf("repaired"),
+                shakyIds = setOf("shaky")
+            )
+        )
+
+        assertEquals("Repair split", copy.title)
+        assertTrue(copy.message.contains("one more repeat"))
+    }
+
+    @Test
+    fun practiceOutcomeGuidanceExplainsOnlyShakyOutcomes() {
+        val copy = practiceOutcomeGuidanceCopyFor(
+            ReviewSessionOutcomes(
+                cleanIds = emptySet(),
+                repairedIds = emptySet(),
+                shakyIds = setOf("shaky")
+            )
+        )
+
+        assertEquals("Still shaky", copy.title)
+        assertTrue(copy.message.contains("Repeat before"))
+    }
+
+    @Test
+    fun practiceOutcomeGuidanceExplainsOnlyRepairedOutcomes() {
+        val copy = practiceOutcomeGuidanceCopyFor(
+            ReviewSessionOutcomes(
+                cleanIds = emptySet(),
+                repairedIds = setOf("repaired"),
+                shakyIds = emptySet()
+            )
+        )
+
+        assertEquals("Repair held", copy.title)
+        assertTrue(copy.message.contains("Review them later"))
+    }
+
+    @Test
+    fun practiceOutcomeGuidanceExplainsCleanOutcomes() {
+        val copy = practiceOutcomeGuidanceCopyFor(
+            ReviewSessionOutcomes(
+                cleanIds = setOf("clean"),
+                repairedIds = emptySet(),
+                shakyIds = emptySet()
+            )
+        )
+
+        assertEquals("Clean set", copy.title)
+        assertTrue(copy.message.contains("No repair needed"))
+    }
+
+    @Test
     fun practiceCompletionNextStepExplainsCleanWritingQueues() {
         val nextStep = practiceCompletionNextStepFor(
             mode = PracticeMode.Writing,

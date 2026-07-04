@@ -202,9 +202,10 @@ Implemented:
 - Added tested mode-aware repeat action labels to practice completion.
 - Added tested compact outcome tone labels to practice completion metrics.
 - Added tested compact accuracy tone copy to practice completion.
+- Added tested compact repaired-versus-shaky guidance copy to practice completion.
 
 ## Next Polish Pass
 
 Implement next:
 
-- Add compact repaired-versus-shaky guidance copy to practice completion.
+- Add reduced-motion-aware entrance motion to practice outcome guidance.
