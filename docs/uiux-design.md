@@ -194,9 +194,10 @@ Implemented:
 - Added tested practice completion next-step copy for clean sound-focused queues.
 - Added tested practice completion next-step copy for clean contrast-focused queues.
 - Added tested practice completion next-step copy for clean speed-focused queues.
+- Added tested practice completion next-step copy for clean cross-script queues.
 
 ## Next Polish Pass
 
 Implement next:
 
-- Add compact practice completion next-step copy for clean cross-script queues.
+- Add compact practice completion next-step copy for clean mixed-review queues.

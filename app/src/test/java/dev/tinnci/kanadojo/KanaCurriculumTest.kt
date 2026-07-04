@@ -1156,6 +1156,17 @@ class KanaCurriculumTest {
     }
 
     @Test
+    fun practiceCompletionNextStepExplainsCleanCrossScriptQueues() {
+        val nextStep = practiceCompletionNextStepFor(
+            mode = PracticeMode.Cross,
+            stats = LessonSessionStats(correct = 6, missed = 0)
+        )
+
+        assertEquals("Scripts are connected", nextStep.title)
+        assertTrue(nextStep.message.contains("hiragana and katakana"))
+    }
+
+    @Test
     fun reviewSessionOutcomesSeparateCleanRepairedAndShakyKana() {
         val outcomes = reviewSessionOutcomesFor(
             correctCounts = mapOf(

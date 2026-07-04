@@ -603,6 +603,11 @@ fun practiceCompletionNextStepFor(mode: PracticeMode, stats: LessonSessionStats)
             message = "Move to mixed review or the path while answers still feel automatic."
         )
 
+        mode == PracticeMode.Cross -> PracticeCompletionNextStep(
+            title = "Scripts are connected",
+            message = "Return to the path or mixed review while hiragana and katakana are both active."
+        )
+
         else -> PracticeCompletionNextStep(
             title = "Ready for path",
             message = "Clean queue. Continue while recall is warm."
