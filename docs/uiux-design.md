@@ -139,10 +139,11 @@ Implemented:
 - Compact settings menu for motion, sound, and haptic controls, keeping script selection visible.
 - Shared answer option component for kana, romaji, and sound-choice prompts.
 - Extracted lesson-runner and completion shell so session flow can be polished independently from the main app scaffold.
+- Extracted chart/reference UI so kana browsing and mastery visualization can evolve separately from the app shell.
 
 ## Next Polish Pass
 
 Implement next:
 
 - Continue splitting large screen sections out of `MainActivity.kt`.
-- Extract practice review and chart surfaces from `MainActivity.kt`.
+- Extract practice review surfaces from `MainActivity.kt`.
