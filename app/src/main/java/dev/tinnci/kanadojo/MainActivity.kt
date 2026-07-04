@@ -171,6 +171,14 @@ private data class ProgressSnapshot(
     val overall: Float = if (total == 0) 0f else fluent / total.toFloat()
 }
 
+private data class LessonSessionStats(
+    val correct: Int = 0,
+    val missed: Int = 0
+) {
+    val attempts: Int = correct + missed
+    val accuracy: Float = if (attempts == 0) 0f else correct / attempts.toFloat()
+}
+
 private class ProgressStore(context: Context) {
     private val prefs = context.getSharedPreferences("kana_progress", Context.MODE_PRIVATE)
 
@@ -624,6 +632,7 @@ private fun LessonRunner(
 ) {
     val queue = remember(lesson) { mutableStateListOf<Exercise>().apply { addAll(buildLessonExercises(lesson)) } }
     var completed by remember(lesson) { mutableIntStateOf(0) }
+    var sessionStats by remember(lesson) { mutableStateOf(LessonSessionStats()) }
     var feedback by remember(lesson) { mutableStateOf<AnswerFeedback?>(null) }
     val current = queue.firstOrNull()
     val total = (completed + queue.size).coerceAtLeast(1)
@@ -642,10 +651,16 @@ private fun LessonRunner(
                 progress = { completed / total.toFloat() },
                 modifier = Modifier.weight(1f)
             )
+            Spacer(Modifier.width(12.dp))
+            Text(
+                "${sessionStats.correct}/${sessionStats.attempts.coerceAtLeast(1)}",
+                style = MaterialTheme.typography.labelLarge,
+                fontWeight = FontWeight.Bold
+            )
         }
 
         if (current == null) {
-            LessonComplete(lesson = lesson, onContinue = onExit)
+            LessonComplete(lesson = lesson, stats = sessionStats, onContinue = onExit)
         } else {
             ExerciseCard(
                 exercise = current,
@@ -655,6 +670,11 @@ private fun LessonRunner(
                 onAnswer = { correct ->
                     if (feedback == null) {
                         feedback = AnswerFeedback(correct = correct, answer = correctAnswerFor(current))
+                        sessionStats = if (correct) {
+                            sessionStats.copy(correct = sessionStats.correct + 1)
+                        } else {
+                            sessionStats.copy(missed = sessionStats.missed + 1)
+                        }
                         onResult(current.items, correct)
                     }
                 },
@@ -674,7 +694,13 @@ private fun LessonRunner(
 }
 
 @Composable
-private fun LessonComplete(lesson: KanaLesson, onContinue: () -> Unit) {
+private fun LessonComplete(lesson: KanaLesson, stats: LessonSessionStats, onContinue: () -> Unit) {
+    val accuracy by animateFloatAsState(targetValue = stats.accuracy, label = "lessonAccuracy")
+    val message = when {
+        stats.missed == 0 -> "Clean run. Keep the recall warm."
+        stats.accuracy >= 0.75f -> "Good pass. Misses are queued for review."
+        else -> "This row needs another repair pass."
+    }
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -692,6 +718,7 @@ private fun LessonComplete(lesson: KanaLesson, onContinue: () -> Unit) {
         }
         Spacer(Modifier.height(20.dp))
         Text("Lesson complete", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Black)
+        Text(message, style = MaterialTheme.typography.bodyLarge, textAlign = TextAlign.Center)
         Spacer(Modifier.height(8.dp))
         StageChip(lesson.stage)
         Spacer(Modifier.height(18.dp))
@@ -706,6 +733,11 @@ private fun LessonComplete(lesson: KanaLesson, onContinue: () -> Unit) {
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(10.dp)
             ) {
+                Row(horizontalArrangement = Arrangement.spacedBy(10.dp), modifier = Modifier.fillMaxWidth()) {
+                    ProgressStat("Correct", stats.correct, Color(0xFFDCEBDD), Modifier.weight(1f))
+                    ProgressStat("Missed", stats.missed, Color(0xFFFFDFD6), Modifier.weight(1f))
+                }
+                LinearProgressIndicator(progress = { accuracy }, modifier = Modifier.fillMaxWidth())
                 Text(lesson.items.joinToString(" ") { it.kana }, fontSize = 34.sp, fontWeight = FontWeight.Black)
                 Text(lesson.items.joinToString("  ") { it.romaji }, style = MaterialTheme.typography.titleMedium)
                 Text("These will stay in review until they feel automatic.", style = MaterialTheme.typography.bodyMedium, textAlign = TextAlign.Center)
