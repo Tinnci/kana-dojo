@@ -17,6 +17,7 @@ fun buildLessonExercises(lesson: KanaLesson): List<Exercise> {
         LearningStage.ShapeHeavy -> 4
         LearningStage.TailRows -> lesson.items.size
         LearningStage.Voiced -> lesson.items.size
+        LearningStage.Combination -> lesson.items.size
         LearningStage.Confusable -> lesson.items.size
     }
     val writing = lesson.items.take(writingCount).map { Exercise(ExerciseKind.TraceKana, listOf(it)) }
@@ -139,6 +140,7 @@ fun lessonsFor(script: Script): List<KanaLesson> {
 private fun lessonStage(index: Int, items: List<KanaItem>, allItems: List<KanaItem>): LearningStage =
     when {
         index == 1 -> LearningStage.Anchor
+        index >= 16 -> LearningStage.Combination
         index >= 11 -> LearningStage.Voiced
         items.any { item -> item.confusable.any { kana -> (allItems.firstOrNull { it.kana == kana }?.lesson ?: Int.MAX_VALUE) <= index } } ->
             LearningStage.Confusable
@@ -154,6 +156,7 @@ private fun lessonDifficulty(stage: LearningStage): Int =
         LearningStage.ShapeHeavy,
         LearningStage.TailRows,
         LearningStage.Voiced,
+        LearningStage.Combination,
         LearningStage.Confusable -> 3
     }
 
@@ -269,7 +272,40 @@ val hiraganaItems = listOf(
     kana(Script.Hiragana, "ぴ", "pi", "p", 15),
     kana(Script.Hiragana, "ぷ", "pu", "p", 15),
     kana(Script.Hiragana, "ぺ", "pe", "p", 15),
-    kana(Script.Hiragana, "ぽ", "po", "p", 15)
+    kana(Script.Hiragana, "ぽ", "po", "p", 15),
+    kana(Script.Hiragana, "きゃ", "kya", "k-y", 16),
+    kana(Script.Hiragana, "きゅ", "kyu", "k-y", 16),
+    kana(Script.Hiragana, "きょ", "kyo", "k-y", 16),
+    kana(Script.Hiragana, "しゃ", "sha", "s-y", 16),
+    kana(Script.Hiragana, "しゅ", "shu", "s-y", 16),
+    kana(Script.Hiragana, "しょ", "sho", "s-y", 16),
+    kana(Script.Hiragana, "ちゃ", "cha", "t-y", 17),
+    kana(Script.Hiragana, "ちゅ", "chu", "t-y", 17),
+    kana(Script.Hiragana, "ちょ", "cho", "t-y", 17),
+    kana(Script.Hiragana, "にゃ", "nya", "n-y", 17),
+    kana(Script.Hiragana, "にゅ", "nyu", "n-y", 17),
+    kana(Script.Hiragana, "にょ", "nyo", "n-y", 17),
+    kana(Script.Hiragana, "ひゃ", "hya", "h-y", 18),
+    kana(Script.Hiragana, "ひゅ", "hyu", "h-y", 18),
+    kana(Script.Hiragana, "ひょ", "hyo", "h-y", 18),
+    kana(Script.Hiragana, "みゃ", "mya", "m-y", 18),
+    kana(Script.Hiragana, "みゅ", "myu", "m-y", 18),
+    kana(Script.Hiragana, "みょ", "myo", "m-y", 18),
+    kana(Script.Hiragana, "りゃ", "rya", "r-y", 19),
+    kana(Script.Hiragana, "りゅ", "ryu", "r-y", 19),
+    kana(Script.Hiragana, "りょ", "ryo", "r-y", 19),
+    kana(Script.Hiragana, "ぎゃ", "gya", "g-y", 19),
+    kana(Script.Hiragana, "ぎゅ", "gyu", "g-y", 19),
+    kana(Script.Hiragana, "ぎょ", "gyo", "g-y", 19),
+    kana(Script.Hiragana, "じゃ", "ja", "j-y", 20),
+    kana(Script.Hiragana, "じゅ", "ju", "j-y", 20),
+    kana(Script.Hiragana, "じょ", "jo", "j-y", 20),
+    kana(Script.Hiragana, "びゃ", "bya", "b-y", 20),
+    kana(Script.Hiragana, "びゅ", "byu", "b-y", 20),
+    kana(Script.Hiragana, "びょ", "byo", "b-y", 20),
+    kana(Script.Hiragana, "ぴゃ", "pya", "p-y", 20),
+    kana(Script.Hiragana, "ぴゅ", "pyu", "p-y", 20),
+    kana(Script.Hiragana, "ぴょ", "pyo", "p-y", 20)
 )
 
 val katakanaItems = listOf(
@@ -343,5 +379,38 @@ val katakanaItems = listOf(
     kana(Script.Katakana, "ピ", "pi", "p", 15),
     kana(Script.Katakana, "プ", "pu", "p", 15),
     kana(Script.Katakana, "ペ", "pe", "p", 15),
-    kana(Script.Katakana, "ポ", "po", "p", 15)
+    kana(Script.Katakana, "ポ", "po", "p", 15),
+    kana(Script.Katakana, "キャ", "kya", "k-y", 16),
+    kana(Script.Katakana, "キュ", "kyu", "k-y", 16),
+    kana(Script.Katakana, "キョ", "kyo", "k-y", 16),
+    kana(Script.Katakana, "シャ", "sha", "s-y", 16),
+    kana(Script.Katakana, "シュ", "shu", "s-y", 16),
+    kana(Script.Katakana, "ショ", "sho", "s-y", 16),
+    kana(Script.Katakana, "チャ", "cha", "t-y", 17),
+    kana(Script.Katakana, "チュ", "chu", "t-y", 17),
+    kana(Script.Katakana, "チョ", "cho", "t-y", 17),
+    kana(Script.Katakana, "ニャ", "nya", "n-y", 17),
+    kana(Script.Katakana, "ニュ", "nyu", "n-y", 17),
+    kana(Script.Katakana, "ニョ", "nyo", "n-y", 17),
+    kana(Script.Katakana, "ヒャ", "hya", "h-y", 18),
+    kana(Script.Katakana, "ヒュ", "hyu", "h-y", 18),
+    kana(Script.Katakana, "ヒョ", "hyo", "h-y", 18),
+    kana(Script.Katakana, "ミャ", "mya", "m-y", 18),
+    kana(Script.Katakana, "ミュ", "myu", "m-y", 18),
+    kana(Script.Katakana, "ミョ", "myo", "m-y", 18),
+    kana(Script.Katakana, "リャ", "rya", "r-y", 19),
+    kana(Script.Katakana, "リュ", "ryu", "r-y", 19),
+    kana(Script.Katakana, "リョ", "ryo", "r-y", 19),
+    kana(Script.Katakana, "ギャ", "gya", "g-y", 19),
+    kana(Script.Katakana, "ギュ", "gyu", "g-y", 19),
+    kana(Script.Katakana, "ギョ", "gyo", "g-y", 19),
+    kana(Script.Katakana, "ジャ", "ja", "j-y", 20),
+    kana(Script.Katakana, "ジュ", "ju", "j-y", 20),
+    kana(Script.Katakana, "ジョ", "jo", "j-y", 20),
+    kana(Script.Katakana, "ビャ", "bya", "b-y", 20),
+    kana(Script.Katakana, "ビュ", "byu", "b-y", 20),
+    kana(Script.Katakana, "ビョ", "byo", "b-y", 20),
+    kana(Script.Katakana, "ピャ", "pya", "p-y", 20),
+    kana(Script.Katakana, "ピュ", "pyu", "p-y", 20),
+    kana(Script.Katakana, "ピョ", "pyo", "p-y", 20)
 )

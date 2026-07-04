@@ -87,7 +87,19 @@ Add dakuten and handakuten after the base table is stable. These should feel lik
 - Exercises: listen-first choice, romaji recall, trace every marked kana
 - Goal: recognize sound shifts from marks while separating duplicate romaji pairs like `じ/ぢ` and `ず/づ`
 
-### Stage 7: Mixed Fluency
+### Stage 7: Combination Kana
+
+Teach small `ゃ/ゅ/ょ` combinations after voiced kana. These should be learned as blended sounds rather than as two separate kana.
+
+- k/s blends: kya kyu kyo, sha shu sho
+- t/n blends: cha chu cho, nya nyu nyo
+- h/m blends: hya hyu hyo, mya myu myo
+- r/g blends: rya ryu ryo, gya gyu gyo
+- j/b/p blends: ja ju jo, bya byu byo, pya pyu pyo
+- Exercises: listen-first choice, romaji recall, trace with attention to the smaller second kana
+- Goal: read common syllable blends without mentally spelling them out
+
+### Stage 8: Mixed Fluency
 
 Mix all learned kana inside one script first, then mix hiragana and katakana later.
 
@@ -98,7 +110,7 @@ Mix all learned kana inside one script first, then mix hiragana and katakana lat
 
 ## Lesson Grouping
 
-Use fifteen lessons per script: ten base-kana lessons, then five voiced-kana lessons.
+Use twenty lessons per script: ten base-kana lessons, five voiced-kana lessons, then five combination-kana lessons.
 
 | Lesson | Group | Kana Count | Difficulty Note |
 | --- | --- | ---: | --- |
@@ -117,6 +129,11 @@ Use fifteen lessons per script: ten base-kana lessons, then five voiced-kana les
 | 13 | d row | 5 | contrasts `ぢ/づ` or `ヂ/ヅ` with z-row kana |
 | 14 | b row | 5 | voiced h-row transformation |
 | 15 | p row | 5 | handakuten transformation |
+| 16 | k/s blends | 6 | first small-y combinations |
+| 17 | t/n blends | 6 | includes `cha/chu/cho` |
+| 18 | h/m blends | 6 | shape-heavy combinations |
+| 19 | r/g blends | 6 | mixes base and voiced blends |
+| 20 | j/b/p blends | 9 | densest combination lesson |
 
 The app should unlock the next lesson when the current lesson average mastery reaches `2`, but it should keep weak kana visible in mistakes until they reach `4`.
 

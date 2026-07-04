@@ -11,14 +11,16 @@ class KanaCurriculumTest {
         val hiraganaLessons = lessonsFor(Script.Hiragana)
         val katakanaLessons = lessonsFor(Script.Katakana)
 
-        assertEquals(15, hiraganaLessons.size)
-        assertEquals(15, katakanaLessons.size)
+        assertEquals(20, hiraganaLessons.size)
+        assertEquals(20, katakanaLessons.size)
         assertEquals(LearningStage.Anchor, hiraganaLessons[0].stage)
         assertEquals(LearningStage.RegularRows, hiraganaLessons[1].stage)
         assertEquals(LearningStage.Confusable, hiraganaLessons[3].stage)
         assertEquals(LearningStage.Confusable, katakanaLessons[3].stage)
         assertEquals(LearningStage.Voiced, hiraganaLessons[10].stage)
         assertEquals(LearningStage.Voiced, katakanaLessons[14].stage)
+        assertEquals(LearningStage.Combination, hiraganaLessons[15].stage)
+        assertEquals(LearningStage.Combination, katakanaLessons[19].stage)
         assertEquals(listOf("a", "i", "u", "e", "o"), hiraganaLessons[0].items.map { it.romaji })
     }
 
@@ -36,10 +38,22 @@ class KanaCurriculumTest {
     @Test
     fun voicedKanaLessonsCoverDakutenAndHandakuten() {
         val hiraganaLessons = lessonsFor(Script.Hiragana)
-        val voicedKana = hiraganaLessons.drop(10).flatMap { it.items }.map { it.kana }.toSet()
+        val voicedKana = hiraganaLessons.slice(10..14).flatMap { it.items }.map { it.kana }.toSet()
 
         assertTrue(setOf("が", "ざ", "だ", "ば", "ぱ").all { it in voicedKana })
-        assertTrue(hiraganaLessons.drop(10).all { it.stage == LearningStage.Voiced })
+        assertTrue(hiraganaLessons.slice(10..14).all { it.stage == LearningStage.Voiced })
+    }
+
+    @Test
+    fun combinationLessonsCoverSmallYaYuYoBlends() {
+        val hiraganaLessons = lessonsFor(Script.Hiragana)
+        val katakanaLessons = lessonsFor(Script.Katakana)
+        val hiraganaBlends = hiraganaLessons.drop(15).flatMap { it.items }.map { it.kana }.toSet()
+        val katakanaBlends = katakanaLessons.drop(15).flatMap { it.items }.map { it.kana }.toSet()
+
+        assertTrue(setOf("きゃ", "しゃ", "ちゃ", "にゃ", "ひゃ", "みゃ", "りゃ", "ぎゃ", "じゃ", "びゃ", "ぴゃ").all { it in hiraganaBlends })
+        assertTrue(setOf("キャ", "シャ", "チャ", "ニャ", "ヒャ", "ミャ", "リャ", "ギャ", "ジャ", "ビャ", "ピャ").all { it in katakanaBlends })
+        assertTrue(hiraganaLessons.drop(15).all { it.stage == LearningStage.Combination })
     }
 
     @Test
