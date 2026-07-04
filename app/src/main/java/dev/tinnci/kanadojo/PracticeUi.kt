@@ -28,6 +28,7 @@ import androidx.compose.material.icons.outlined.School
 import androidx.compose.material.icons.outlined.TouchApp
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
@@ -359,7 +360,15 @@ private fun PracticeCompletionPanel(
                     Text(repeatActionLabel, fontWeight = FontWeight.Bold)
                 }
             } else {
-                Button(onClick = onRepeat, shape = RoundedCornerShape(18.dp), modifier = Modifier.fillMaxWidth()) {
+                Button(
+                    onClick = onRepeat,
+                    shape = RoundedCornerShape(18.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.error,
+                        contentColor = MaterialTheme.colorScheme.onError
+                    ),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
                     Icon(Icons.Outlined.Replay, contentDescription = null)
                     Spacer(Modifier.width(8.dp))
                     Text(repeatActionLabel, fontWeight = FontWeight.Bold)

@@ -208,9 +208,11 @@ Implemented:
 - Added tested compact completion action rationale copy for return-to-path versus repeat.
 - Added reduced-motion-aware entrance motion to practice action rationale.
 - Added compact action icon tone for clean return-to-path completions.
+- Added compact action icon tone for repeat-required completions.
+- Added repeat-required primary action tone to practice completion.
 
 ## Next Polish Pass
 
 Implement next:
 
-- Add compact action icon tone for repeat-required completions.
+- Add compact secondary repeat rationale for clean completions.
