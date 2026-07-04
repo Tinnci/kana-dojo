@@ -154,9 +154,10 @@ Implemented:
 - Surfaced due spaced-review counts in practice and included due recall-ready kana in weak review.
 - Added due-review priority to the path hero and daily focus metrics so the first screen separates due recall from repair work.
 - Added a compact due-kana preview to the daily focus panel before entering practice.
+- Added a tested daily review intro state that explains due recall, mistake repair, or low-mastery repair before practice begins.
 
 ## Next Polish Pass
 
 Implement next:
 
-- Add a dedicated daily review intro state that explains whether the queue is due recall, mistakes, or low-mastery repair.
+- Add a review-session completion state with accuracy, repaired kana, and a clear next action.

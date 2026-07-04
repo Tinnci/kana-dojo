@@ -271,6 +271,31 @@ class KanaCurriculumTest {
     }
 
     @Test
+    fun weakReviewIntroPrioritizesDueRecall() {
+        val intro = reviewIntroCopyFor(PracticeMode.Weak, dueCount = 3, weakCount = 2)
+
+        assertEquals("Due recall", intro.title)
+        assertEquals("Review due", intro.actionLabel)
+    }
+
+    @Test
+    fun weakReviewIntroFallsBackToMistakeRepairBeforeLowMastery() {
+        val mistakeIntro = reviewIntroCopyFor(PracticeMode.Weak, dueCount = 0, weakCount = 2)
+        val lowMasteryIntro = reviewIntroCopyFor(PracticeMode.Weak, dueCount = 0, weakCount = 0)
+
+        assertEquals("Mistake repair", mistakeIntro.title)
+        assertEquals("Low-mastery repair", lowMasteryIntro.title)
+    }
+
+    @Test
+    fun nonWeakReviewIntroUsesModeCopy() {
+        val intro = reviewIntroCopyFor(PracticeMode.Contrast, dueCount = 4, weakCount = 3)
+
+        assertEquals(PracticeMode.Contrast.title, intro.title)
+        assertEquals("Start", intro.actionLabel)
+    }
+
+    @Test
     fun contrastPracticeTargetsConfusableKana() {
         val contrastItems = practiceItemsFor(
             mode = PracticeMode.Contrast,

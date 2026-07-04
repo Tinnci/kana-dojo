@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -24,6 +25,7 @@ import androidx.compose.material.icons.outlined.Replay
 import androidx.compose.material.icons.outlined.School
 import androidx.compose.material.icons.outlined.TouchApp
 import androidx.compose.material3.AssistChip
+import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
@@ -87,6 +89,12 @@ fun MistakePracticeScreen(
     val dueCount = remember(scriptItems, dueSnapshot, currentEpochDay, masterySnapshot) {
         dueReviewCountFor(scriptItems, dueSnapshot, currentEpochDay, masterySnapshot)
     }
+    var showIntro by remember(selectedMode, queueSignature) { mutableStateOf(true) }
+    val intro = reviewIntroCopyFor(
+        mode = selectedMode,
+        dueCount = dueCount,
+        weakCount = weakCount
+    )
 
     if (current == null || exercise == null) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -111,6 +119,14 @@ fun MistakePracticeScreen(
             dueCount = dueCount,
             contrastCount = contrastCount
         )
+        if (showIntro) {
+            PracticeIntroPanel(
+                intro = intro,
+                previewItems = practiceItems.take(8),
+                onStart = { showIntro = false }
+            )
+            return@Column
+        }
         PracticeSessionPanel(
             stats = sessionStats,
             completed = currentIndex,
@@ -138,6 +154,51 @@ fun MistakePracticeScreen(
                 feedback = null
             }
         )
+    }
+}
+
+@Composable
+private fun PracticeIntroPanel(
+    intro: PracticeIntroCopy,
+    previewItems: List<KanaItem>,
+    onStart: () -> Unit
+) {
+    Surface(
+        shape = RoundedCornerShape(22.dp),
+        color = MaterialTheme.colorScheme.surface,
+        tonalElevation = 2.dp,
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(14.dp)
+        ) {
+            Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                Text(intro.title, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Black)
+                Text(intro.subtitle, style = MaterialTheme.typography.bodyMedium)
+            }
+            LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
+                items(previewItems, key = { it.id }) { item ->
+                    Surface(
+                        shape = RoundedCornerShape(14.dp),
+                        color = MaterialTheme.colorScheme.surfaceVariant
+                    ) {
+                        Column(
+                            modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Text(item.kana, fontSize = 24.sp, fontWeight = FontWeight.Black)
+                            Text(item.romaji, style = MaterialTheme.typography.labelSmall)
+                        }
+                    }
+                }
+            }
+            Button(onClick = onStart, shape = RoundedCornerShape(18.dp), modifier = Modifier.fillMaxWidth()) {
+                Text(intro.actionLabel, fontWeight = FontWeight.Bold)
+            }
+        }
     }
 }
 

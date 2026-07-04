@@ -29,6 +29,41 @@ enum class PracticeMode(val label: String, val title: String, val subtitle: Stri
     Mixed("Mixed", "Mixed recall", "Keep familiar kana fast and automatic.")
 }
 
+data class PracticeIntroCopy(
+    val title: String,
+    val subtitle: String,
+    val actionLabel: String
+)
+
+fun reviewIntroCopyFor(mode: PracticeMode, dueCount: Int, weakCount: Int): PracticeIntroCopy =
+    when (mode) {
+        PracticeMode.Weak -> when {
+            dueCount > 0 -> PracticeIntroCopy(
+                title = "Due recall",
+                subtitle = "Start with kana whose spacing has matured today.",
+                actionLabel = "Review due"
+            )
+
+            weakCount > 0 -> PracticeIntroCopy(
+                title = "Mistake repair",
+                subtitle = "Replay missed kana before they settle into the wrong shape.",
+                actionLabel = "Repair mistakes"
+            )
+
+            else -> PracticeIntroCopy(
+                title = "Low-mastery repair",
+                subtitle = "Build shaky kana toward stable recall.",
+                actionLabel = "Start repair"
+            )
+        }
+
+        else -> PracticeIntroCopy(
+            title = mode.title,
+            subtitle = mode.subtitle,
+            actionLabel = "Start"
+        )
+    }
+
 enum class LearningStage(val label: String, val description: String) {
     Anchor("Anchor", "sound anchors"),
     RegularRows("Rows", "regular row rhythm"),
