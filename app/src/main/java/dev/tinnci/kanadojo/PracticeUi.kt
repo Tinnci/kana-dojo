@@ -338,13 +338,13 @@ private fun PracticeCompletionPanel(
             PracticeCompletionSectionDivider("Outcome")
             PracticeOutcomeGuidancePanel(copy = outcomeGuidance, reduceMotion = reduceMotion)
             if (cleanItems.isNotEmpty()) {
-                CompletionKanaGroup("Clean", cleanItems.take(8))
+                CompletionKanaGroup("Clean", cleanItems)
             }
             if (repairedItems.isNotEmpty()) {
-                CompletionKanaGroup("Repaired", repairedItems.take(8))
+                CompletionKanaGroup("Repaired", repairedItems)
             }
             if (shakyItems.isNotEmpty()) {
-                CompletionKanaGroup("Still shaky", shakyItems.take(8))
+                CompletionKanaGroup("Still shaky", shakyItems)
             }
             PracticeCompletionNextStepPanel(
                 mode = mode,
@@ -685,9 +685,31 @@ private fun PracticeCompletionModeChip(mode: PracticeMode) {
 @Composable
 private fun CompletionKanaGroup(label: String, items: List<KanaItem>) {
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        Text(label, style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Bold)
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                label,
+                style = MaterialTheme.typography.labelLarge,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.weight(1f)
+            )
+            Surface(
+                shape = RoundedCornerShape(999.dp),
+                color = MaterialTheme.colorScheme.surface.copy(alpha = 0.72f)
+            ) {
+                Text(
+                    "${items.size}",
+                    style = MaterialTheme.typography.labelSmall,
+                    fontWeight = FontWeight.Black,
+                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp)
+                )
+            }
+        }
         LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
-            items(items, key = { it.id }) { item ->
+            items(items.take(8), key = { it.id }) { item ->
                 Surface(
                     shape = RoundedCornerShape(14.dp),
                     color = MaterialTheme.colorScheme.surface.copy(alpha = 0.74f)
