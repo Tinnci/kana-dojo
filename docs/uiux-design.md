@@ -180,9 +180,10 @@ Implemented:
 - Added tested outcome-aware path action tones so next-lesson, due-review, and repair feedback read distinctly.
 - Added tested compact locked-lesson copy that names the previous recall gate without adding path card height.
 - Added tested path-stage progress copy so filtered lesson groups show stage fluency in the existing journey header.
+- Added tested compact path-stage empty states when a filter has no actionable lesson.
 
 ## Next Polish Pass
 
 Implement next:
 
-- Add a compact path-stage empty state when a filter hides every actionable lesson.
+- Add compact chart filter progress copy so reference browsing mirrors path-stage clarity.

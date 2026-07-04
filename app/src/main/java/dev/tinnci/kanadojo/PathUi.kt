@@ -78,6 +78,8 @@ fun LessonPathScreen(
         selectedStage?.let { stage -> lessons.filter { it.stage == stage } } ?: lessons
     }
     val stageProgressCopy = pathStageProgressCopyFor(selectedStage, lessons, mastery)
+    val stageEmptyStateCopy = pathStageEmptyStateCopyFor(selectedStage, lessons, mastery)
+    val listedLessons = if (stageEmptyStateCopy == null) visibleLessons else emptyList()
     val mistakeSnapshot = mistakeIds.toList()
     val masterySnapshot = mastery.toMap()
     val reviewCount = remember(scriptItems, mistakeSnapshot, masterySnapshot) {
@@ -224,7 +226,15 @@ fun LessonPathScreen(
                 onStageChange = { selectedStage = it }
             )
         }
-        items(visibleLessons, key = { it.index }) { lesson ->
+        stageEmptyStateCopy?.let { copy ->
+            item {
+                StageEmptyStatePanel(
+                    copy = copy,
+                    onClear = { selectedStage = null }
+                )
+            }
+        }
+        items(listedLessons, key = { it.index }) { lesson ->
             val unlocked = isLessonUnlocked(lesson, lessons, mastery)
             val lockCopy = lessonLockCopyFor(lesson, lessons, mastery)
             val learned = lesson.items.count { (mastery[it.id] ?: 0) > 0 }
@@ -308,6 +318,30 @@ private fun StageFilterChip(label: String, selected: Boolean, onClick: () -> Uni
             }
         }
     )
+}
+
+@Composable
+private fun StageEmptyStatePanel(copy: StageEmptyStateCopy, onClear: () -> Unit) {
+    Surface(
+        shape = RoundedCornerShape(18.dp),
+        color = MaterialTheme.colorScheme.surfaceVariant,
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Row(
+            modifier = Modifier.padding(14.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(10.dp)
+        ) {
+            Icon(Icons.Outlined.Lock, contentDescription = null, modifier = Modifier.size(20.dp))
+            Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                Text(copy.title, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Black)
+                Text(copy.message, style = MaterialTheme.typography.bodySmall)
+            }
+            FilledTonalButton(onClick = onClear, shape = RoundedCornerShape(16.dp)) {
+                Text(copy.actionLabel, fontWeight = FontWeight.Bold)
+            }
+        }
+    }
 }
 
 @Composable

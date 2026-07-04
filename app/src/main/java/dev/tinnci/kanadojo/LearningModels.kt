@@ -83,6 +83,12 @@ data class StageProgressCopy(
     val message: String
 )
 
+data class StageEmptyStateCopy(
+    val title: String,
+    val message: String,
+    val actionLabel: String
+)
+
 enum class PathFeedbackAction {
     StartLesson,
     OpenPractice

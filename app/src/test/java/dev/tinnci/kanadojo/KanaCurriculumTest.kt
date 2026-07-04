@@ -146,6 +146,48 @@ class KanaCurriculumTest {
     }
 
     @Test
+    fun pathStageEmptyStateExplainsLockedFutureStage() {
+        val lessons = lessonsFor(Script.Hiragana)
+
+        val copy = pathStageEmptyStateCopyFor(
+            selectedStage = LearningStage.Voiced,
+            lessons = lessons,
+            mastery = emptyMap()
+        )
+
+        assertEquals("No open marks lessons", copy?.title)
+        assertEquals("Show all", copy?.actionLabel)
+    }
+
+    @Test
+    fun pathStageEmptyStateExplainsCompletedStage() {
+        val lessons = lessonsFor(Script.Hiragana)
+        val anchor = lessons.first { it.stage == LearningStage.Anchor }
+        val mastery = anchor.items.associate { it.id to 4 }
+
+        val copy = pathStageEmptyStateCopyFor(
+            selectedStage = LearningStage.Anchor,
+            lessons = lessons,
+            mastery = mastery
+        )
+
+        assertEquals("Anchor fluent", copy?.title)
+    }
+
+    @Test
+    fun pathStageEmptyStateClearsWhenStageHasActionableLesson() {
+        val lessons = lessonsFor(Script.Hiragana)
+
+        val copy = pathStageEmptyStateCopyFor(
+            selectedStage = LearningStage.Anchor,
+            lessons = lessons,
+            mastery = emptyMap()
+        )
+
+        assertEquals(null, copy)
+    }
+
+    @Test
     fun nextPathLessonReturnsFirstUnfinishedUnlockedLesson() {
         val lessons = lessonsFor(Script.Hiragana)
         val lessonOneFluent = lessons[0].items.associate { it.id to 4 }

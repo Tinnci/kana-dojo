@@ -377,6 +377,31 @@ fun pathStageProgressCopyFor(
     return StageProgressCopy(message = "$prefix$fluentCount/${stageLessons.size} fluent")
 }
 
+fun pathStageEmptyStateCopyFor(
+    selectedStage: LearningStage?,
+    lessons: List<KanaLesson>,
+    mastery: Map<String, Int>
+): StageEmptyStateCopy? {
+    val stage = selectedStage ?: return null
+    val stageLessons = lessons.filter { it.stage == stage }
+    val hasActionableLesson = stageLessons.any { isLessonUnlocked(it, lessons, mastery) && lessonAverageMastery(it, mastery) < 4f }
+    if (hasActionableLesson) return null
+    val allFluent = stageLessons.isNotEmpty() && stageLessons.all { lessonAverageMastery(it, mastery) >= 4f }
+    return if (allFluent) {
+        StageEmptyStateCopy(
+            title = "${stage.label} fluent",
+            message = "This stage is complete. Clear the filter to continue the path.",
+            actionLabel = "Show all"
+        )
+    } else {
+        StageEmptyStateCopy(
+            title = "No open ${stage.label.lowercase()} lessons",
+            message = "Earlier rows still control this stage. Clear the filter to return to the next open lesson.",
+            actionLabel = "Show all"
+        )
+    }
+}
+
 fun nextPathLesson(lessons: List<KanaLesson>, mastery: Map<String, Int>): KanaLesson? =
     lessons.firstOrNull { lesson ->
         isLessonUnlocked(lesson, lessons, mastery) && lessonAverageMastery(lesson, mastery) < 4f
