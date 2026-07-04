@@ -77,7 +77,9 @@ fun MistakePracticeScreen(
     var currentIndex by remember(selectedMode, queueSignature) { mutableIntStateOf(0) }
     var feedback by remember(selectedMode, practiceItems, currentIndex) { mutableStateOf<AnswerFeedback?>(null) }
     var sessionStats by remember(selectedMode, queueSignature) { mutableStateOf(LessonSessionStats()) }
-    val current = if (practiceItems.isEmpty()) null else practiceItems[currentIndex % practiceItems.size]
+    var repairedIds by remember(selectedMode, queueSignature) { mutableStateOf(emptySet<String>()) }
+    val queueComplete = currentIndex >= practiceItems.size
+    val current = if (practiceItems.isEmpty() || queueComplete) null else practiceItems[currentIndex]
     val exercise = current?.let { practiceExerciseFor(it, selectedMode, currentIndex) }
     val optionItems = if (selectedMode == PracticeMode.Cross) allItems else scriptItems
     val queueLabel = if (selectedMode == PracticeMode.Cross) "Both scripts" else script.label
@@ -96,7 +98,7 @@ fun MistakePracticeScreen(
         weakCount = weakCount
     )
 
-    if (current == null || exercise == null) {
+    if (practiceItems.isEmpty()) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             Text("No kana to review yet.")
         }
@@ -127,6 +129,24 @@ fun MistakePracticeScreen(
             )
             return@Column
         }
+        if (queueComplete) {
+            PracticeCompletionPanel(
+                stats = sessionStats,
+                repairedCount = repairedIds.size,
+                queueSize = practiceItems.size,
+                onRepeat = {
+                    currentIndex = 0
+                    feedback = null
+                    sessionStats = LessonSessionStats()
+                    repairedIds = emptySet()
+                    showIntro = true
+                }
+            )
+            return@Column
+        }
+        if (current == null || exercise == null) {
+            return@Column
+        }
         PracticeSessionPanel(
             stats = sessionStats,
             completed = currentIndex,
@@ -146,6 +166,9 @@ fun MistakePracticeScreen(
                     } else {
                         sessionStats.copy(missed = sessionStats.missed + 1)
                     }
+                    if (correct) {
+                        repairedIds = repairedIds + current.id
+                    }
                     onResult(listOf(current), correct)
                 }
             },
@@ -154,6 +177,55 @@ fun MistakePracticeScreen(
                 feedback = null
             }
         )
+    }
+}
+
+@Composable
+private fun PracticeCompletionPanel(
+    stats: LessonSessionStats,
+    repairedCount: Int,
+    queueSize: Int,
+    onRepeat: () -> Unit
+) {
+    val accuracy by animateFloatAsState(targetValue = stats.accuracy, label = "practiceCompletionAccuracy")
+    Surface(
+        shape = RoundedCornerShape(22.dp),
+        color = MaterialTheme.colorScheme.primaryContainer,
+        tonalElevation = 3.dp,
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(14.dp)
+        ) {
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                Box(
+                    modifier = Modifier
+                        .size(52.dp)
+                        .background(MaterialTheme.colorScheme.primary, CircleShape),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(Icons.Outlined.CheckCircle, contentDescription = null, tint = MaterialTheme.colorScheme.onPrimary)
+                }
+                Column(modifier = Modifier.weight(1f)) {
+                    Text("Review complete", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Black)
+                    Text("Repeat the queue if any kana still felt slow.", style = MaterialTheme.typography.bodyMedium)
+                }
+            }
+            LinearProgressIndicator(progress = { accuracy }, modifier = Modifier.fillMaxWidth())
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
+                FocusMetric("Repaired", repairedCount, Modifier.weight(1f))
+                FocusMetric("Missed", stats.missed, Modifier.weight(1f))
+                FocusMetric("Queue", queueSize, Modifier.weight(1f))
+            }
+            Button(onClick = onRepeat, shape = RoundedCornerShape(18.dp), modifier = Modifier.fillMaxWidth()) {
+                Icon(Icons.Outlined.Replay, contentDescription = null)
+                Spacer(Modifier.width(8.dp))
+                Text("Repeat queue", fontWeight = FontWeight.Bold)
+            }
+        }
     }
 }
 
