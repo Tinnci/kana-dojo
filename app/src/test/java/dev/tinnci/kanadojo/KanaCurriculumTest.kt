@@ -200,6 +200,30 @@ class KanaCurriculumTest {
     }
 
     @Test
+    fun weakPracticeFallsBackToLowestMasteryKanaWhenNoMistakesExist() {
+        val scriptItems = itemsFor(Script.Hiragana)
+        val low = scriptItems[3]
+        val lower = scriptItems[4]
+        val mastery = scriptItems.associate { item ->
+            item.id to when (item.id) {
+                low.id -> 1
+                lower.id -> 0
+                else -> 5
+            }
+        }
+
+        val weakItems = practiceItemsFor(
+            mode = PracticeMode.Weak,
+            scriptItems = scriptItems,
+            mistakeIds = emptyList(),
+            allItems = hiraganaItems + katakanaItems,
+            mastery = mastery
+        )
+
+        assertEquals(listOf(lower.id, low.id), weakItems.take(2).map { it.id })
+    }
+
+    @Test
     fun contrastPracticeTargetsConfusableKana() {
         val contrastItems = practiceItemsFor(
             mode = PracticeMode.Contrast,
@@ -213,6 +237,14 @@ class KanaCurriculumTest {
         assertTrue(contrastItems.all { it.confusable.isNotEmpty() })
         assertTrue(contrastItems.any { it.kana == "シ" })
         assertTrue(contrastItems.any { it.kana == "ン" })
+    }
+
+    @Test
+    fun kanaOptionsIncludeConfusableChoices() {
+        val target = katakanaItems.first { it.kana == "シ" }
+        val options = kanaOptions(target, hiraganaItems + katakanaItems)
+
+        assertTrue("ツ" in options)
     }
 
     @Test
@@ -274,6 +306,20 @@ class KanaCurriculumTest {
         )
 
         assertEquals(seen.keys.toSet(), soundItems.map { it.id }.toSet())
+    }
+
+    @Test
+    fun soundPracticeFallbackExcludesStandaloneSpecialMarks() {
+        val soundItems = practiceItemsFor(
+            mode = PracticeMode.Sound,
+            scriptItems = itemsFor(Script.Katakana),
+            mistakeIds = emptyList(),
+            allItems = hiraganaItems + katakanaItems,
+            mastery = emptyMap()
+        )
+
+        assertTrue(soundItems.isNotEmpty())
+        assertTrue(soundItems.all { supportsAudioPrompt(it) })
     }
 
     @Test

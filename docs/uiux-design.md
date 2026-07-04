@@ -148,9 +148,10 @@ Implemented:
 - Extracted common metric and stage chips so shared progress indicators stay consistent across path, lesson completion, and practice.
 - Extracted settings and app shell bars so global navigation and preferences can be refined independently.
 - Polished the app shell with a compact settings icon and segmented script switch for clearer global controls.
+- Added focused tests for weak queue fallback, confusable options, and sound-practice fallback behavior.
 
 ## Next Polish Pass
 
 Implement next:
 
-- Add more focused tests around exercise generation and review queue behavior.
+- Continue expanding tests around spaced review promotion/demotion once scheduling becomes more detailed.
