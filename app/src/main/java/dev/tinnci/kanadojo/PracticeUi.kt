@@ -280,6 +280,7 @@ private fun PracticeCompletionPanel(
     val stable = action == ReviewCompletionAction.ReturnToPath
     val nextStep = practiceCompletionNextStepFor(mode, stats)
     val repeatActionLabel = practiceRepeatActionLabelFor(mode)
+    val completionMetrics = practiceCompletionMetricsFor(outcomes, queueSize)
     val summary = if (stable) {
         "Clean pass. Continue the path while recall is warm."
     } else {
@@ -313,10 +314,9 @@ private fun PracticeCompletionPanel(
             }
             LinearProgressIndicator(progress = { accuracy }, modifier = Modifier.fillMaxWidth())
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
-                FocusMetric("Clean", outcomes.cleanIds.size, Modifier.weight(1f))
-                FocusMetric("Repaired", outcomes.repairedIds.size, Modifier.weight(1f))
-                FocusMetric("Shaky", outcomes.shakyIds.size, Modifier.weight(1f))
-                FocusMetric("Queue", queueSize, Modifier.weight(1f))
+                completionMetrics.forEach { metric ->
+                    PracticeCompletionMetricTile(metric, Modifier.weight(1f))
+                }
             }
             if (cleanItems.isNotEmpty()) {
                 CompletionKanaGroup("Clean", cleanItems.take(8))
@@ -354,6 +354,49 @@ private fun PracticeCompletionPanel(
         }
     }
 }
+
+@Composable
+private fun PracticeCompletionMetricTile(metric: PracticeCompletionMetric, modifier: Modifier = Modifier) {
+    Surface(
+        shape = RoundedCornerShape(14.dp),
+        color = MaterialTheme.colorScheme.surface.copy(alpha = 0.72f),
+        modifier = modifier
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 8.dp, vertical = 7.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(3.dp)
+        ) {
+            Row(horizontalArrangement = Arrangement.spacedBy(4.dp), verticalAlignment = Alignment.CenterVertically) {
+                Text(metric.value.toString(), style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Black)
+                Text(metric.label, style = MaterialTheme.typography.labelSmall, maxLines = 1, overflow = TextOverflow.Ellipsis)
+            }
+            Surface(
+                shape = RoundedCornerShape(999.dp),
+                color = practiceCompletionMetricToneColor(metric.toneLabel)
+            ) {
+                Text(
+                    metric.toneLabel,
+                    style = MaterialTheme.typography.labelSmall,
+                    fontWeight = FontWeight.Black,
+                    modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
+                    maxLines = 1
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun practiceCompletionMetricToneColor(toneLabel: String): Color =
+    when (toneLabel) {
+        "Stable" -> Color(0xFFDCEBDD)
+        "Fixed" -> Color(0xFFE2EEF8)
+        "Repeat" -> Color(0xFFFFDFD6)
+        else -> MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.78f)
+    }
 
 @Composable
 private fun PracticeCompletionNextStepPanel(

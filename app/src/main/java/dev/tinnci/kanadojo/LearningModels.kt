@@ -167,6 +167,12 @@ data class ReviewSessionOutcomes(
     val shakyIds: Set<String>
 )
 
+data class PracticeCompletionMetric(
+    val label: String,
+    val value: Int,
+    val toneLabel: String
+)
+
 data class PracticeCompletionNextStep(
     val title: String,
     val message: String
@@ -586,6 +592,14 @@ fun practiceRepeatActionLabelFor(mode: PracticeMode): String =
         PracticeMode.Cross -> "Repeat both scripts"
         PracticeMode.Mixed -> "Repeat mixed"
     }
+
+fun practiceCompletionMetricsFor(outcomes: ReviewSessionOutcomes, queueSize: Int): List<PracticeCompletionMetric> =
+    listOf(
+        PracticeCompletionMetric("Clean", outcomes.cleanIds.size, "Stable"),
+        PracticeCompletionMetric("Repaired", outcomes.repairedIds.size, "Fixed"),
+        PracticeCompletionMetric("Shaky", outcomes.shakyIds.size, "Repeat"),
+        PracticeCompletionMetric("Queue", queueSize, "Total")
+    )
 
 fun practiceCompletionNextStepFor(mode: PracticeMode, stats: LessonSessionStats): PracticeCompletionNextStep =
     when {

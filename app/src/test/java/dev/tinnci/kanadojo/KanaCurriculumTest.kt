@@ -1105,6 +1105,28 @@ class KanaCurriculumTest {
     }
 
     @Test
+    fun practiceCompletionMetricsAddCompactOutcomeToneLabels() {
+        val metrics = practiceCompletionMetricsFor(
+            outcomes = ReviewSessionOutcomes(
+                cleanIds = setOf("a", "i"),
+                repairedIds = setOf("u"),
+                shakyIds = setOf("e")
+            ),
+            queueSize = 6
+        )
+
+        assertEquals(
+            listOf(
+                PracticeCompletionMetric("Clean", 2, "Stable"),
+                PracticeCompletionMetric("Repaired", 1, "Fixed"),
+                PracticeCompletionMetric("Shaky", 1, "Repeat"),
+                PracticeCompletionMetric("Queue", 6, "Total")
+            ),
+            metrics
+        )
+    }
+
+    @Test
     fun practiceCompletionNextStepExplainsCleanWritingQueues() {
         val nextStep = practiceCompletionNextStepFor(
             mode = PracticeMode.Writing,

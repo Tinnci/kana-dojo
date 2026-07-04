@@ -200,9 +200,10 @@ Implemented:
 - Added a compact mode chip to the practice completion next-step panel.
 - Added reduced-motion-aware entrance motion to the practice completion next-step panel.
 - Added tested mode-aware repeat action labels to practice completion.
+- Added tested compact outcome tone labels to practice completion metrics.
 
 ## Next Polish Pass
 
 Implement next:
 
-- Add compact outcome tone labels to practice completion metrics.
+- Add compact accuracy tone copy to practice completion.
