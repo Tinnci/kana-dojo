@@ -207,9 +207,10 @@ Implemented:
 - Added compact outcome guidance icon tones for repaired and shaky states.
 - Added tested compact completion action rationale copy for return-to-path versus repeat.
 - Added reduced-motion-aware entrance motion to practice action rationale.
+- Added compact action icon tone for clean return-to-path completions.
 
 ## Next Polish Pass
 
 Implement next:
 
-- Add compact action icon tone for clean return-to-path completions.
+- Add compact action icon tone for repeat-required completions.

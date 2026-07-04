@@ -382,6 +382,7 @@ private fun PracticeActionRationalePanel(
     val repeatRequired = action == ReviewCompletionAction.RepeatQueue
     val icon = if (repeatRequired) Icons.Outlined.Replay else Icons.Outlined.School
     val tint = if (repeatRequired) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary
+    val iconContainerColor = if (repeatRequired) Color(0xFFFFDFD6) else Color(0xFFDCEBDD)
     val panelAlpha by animateFloatAsState(
         targetValue = if (reduceMotion || entered) 1f else 0f,
         animationSpec = tween(durationMillis = 200),
@@ -404,7 +405,14 @@ private fun PracticeActionRationalePanel(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(10.dp)
         ) {
-            Icon(icon, contentDescription = null, tint = tint, modifier = Modifier.size(18.dp))
+            Box(
+                modifier = Modifier
+                    .size(30.dp)
+                    .background(iconContainerColor, CircleShape),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(icon, contentDescription = null, tint = tint, modifier = Modifier.size(18.dp))
+            }
             Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(1.dp)) {
                 Text(copy.title, style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Black)
                 Text(copy.message, style = MaterialTheme.typography.bodySmall)
