@@ -222,6 +222,54 @@ class KanaCurriculumTest {
     }
 
     @Test
+    fun practiceSessionGoalPrioritizesDueWeakQueue() {
+        val goal = practiceSessionGoalFor(
+            mode = PracticeMode.Weak,
+            queueSize = 6,
+            dueCount = 3,
+            weakCount = 2,
+            contrastCount = 0
+        )
+
+        assertEquals("Clear due recall", goal.title)
+        assertEquals("Finish 6 reps with no missed due kana.", goal.message)
+    }
+
+    @Test
+    fun practiceSessionGoalExplainsSoundAndWritingModes() {
+        val sound = practiceSessionGoalFor(
+            mode = PracticeMode.Sound,
+            queueSize = 6,
+            dueCount = 0,
+            weakCount = 0,
+            contrastCount = 0
+        )
+        val writing = practiceSessionGoalFor(
+            mode = PracticeMode.Writing,
+            queueSize = 6,
+            dueCount = 0,
+            weakCount = 0,
+            contrastCount = 0
+        )
+
+        assertEquals("Hear before reading", sound.title)
+        assertEquals("Stabilize shapes", writing.title)
+    }
+
+    @Test
+    fun practiceSessionGoalCallsOutLookalikeContrast() {
+        val goal = practiceSessionGoalFor(
+            mode = PracticeMode.Contrast,
+            queueSize = 6,
+            dueCount = 0,
+            weakCount = 0,
+            contrastCount = 4
+        )
+
+        assertEquals("Separate lookalikes", goal.title)
+    }
+
+    @Test
     fun practicePreviewReasonLabelsWeakQueueSources() {
         val item = hiraganaItems.first()
         val due = practicePreviewReasonFor(

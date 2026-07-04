@@ -170,9 +170,10 @@ Implemented:
 - Added tested per-kana reason labels to practice queue intros so fallback modes show why each symbol was selected.
 - Added tested practice-mode tab affordances that mark current, recommended, and fallback modes for faster scanning.
 - Added tested practice queue source cues for selected-script, recommended, and cross-script practice contexts.
+- Added tested practice-session goals so each queue states what a successful pass means before and during practice.
 
 ## Next Polish Pass
 
 Implement next:
 
-- Add a lightweight practice-session goal line so learners know what a successful queue pass means before starting.
+- Add lightweight motion to practice-mode changes so queue intent shifts feel clear without distracting from drills.

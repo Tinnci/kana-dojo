@@ -114,6 +114,15 @@ fun MistakePracticeScreen(
             soundReadyCount = soundReadyCount
         )
     }
+    val sessionGoal = remember(selectedMode, practiceItems, dueCount, weakCount, contrastCount) {
+        practiceSessionGoalFor(
+            mode = selectedMode,
+            queueSize = practiceItems.size,
+            dueCount = dueCount,
+            weakCount = weakCount,
+            contrastCount = contrastCount
+        )
+    }
     val fallbackMode = if ("fallback" in queueExplanation.title.lowercase()) selectedMode else null
     var showIntro by remember(selectedMode, queueSignature) { mutableStateOf(true) }
     val intro = reviewIntroCopyFor(
@@ -166,6 +175,7 @@ fun MistakePracticeScreen(
         if (showIntro) {
             PracticeIntroPanel(
                 intro = intro,
+                goal = sessionGoal,
                 previewItems = practiceItems.take(8),
                 previewReasons = previewReasons,
                 onStart = { showIntro = false }
@@ -199,7 +209,8 @@ fun MistakePracticeScreen(
         PracticeSessionPanel(
             stats = sessionStats,
             completed = currentIndex,
-            queueSize = practiceItems.size
+            queueSize = practiceItems.size,
+            goal = sessionGoal
         )
         ExerciseCard(
             exercise = exercise,
@@ -339,6 +350,7 @@ private fun CompletionKanaGroup(label: String, items: List<KanaItem>) {
 @Composable
 private fun PracticeIntroPanel(
     intro: PracticeIntroCopy,
+    goal: PracticeSessionGoal,
     previewItems: List<KanaItem>,
     previewReasons: Map<String, String>,
     onStart: () -> Unit
@@ -359,6 +371,7 @@ private fun PracticeIntroPanel(
                 Text(intro.title, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Black)
                 Text(intro.subtitle, style = MaterialTheme.typography.bodyMedium)
             }
+            PracticeGoalLine(goal)
             LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
                 items(previewItems, key = { it.id }) { item ->
                     Surface(
@@ -378,6 +391,27 @@ private fun PracticeIntroPanel(
             }
             Button(onClick = onStart, shape = RoundedCornerShape(18.dp), modifier = Modifier.fillMaxWidth()) {
                 Text(intro.actionLabel, fontWeight = FontWeight.Bold)
+            }
+        }
+    }
+}
+
+@Composable
+private fun PracticeGoalLine(goal: PracticeSessionGoal, modifier: Modifier = Modifier) {
+    Surface(
+        shape = RoundedCornerShape(14.dp),
+        color = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.72f),
+        modifier = modifier.fillMaxWidth()
+    ) {
+        Row(
+            modifier = Modifier.padding(horizontal = 12.dp, vertical = 9.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(10.dp)
+        ) {
+            Icon(Icons.Outlined.CheckCircle, contentDescription = null, modifier = Modifier.size(18.dp))
+            Column(verticalArrangement = Arrangement.spacedBy(1.dp)) {
+                Text(goal.title, style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Black)
+                Text(goal.message, style = MaterialTheme.typography.bodySmall)
             }
         }
     }
@@ -565,7 +599,12 @@ private fun practiceModeColor(mode: PracticeMode): Color =
     }
 
 @Composable
-private fun PracticeSessionPanel(stats: LessonSessionStats, completed: Int, queueSize: Int) {
+private fun PracticeSessionPanel(
+    stats: LessonSessionStats,
+    completed: Int,
+    queueSize: Int,
+    goal: PracticeSessionGoal
+) {
     val accuracy by animateFloatAsState(targetValue = stats.accuracy, label = "practiceAccuracy")
     Surface(
         shape = RoundedCornerShape(18.dp),
@@ -587,6 +626,7 @@ private fun PracticeSessionPanel(stats: LessonSessionStats, completed: Int, queu
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
+            PracticeGoalLine(goal)
             LinearProgressIndicator(progress = { accuracy }, modifier = Modifier.fillMaxWidth())
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
                 FocusMetric("Correct", stats.correct, Modifier.weight(1f))

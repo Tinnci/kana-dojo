@@ -47,6 +47,11 @@ data class PracticeQueueExplanation(
     val message: String
 )
 
+data class PracticeSessionGoal(
+    val title: String,
+    val message: String
+)
+
 data class PracticeModeTabAffordance(
     val label: String,
     val badge: String?
@@ -172,6 +177,70 @@ fun practiceQueueExplanationFor(
         else -> PracticeQueueExplanation(
             title = "Mixed recall",
             message = "Mixed practice rotates reading, sound, and writing prompts."
+        )
+    }
+
+fun practiceSessionGoalFor(
+    mode: PracticeMode,
+    queueSize: Int,
+    dueCount: Int,
+    weakCount: Int,
+    contrastCount: Int
+): PracticeSessionGoal =
+    when {
+        queueSize == 0 -> PracticeSessionGoal(
+            title = "Build a queue",
+            message = "Complete a lesson first so practice has kana to measure."
+        )
+
+        mode == PracticeMode.Weak && dueCount > 0 -> PracticeSessionGoal(
+            title = "Clear due recall",
+            message = "Finish $queueSize reps with no missed due kana."
+        )
+
+        mode == PracticeMode.Weak && weakCount > 0 -> PracticeSessionGoal(
+            title = "Repair misses",
+            message = "Turn shaky kana into clean or repaired by the end."
+        )
+
+        mode == PracticeMode.Weak -> PracticeSessionGoal(
+            title = "Lift low mastery",
+            message = "Move the least stable kana toward recall."
+        )
+
+        mode == PracticeMode.Contrast && contrastCount > 0 -> PracticeSessionGoal(
+            title = "Separate lookalikes",
+            message = "Keep confusable kana distinct through every prompt."
+        )
+
+        mode == PracticeMode.Contrast -> PracticeSessionGoal(
+            title = "Sharpen contrast",
+            message = "Use the fallback queue to find the next visual weakness."
+        )
+
+        mode == PracticeMode.Sound -> PracticeSessionGoal(
+            title = "Hear before reading",
+            message = "Choose kana from sound before relying on written hints."
+        )
+
+        mode == PracticeMode.Writing -> PracticeSessionGoal(
+            title = "Stabilize shapes",
+            message = "Trace each kana only after the stroke path feels deliberate."
+        )
+
+        mode == PracticeMode.Speed -> PracticeSessionGoal(
+            title = "Keep recall fast",
+            message = "Answer familiar kana without slowing down for labels."
+        )
+
+        mode == PracticeMode.Cross -> PracticeSessionGoal(
+            title = "Switch scripts cleanly",
+            message = "Read hiragana and katakana in one rhythm."
+        )
+
+        else -> PracticeSessionGoal(
+            title = "Stay flexible",
+            message = "Rotate reading, sound, and writing without losing accuracy."
         )
     }
 
