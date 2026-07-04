@@ -235,9 +235,10 @@ Implemented:
 - Added compact completion action-button color contrast audit.
 - Added tested compact completion action-button disabled-state audit.
 - Added tested compact completion action-button disabled-state copy.
+- Added tested compact completion action-button semantic labels.
 
 ## Next Polish Pass
 
 Implement next:
 
-- Add compact completion action-button semantic labels.
+- Add compact completion action-button accessibility state descriptions.

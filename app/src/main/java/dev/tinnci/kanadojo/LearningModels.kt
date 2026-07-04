@@ -637,6 +637,9 @@ fun practiceCompletionDisabledActionCopyFor(
 fun practiceReturnActionLabelFor(compact: Boolean = false): String =
     if (compact) "Path" else "Back to path"
 
+fun practiceReturnActionSemanticLabelFor(): String =
+    "Return to lesson path"
+
 fun practiceRepeatActionLabelFor(mode: PracticeMode, compact: Boolean = false): String =
     if (compact) {
         when (mode) {
@@ -659,6 +662,9 @@ fun practiceRepeatActionLabelFor(mode: PracticeMode, compact: Boolean = false): 
             PracticeMode.Mixed -> "Repeat mixed"
         }
     }
+
+fun practiceRepeatActionSemanticLabelFor(mode: PracticeMode): String =
+    "Repeat ${mode.title.lowercase()} queue"
 
 fun practiceCompletionMetricsFor(outcomes: ReviewSessionOutcomes, queueSize: Int): List<PracticeCompletionMetric> =
     listOf(

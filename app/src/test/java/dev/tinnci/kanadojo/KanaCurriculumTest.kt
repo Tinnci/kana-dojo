@@ -1161,6 +1161,14 @@ class KanaCurriculumTest {
     }
 
     @Test
+    fun practiceCompletionActionSemanticLabelsKeepFullIntent() {
+        assertEquals("Return to lesson path", practiceReturnActionSemanticLabelFor())
+        assertEquals("Repeat sound recall queue", practiceRepeatActionSemanticLabelFor(PracticeMode.Sound))
+        assertEquals("Repeat mixed recall queue", practiceRepeatActionSemanticLabelFor(PracticeMode.Mixed))
+        assertEquals("Repeat both scripts queue", practiceRepeatActionSemanticLabelFor(PracticeMode.Cross))
+    }
+
+    @Test
     fun practiceCompletionMetricsAddCompactOutcomeToneLabels() {
         val metrics = practiceCompletionMetricsFor(
             outcomes = ReviewSessionOutcomes(

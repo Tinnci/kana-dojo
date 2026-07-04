@@ -51,6 +51,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -287,6 +289,8 @@ private fun PracticeCompletionPanel(
     val nextStep = practiceCompletionNextStepFor(mode, stats)
     val repeatActionLabel = practiceRepeatActionLabelFor(mode)
     val compactRepeatActionLabel = practiceRepeatActionLabelFor(mode, compact = true)
+    val returnActionSemanticLabel = practiceReturnActionSemanticLabelFor()
+    val repeatActionSemanticLabel = practiceRepeatActionSemanticLabelFor(mode)
     val completionMetrics = practiceCompletionMetricsFor(outcomes, queueSize)
     val actionAvailability = practiceCompletionActionAvailabilityFor(action, queueSize)
     val disabledActionCopy = practiceCompletionDisabledActionCopyFor(action, actionAvailability)
@@ -365,6 +369,8 @@ private fun PracticeCompletionPanel(
                 PracticeCompletionActionGroup(
                     repeatActionLabel = repeatActionLabel,
                     compactRepeatActionLabel = compactRepeatActionLabel,
+                    returnActionSemanticLabel = returnActionSemanticLabel,
+                    repeatActionSemanticLabel = repeatActionSemanticLabel,
                     actionAvailability = actionAvailability,
                     disabledActionCopy = disabledActionCopy,
                     reduceMotion = reduceMotion,
@@ -375,6 +381,7 @@ private fun PracticeCompletionPanel(
                 PracticeRepeatRequiredActionGroup(
                     repeatActionLabel = repeatActionLabel,
                     compactRepeatActionLabel = compactRepeatActionLabel,
+                    repeatActionSemanticLabel = repeatActionSemanticLabel,
                     actionAvailability = actionAvailability,
                     disabledActionCopy = disabledActionCopy,
                     reduceMotion = reduceMotion,
@@ -389,6 +396,8 @@ private fun PracticeCompletionPanel(
 private fun PracticeCompletionActionGroup(
     repeatActionLabel: String,
     compactRepeatActionLabel: String,
+    returnActionSemanticLabel: String,
+    repeatActionSemanticLabel: String,
     actionAvailability: PracticeCompletionActionAvailability,
     disabledActionCopy: PracticeCompletionDisabledActionCopy?,
     reduceMotion: Boolean,
@@ -419,7 +428,7 @@ private fun PracticeCompletionActionGroup(
                 onClick = onReturnToPath,
                 enabled = actionAvailability.returnToPathEnabled,
                 shape = RoundedCornerShape(18.dp),
-                modifier = Modifier.practiceCompletionActionButtonTouchTarget()
+                modifier = Modifier.practiceCompletionActionButtonTouchTarget(returnActionSemanticLabel)
             ) {
                 Icon(Icons.Outlined.School, contentDescription = null, modifier = Modifier.size(20.dp))
                 Spacer(Modifier.width(6.dp))
@@ -430,7 +439,7 @@ private fun PracticeCompletionActionGroup(
                 onClick = onRepeat,
                 enabled = actionAvailability.repeatEnabled,
                 shape = RoundedCornerShape(18.dp),
-                modifier = Modifier.practiceCompletionActionButtonTouchTarget()
+                modifier = Modifier.practiceCompletionActionButtonTouchTarget(repeatActionSemanticLabel)
             ) {
                 Icon(Icons.Outlined.Replay, contentDescription = null, modifier = Modifier.size(20.dp))
                 Spacer(Modifier.width(6.dp))
@@ -445,6 +454,7 @@ private fun PracticeCompletionActionGroup(
 private fun PracticeRepeatRequiredActionGroup(
     repeatActionLabel: String,
     compactRepeatActionLabel: String,
+    repeatActionSemanticLabel: String,
     actionAvailability: PracticeCompletionActionAvailability,
     disabledActionCopy: PracticeCompletionDisabledActionCopy?,
     reduceMotion: Boolean,
@@ -478,7 +488,7 @@ private fun PracticeRepeatRequiredActionGroup(
                     containerColor = MaterialTheme.colorScheme.error,
                     contentColor = MaterialTheme.colorScheme.onError
                 ),
-                modifier = Modifier.practiceCompletionActionButtonTouchTarget()
+                modifier = Modifier.practiceCompletionActionButtonTouchTarget(repeatActionSemanticLabel)
             ) {
                 Icon(Icons.Outlined.Replay, contentDescription = null, modifier = Modifier.size(20.dp))
                 Spacer(Modifier.width(6.dp))
@@ -489,8 +499,10 @@ private fun PracticeRepeatRequiredActionGroup(
     }
 }
 
-private fun Modifier.practiceCompletionActionButtonTouchTarget(): Modifier =
-    fillMaxWidth().heightIn(min = 48.dp)
+private fun Modifier.practiceCompletionActionButtonTouchTarget(actionSemanticLabel: String): Modifier =
+    fillMaxWidth()
+        .heightIn(min = 48.dp)
+        .semantics { contentDescription = actionSemanticLabel }
 
 @Composable
 private fun PracticeDisabledActionCopy(copy: PracticeCompletionDisabledActionCopy) {
