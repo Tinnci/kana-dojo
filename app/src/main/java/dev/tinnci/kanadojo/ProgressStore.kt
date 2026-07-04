@@ -1,7 +1,6 @@
 package dev.tinnci.kanadojo
 
 import android.content.Context
-import java.util.concurrent.TimeUnit
 
 class ProgressStore(context: Context) {
     private val prefs = context.getSharedPreferences("kana_progress", Context.MODE_PRIVATE)
@@ -60,6 +59,4 @@ class ProgressStore(context: Context) {
         editor.putStringSet("mistakes", currentMistakes).apply()
     }
 
-    private fun currentEpochDay(): Long =
-        TimeUnit.MILLISECONDS.toDays(System.currentTimeMillis())
 }

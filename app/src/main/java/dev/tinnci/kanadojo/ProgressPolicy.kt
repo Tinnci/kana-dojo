@@ -1,5 +1,7 @@
 package dev.tinnci.kanadojo
 
+import java.util.concurrent.TimeUnit
+
 data class ProgressUpdate(
     val mastery: Int,
     val missStreak: Int,
@@ -46,3 +48,6 @@ fun reviewDelayDaysFor(mastery: Int, correct: Boolean): Int {
         else -> 14
     }
 }
+
+fun currentEpochDay(): Long =
+    TimeUnit.MILLISECONDS.toDays(System.currentTimeMillis())

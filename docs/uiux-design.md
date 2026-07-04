@@ -151,9 +151,10 @@ Implemented:
 - Added focused tests for weak queue fallback, confusable options, and sound-practice fallback behavior.
 - Added tested progress policy so mastered kana demote only after repeated misses while weaker kana still repair quickly.
 - Persisted simple review due dates for future calendar-based spaced review.
+- Surfaced due spaced-review counts in practice and included due recall-ready kana in weak review.
 
 ## Next Polish Pass
 
 Implement next:
 
-- Surface due spaced-review counts in practice once the review queue UI is ready for calendar timing.
+- Add due-review detail to the path hero once the daily review copy is settled.

@@ -53,13 +53,19 @@ fun practiceItemsFor(
     scriptItems: List<KanaItem>,
     mistakeIds: List<String>,
     allItems: List<KanaItem>,
-    mastery: Map<String, Int>
+    mastery: Map<String, Int>,
+    reviewDueEpochDays: Map<String, Long> = emptyMap(),
+    currentEpochDay: Long = 0L
 ): List<KanaItem> {
     val byId = allItems.associateBy { it.id }
     return when (mode) {
-        PracticeMode.Weak -> mistakeIds
-            .mapNotNull { byId[it] }
-            .filter { it.script == scriptItems.firstOrNull()?.script }
+        PracticeMode.Weak -> (
+            mistakeIds
+                .mapNotNull { byId[it] }
+                .filter { it.script == scriptItems.firstOrNull()?.script } +
+                dueReviewItemsFor(scriptItems, reviewDueEpochDays, currentEpochDay, mastery)
+            )
+            .distinctBy { it.id }
             .ifEmpty { scriptItems.sortedBy { mastery[it.id] ?: 0 }.take(6) }
 
         PracticeMode.Contrast -> scriptItems
@@ -238,6 +244,25 @@ fun reviewCountFor(scriptItems: List<KanaItem>, mistakeIds: List<String>, master
             scriptItems.filter { (mastery[it.id] ?: 0) in 1..3 }.map { it.id }
         ).toSet().size
 }
+
+fun dueReviewItemsFor(
+    scriptItems: List<KanaItem>,
+    reviewDueEpochDays: Map<String, Long>,
+    currentEpochDay: Long,
+    mastery: Map<String, Int>
+): List<KanaItem> =
+    scriptItems.filter { item ->
+        val dueDay = reviewDueEpochDays[item.id] ?: return@filter false
+        (mastery[item.id] ?: 0) >= 2 && dueDay <= currentEpochDay
+    }
+
+fun dueReviewCountFor(
+    scriptItems: List<KanaItem>,
+    reviewDueEpochDays: Map<String, Long>,
+    currentEpochDay: Long,
+    mastery: Map<String, Int>
+): Int =
+    dueReviewItemsFor(scriptItems, reviewDueEpochDays, currentEpochDay, mastery).size
 
 fun isLessonUnlocked(lesson: KanaLesson, lessons: List<KanaLesson>, mastery: Map<String, Int>): Boolean {
     val previous = lessons.lastOrNull { it.index == lesson.index - 1 }

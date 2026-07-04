@@ -224,6 +224,53 @@ class KanaCurriculumTest {
     }
 
     @Test
+    fun weakPracticeIncludesDueSpacedReviewKana() {
+        val scriptItems = itemsFor(Script.Hiragana)
+        val mistake = scriptItems[0]
+        val due = scriptItems[1]
+        val future = scriptItems[2]
+        val today = 100L
+
+        val weakItems = practiceItemsFor(
+            mode = PracticeMode.Weak,
+            scriptItems = scriptItems,
+            mistakeIds = listOf(mistake.id),
+            allItems = hiraganaItems + katakanaItems,
+            mastery = mapOf(due.id to 2, future.id to 2),
+            reviewDueEpochDays = mapOf(due.id to today, future.id to today + 1),
+            currentEpochDay = today
+        )
+
+        assertEquals(listOf(mistake.id, due.id), weakItems.map { it.id })
+    }
+
+    @Test
+    fun dueReviewCountOnlyIncludesRecallReadyDueKana() {
+        val scriptItems = itemsFor(Script.Katakana)
+        val dueRecall = scriptItems[0]
+        val dueFamiliar = scriptItems[1]
+        val futureRecall = scriptItems[2]
+        val today = 100L
+
+        val count = dueReviewCountFor(
+            scriptItems = scriptItems,
+            reviewDueEpochDays = mapOf(
+                dueRecall.id to today,
+                dueFamiliar.id to today,
+                futureRecall.id to today + 1
+            ),
+            currentEpochDay = today,
+            mastery = mapOf(
+                dueRecall.id to 2,
+                dueFamiliar.id to 1,
+                futureRecall.id to 2
+            )
+        )
+
+        assertEquals(1, count)
+    }
+
+    @Test
     fun contrastPracticeTargetsConfusableKana() {
         val contrastItems = practiceItemsFor(
             mode = PracticeMode.Contrast,

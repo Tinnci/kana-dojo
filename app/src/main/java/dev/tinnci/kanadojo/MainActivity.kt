@@ -39,6 +39,7 @@ private fun KanaDojoApp() {
     val progressStore = remember { ProgressStore(context) }
     val mastery = remember { mutableStateMapOf<String, Int>() }
     val mistakes = remember { mutableStateListOf<String>() }
+    val reviewDueEpochDays = remember { mutableStateMapOf<String, Long>() }
     var selectedScript by remember { mutableStateOf(Script.Hiragana) }
     var currentTab by remember { mutableStateOf(ScreenTab.Lessons) }
     var reduceMotion by remember { mutableStateOf(progressStore.loadReduceMotion()) }
@@ -49,6 +50,8 @@ private fun KanaDojoApp() {
         mastery.putAll(progressStore.loadMastery(allItems))
         mistakes.clear()
         mistakes.addAll(progressStore.loadMistakes())
+        reviewDueEpochDays.clear()
+        reviewDueEpochDays.putAll(progressStore.loadReviewDueEpochDays(allItems))
     }
 
     val tts = rememberKanaSpeech()
@@ -66,6 +69,8 @@ private fun KanaDojoApp() {
         mastery.putAll(progressStore.loadMastery(allItems))
         mistakes.clear()
         mistakes.addAll(progressStore.loadMistakes())
+        reviewDueEpochDays.clear()
+        reviewDueEpochDays.putAll(progressStore.loadReviewDueEpochDays(allItems))
     }
     KanaTheme {
         Scaffold(
@@ -124,6 +129,8 @@ private fun KanaDojoApp() {
                         allItems = allItems,
                         mistakeIds = mistakes,
                         mastery = mastery,
+                        reviewDueEpochDays = reviewDueEpochDays,
+                        currentEpochDay = currentEpochDay(),
                         onSpeak = speakKana,
                         reduceMotion = reduceMotion,
                         onResult = markResult

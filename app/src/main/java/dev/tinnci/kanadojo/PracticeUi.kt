@@ -49,6 +49,8 @@ fun MistakePracticeScreen(
     allItems: List<KanaItem>,
     mistakeIds: List<String>,
     mastery: Map<String, Int>,
+    reviewDueEpochDays: Map<String, Long>,
+    currentEpochDay: Long,
     onSpeak: (String) -> Unit,
     reduceMotion: Boolean,
     onResult: (List<KanaItem>, Boolean) -> Unit
@@ -57,13 +59,16 @@ fun MistakePracticeScreen(
     var selectedMode by remember(script) { mutableStateOf(PracticeMode.Weak) }
     val mistakeSnapshot = mistakeIds.toList()
     val masterySnapshot = mastery.toMap()
-    val practiceItems = remember(script, selectedMode, mistakeSnapshot, masterySnapshot) {
+    val dueSnapshot = reviewDueEpochDays.toMap()
+    val practiceItems = remember(script, selectedMode, mistakeSnapshot, masterySnapshot, dueSnapshot, currentEpochDay) {
         practiceItemsFor(
             mode = selectedMode,
             scriptItems = scriptItems,
             mistakeIds = mistakeSnapshot,
             allItems = allItems,
-            mastery = masterySnapshot
+            mastery = masterySnapshot,
+            reviewDueEpochDays = dueSnapshot,
+            currentEpochDay = currentEpochDay
         )
     }
     val queueSignature = remember(practiceItems) { practiceItems.joinToString("|") { it.id } }
@@ -79,6 +84,9 @@ fun MistakePracticeScreen(
         mistakeSnapshot.count { it in scriptItemIds }
     }
     val contrastCount = remember(practiceItems) { practiceItems.count { it.confusable.isNotEmpty() } }
+    val dueCount = remember(scriptItems, dueSnapshot, currentEpochDay, masterySnapshot) {
+        dueReviewCountFor(scriptItems, dueSnapshot, currentEpochDay, masterySnapshot)
+    }
 
     if (current == null || exercise == null) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -100,6 +108,7 @@ fun MistakePracticeScreen(
             queueLabel = queueLabel,
             queueSize = practiceItems.size,
             weakCount = weakCount,
+            dueCount = dueCount,
             contrastCount = contrastCount
         )
         PracticeSessionPanel(
@@ -169,6 +178,7 @@ private fun PracticeQueuePanel(
     queueLabel: String,
     queueSize: Int,
     weakCount: Int,
+    dueCount: Int,
     contrastCount: Int
 ) {
     val accentColor = practiceModeColor(mode)
@@ -216,6 +226,7 @@ private fun PracticeQueuePanel(
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
                     PracticeQueueMetric("Queue", queueSize, Modifier.weight(1f))
                     PracticeQueueMetric("Weak", weakCount, Modifier.weight(1f))
+                    PracticeQueueMetric("Due", dueCount, Modifier.weight(1f))
                     PracticeQueueMetric("Contrast", contrastCount, Modifier.weight(1f))
                 }
             }
