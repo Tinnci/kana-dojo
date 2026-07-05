@@ -276,9 +276,10 @@ Implemented:
 - Added tested compact completion action-button accessibility role-chip metadata mode audit.
 - Added tested compact completion action-button accessibility role-chip color metadata audit.
 - Added tested compact completion action-button accessibility role-chip color metadata mode audit.
+- Added tested compact completion action-button accessibility role-chip tone fallback audit.
 
 ## Next Polish Pass
 
 Implement next:
 
-- Add compact completion action-button accessibility role-chip tone fallback audit.
+- Add compact completion action-button accessibility role-chip semantic exclusion audit.

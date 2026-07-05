@@ -1730,6 +1730,18 @@ class KanaCurriculumTest {
     }
 
     @Test
+    fun practiceActionRoleTonesFallbackToNeutralFromMetadata() {
+        val actionButton = PracticeCompletionActionButtonMetadata(
+            actionRoleLabel = "Unmapped role",
+            actionSemanticLabel = "Repeat mixed recall queue",
+            accessibilitySemanticLabel = "Unmapped role action: Repeat mixed recall queue",
+            accessibilityTraversalIndex = 0f
+        )
+
+        assertEquals(PracticeActionRoleTone.Neutral, practiceActionRoleToneFor(actionButton))
+    }
+
+    @Test
     fun practiceCompletionActionButtonMetadataProvidesRoleChipColorTones() {
         val cleanActionButtons = practiceCompletionActionButtonMetadataInDisplayOrder(
             completionAction = ReviewCompletionAction.ReturnToPath,
