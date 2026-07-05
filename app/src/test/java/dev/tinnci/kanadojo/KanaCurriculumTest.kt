@@ -1522,6 +1522,35 @@ class KanaCurriculumTest {
     }
 
     @Test
+    fun practiceCompletionActionButtonSemanticsPreserveEnabledCopyAcrossModes() {
+        val ignoredDisabledCopy = PracticeCompletionDisabledActionCopy(
+            title = "No repeat queue",
+            message = "There are no kana in this queue yet, so repeat is disabled."
+        )
+
+        PracticeMode.entries.forEach { mode ->
+            ReviewCompletionAction.entries.forEach { action ->
+                val semantics = practiceCompletionActionButtonMetadataInDisplayOrder(
+                    completionAction = action,
+                    mode = mode
+                ).map { actionButton ->
+                    actionButton to practiceCompletionActionButtonSemanticsFor(
+                        actionButton = actionButton,
+                        enabled = true,
+                        disabledCopy = ignoredDisabledCopy
+                    )
+                }
+
+                semantics.forEach { (actionButton, actionSemantics) ->
+                    assertEquals("Available", actionSemantics.stateDescription)
+                    assertEquals("Activate ${actionButton.actionSemanticLabel}", actionSemantics.clickLabel)
+                    assertTrue(actionSemantics.clickLabel.contains(actionButton.actionSemanticLabel))
+                }
+            }
+        }
+    }
+
+    @Test
     fun practiceCompletionActionStateDescriptionsExplainAvailability() {
         val disabledCopy = PracticeCompletionDisabledActionCopy(
             title = "No repeat queue",
