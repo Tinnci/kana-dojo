@@ -97,7 +97,6 @@ fun KanaChartScreen(script: Script, mastery: Map<String, Int>, onSpeak: (String)
         items(visibleItems) { item ->
             val level = mastery[item.id] ?: 0
             val cardTag = chartCardTagFor(item)
-            val masteryCopy = chartMasteryCopyFor(level)
             val selected = tappedItem?.id == item.id
             Card(
                 onClick = {
@@ -130,16 +129,16 @@ fun KanaChartScreen(script: Script, mastery: Map<String, Int>, onSpeak: (String)
                 ) {
                     Text(item.kana, fontSize = 42.sp, fontWeight = FontWeight.Black)
                     Text(item.romaji, style = MaterialTheme.typography.labelLarge)
-                    Text(chartRowLabelFor(item.row), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Text(localizedChartRowLabel(item.row), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     cardTag?.let { tag ->
-                        Text(tag.label, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Black)
+                        Text(localizedChartCardTag(tag.label), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Black)
                     }
                     if (item.confusable.isNotEmpty()) {
                         Text(stringResource(R.string.chart_tag_contrast), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.tertiary)
                     }
                     Spacer(Modifier.height(8.dp))
                     MasteryPips(level = level)
-                    Text(masteryCopy.label, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Text(localizedChartMasteryLabel(level), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
             }
         }
@@ -160,8 +159,8 @@ private fun ChartTapFeedbackPanel(feedback: ChartTapFeedback) {
         ) {
             Icon(Icons.Outlined.CheckCircle, contentDescription = null, modifier = Modifier.size(18.dp))
             Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
-                Text(feedback.title, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Black)
-                Text(feedback.message, style = MaterialTheme.typography.bodySmall)
+                Text(localizedChartTapTitle(feedback.title), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Black)
+                Text(localizedChartTapMessage(feedback.message), style = MaterialTheme.typography.bodySmall)
             }
         }
     }
@@ -185,8 +184,8 @@ private fun ChartContrastSummaryPanel(copy: ChartContrastSummaryCopy) {
                     .background(MaterialTheme.colorScheme.tertiary, CircleShape)
             )
             Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
-                Text(copy.title, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Black)
-                Text(copy.message, style = MaterialTheme.typography.bodySmall)
+                Text(localizedChartContrastTitle(copy.title), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Black)
+                Text(localizedChartContrastMessage(copy.message), style = MaterialTheme.typography.bodySmall)
             }
         }
     }
@@ -206,8 +205,8 @@ private fun ChartRowGuidancePanel(copy: ChartRowGuidanceCopy) {
         ) {
             Icon(Icons.Outlined.CheckCircle, contentDescription = null, modifier = Modifier.size(18.dp))
             Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
-                Text(copy.title, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Black)
-                Text(copy.message, style = MaterialTheme.typography.bodySmall)
+                Text(localizedChartRowGuidanceTitle(copy.title), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Black)
+                Text(localizedChartRowGuidanceMessage(copy.message), style = MaterialTheme.typography.bodySmall)
             }
         }
     }
@@ -234,7 +233,7 @@ private fun ChartHeader(script: Script, progressCopy: ChartProgressCopy) {
                     fontWeight = FontWeight.Black
                 )
             }
-            Text(progressCopy.message, style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Black)
+            Text(localizedChartProgress(progressCopy.message), style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Black)
         }
     }
 }
@@ -254,7 +253,7 @@ private fun ChartRowFilters(rows: List<String>, selectedRow: String?, onRowChang
         items(rows) { row ->
             AssistChip(
                 onClick = { onRowChange(row) },
-                label = { Text(chartRowLabelFor(row)) },
+                label = { Text(localizedChartRowLabel(row)) },
                 leadingIcon = {
                     if (selectedRow == row) Icon(Icons.Outlined.CheckCircle, contentDescription = null, modifier = Modifier.size(18.dp))
                 }
@@ -281,7 +280,7 @@ private fun MasteryLegend() {
                 item { LegendSwatch(stringResource(R.string.chart_legend_fluent), Color(0xFFDCEBDD)) }
                 item { LegendSwatch(stringResource(R.string.chart_legend_contrast), Color(0xFFE7DEFF)) }
             }
-            Text(chartLegendCopyFor().message, style = MaterialTheme.typography.bodySmall)
+            Text(localizedChartLegendMessage(chartLegendCopyFor().message), style = MaterialTheme.typography.bodySmall)
         }
     }
 }
@@ -319,3 +318,119 @@ private fun MasteryPips(level: Int) {
         }
     }
 }
+
+@Composable
+private fun localizedChartProgress(message: String): String {
+    if (!message.endsWith(" fluent")) return message
+    val labelAndCount = message.removeSuffix(" fluent")
+    val count = labelAndCount.substringAfterLast(" ", missingDelimiterValue = "")
+    val label = labelAndCount.substringBeforeLast(" ", missingDelimiterValue = labelAndCount)
+    if (count.isBlank() || "/" !in count) return message
+    return stringResource(R.string.chart_progress, localizedChartLabel(label), count)
+}
+
+@Composable
+private fun localizedChartRowGuidanceTitle(title: String): String {
+    val prefix = "No fluent "
+    val suffix = " yet"
+    if (!title.startsWith(prefix) || !title.endsWith(suffix)) return title
+    val rowLabel = title.removePrefix(prefix).removeSuffix(suffix)
+    return stringResource(R.string.chart_row_guidance_title, localizedChartLabel(rowLabel))
+}
+
+@Composable
+private fun localizedChartRowGuidanceMessage(message: String): String =
+    when (message) {
+        "Use this row as reference, then return to lessons when you want it to count as recall." -> stringResource(R.string.chart_row_guidance_message)
+        else -> message
+    }
+
+@Composable
+private fun localizedChartContrastTitle(title: String): String {
+    val count = title.substringBefore(" contrast kana").toIntOrNull() ?: return title
+    return stringResource(R.string.chart_contrast_title, count)
+}
+
+@Composable
+private fun localizedChartContrastMessage(message: String): String {
+    val prefix = "Outlined "
+    val suffix = " tiles have known lookalikes; compare shape and stroke direction."
+    if (!message.startsWith(prefix) || !message.endsWith(suffix)) return message
+    val label = message.removePrefix(prefix).removeSuffix(suffix)
+    return stringResource(R.string.chart_contrast_message, localizedChartLabel(label))
+}
+
+@Composable
+private fun localizedChartTapTitle(title: String): String {
+    val kana = title.removePrefix("Audio cue: ")
+    if (kana == title) return title
+    return stringResource(R.string.chart_tap_title, kana)
+}
+
+@Composable
+private fun localizedChartTapMessage(message: String): String {
+    val parts = message.split(" · ")
+    if (parts.size != 2) return message
+    return stringResource(R.string.chart_tap_message, parts[0], localizedChartLabel(parts[1]))
+}
+
+@Composable
+private fun localizedChartRowLabel(row: String): String =
+    when (row) {
+        "vowels" -> stringResource(R.string.chart_row_vowels)
+        "w" -> stringResource(R.string.chart_row_wn)
+        "special" -> stringResource(R.string.chart_row_special)
+        else -> if (row.endsWith("-y")) {
+            stringResource(R.string.chart_row_blends, row.substringBefore("-").uppercase())
+        } else {
+            stringResource(R.string.chart_row_generic, row.uppercase())
+        }
+    }
+
+@Composable
+private fun localizedChartLabel(label: String): String =
+    when (label) {
+        "All" -> stringResource(R.string.chart_row_all)
+        "chart" -> stringResource(R.string.chart_row_chart)
+        "Vowels" -> stringResource(R.string.chart_row_vowels)
+        "vowels" -> stringResource(R.string.chart_row_vowels_lower)
+        "W/N row" -> stringResource(R.string.chart_row_wn)
+        "w/n row" -> stringResource(R.string.chart_row_wn_lower)
+        "Special marks" -> stringResource(R.string.chart_row_special)
+        "special marks" -> stringResource(R.string.chart_row_special_lower)
+        else -> when {
+            label.endsWith(" blends") -> stringResource(R.string.chart_row_blends, label.substringBefore(" ").uppercase())
+            label.endsWith(" row") -> stringResource(R.string.chart_row_generic, label.substringBefore(" ").uppercase())
+            else -> label
+        }
+    }
+
+@Composable
+private fun localizedChartCardTag(label: String): String =
+    when (label) {
+        "small" -> stringResource(R.string.chart_tag_small)
+        "long mark" -> stringResource(R.string.chart_tag_long_mark)
+        "special" -> stringResource(R.string.chart_tag_special)
+        else -> label
+    }
+
+@Composable
+private fun localizedChartMasteryLabel(level: Int): String {
+    val clamped = level.coerceIn(0, 5)
+    val resId = when (clamped) {
+        0 -> R.string.chart_mastery_new
+        1 -> R.string.chart_mastery_familiar
+        2 -> R.string.chart_mastery_recall
+        3 -> R.string.chart_mastery_contrast
+        4 -> R.string.chart_mastery_fluent
+        else -> R.string.chart_mastery_mastered
+    }
+    return stringResource(resId, clamped)
+}
+
+@Composable
+private fun localizedChartLegendMessage(message: String): String =
+    when (message) {
+        "Fluent is stable recall; mastered is long-spaced maintenance." -> stringResource(R.string.chart_legend_message)
+        else -> message
+    }
