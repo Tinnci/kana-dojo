@@ -30,6 +30,10 @@ fun exerciseSnapshotTokens(exercises: List<Exercise>): List<String> =
 fun exercisesFromSnapshotTokens(tokens: List<String>, itemsById: Map<String, KanaItem>): List<Exercise> =
     tokens.mapNotNull { exerciseFromSnapshotToken(it, itemsById) }
 
+fun playableExercisesFromSnapshotTokens(tokens: List<String>, itemsById: Map<String, KanaItem>): List<Exercise> =
+    exercisesFromSnapshotTokens(tokens, itemsById)
+        .filterNot { it.kind == ExerciseKind.PairMatch && it.items.size < 2 }
+
 fun countSnapshotTokens(counts: Map<String, Int>): List<String> =
     counts.entries
         .filter { it.value > 0 }

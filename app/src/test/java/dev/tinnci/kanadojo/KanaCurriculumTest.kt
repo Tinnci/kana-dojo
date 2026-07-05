@@ -45,6 +45,25 @@ class KanaCurriculumTest {
     }
 
     @Test
+    fun playableSnapshotQueuesSkipSinglePairMatchExercises() {
+        val lesson = lessonsFor(Script.Hiragana).first()
+        val item = lesson.items.first()
+        val tokens = exerciseSnapshotTokens(
+            listOf(
+                Exercise(ExerciseKind.PairMatch, listOf(item)),
+                Exercise(ExerciseKind.RomajiToKana, listOf(item))
+            )
+        )
+        val itemsById = lesson.items.associateBy { it.id }
+
+        val raw = exercisesFromSnapshotTokens(tokens, itemsById)
+        val playable = playableExercisesFromSnapshotTokens(tokens, itemsById)
+
+        assertEquals(listOf(ExerciseKind.PairMatch, ExerciseKind.RomajiToKana), raw.map { it.kind })
+        assertEquals(listOf(ExerciseKind.RomajiToKana), playable.map { it.kind })
+    }
+
+    @Test
     fun missedLessonAnswersInsertImmediateRepairAndDelayedRetry() {
         val lesson = lessonsFor(Script.Hiragana).first()
         val item = lesson.items.first()

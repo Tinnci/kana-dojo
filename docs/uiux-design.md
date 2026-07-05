@@ -269,6 +269,7 @@ Implemented:
 - Extracted settings and app shell bars so global navigation and preferences can be refined independently.
 - Polished the app shell with a compact settings icon and segmented script switch for clearer global controls.
 - Added focused tests for weak queue fallback, confusable options, and sound-practice fallback behavior.
+- Restored lesson queues skip obsolete single-pair match exercises so old saved sessions cannot reopen into a stuck match screen.
 - Added tested progress policy so mastered kana demote only after repeated misses while weaker kana still repair quickly.
 - Persisted simple review due dates for future calendar-based spaced review.
 - Surfaced due spaced-review counts in practice and included due recall-ready kana in weak review.
