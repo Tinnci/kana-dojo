@@ -286,7 +286,7 @@ private fun StageFilterRow(
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(stringResource(R.string.path_journey_title), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Black)
                 Spacer(Modifier.weight(1f))
-                Text(progressCopy.message, style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Text(localizedStageProgressMessage(progressCopy.message), style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
             LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
                 item {
@@ -298,7 +298,7 @@ private fun StageFilterRow(
                 }
                 items(stages) { stage ->
                     StageFilterChip(
-                        label = stage.label,
+                        label = localizedLearningStageLabel(stage),
                         selected = selectedStage == stage,
                         onClick = { onStageChange(stage) }
                     )
@@ -335,11 +335,11 @@ private fun StageEmptyStatePanel(copy: StageEmptyStateCopy, onClear: () -> Unit)
         ) {
             Icon(Icons.Outlined.Lock, contentDescription = null, modifier = Modifier.size(20.dp))
             Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
-                Text(copy.title, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Black)
-                Text(copy.message, style = MaterialTheme.typography.bodySmall)
+                Text(localizedStageEmptyTitle(copy.title), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Black)
+                Text(localizedStageEmptyMessage(copy.message), style = MaterialTheme.typography.bodySmall)
             }
             FilledTonalButton(onClick = onClear, shape = RoundedCornerShape(16.dp)) {
-                Text(copy.actionLabel, fontWeight = FontWeight.Bold)
+                Text(localizedStageEmptyAction(copy.actionLabel), fontWeight = FontWeight.Bold)
             }
         }
     }
@@ -394,7 +394,12 @@ private fun DailyFocusPanel(
                 }
             }
             Text(
-                "${lesson.title} - ${lesson.stage.label} - ${masteryLabel(averageMastery)}",
+                stringResource(
+                    R.string.path_focus_meta,
+                    lesson.title,
+                    localizedLearningStageLabel(lesson.stage),
+                    localizedMasteryLabel(averageMastery)
+                ),
                 style = MaterialTheme.typography.labelLarge,
                 fontWeight = FontWeight.Bold
             )
@@ -432,7 +437,7 @@ private fun DailyFocusPanel(
                 ) {
                     Icon(Icons.Outlined.Replay, contentDescription = null)
                     Spacer(Modifier.width(8.dp))
-                    Text(practiceRecommendation.actionLabel, fontWeight = FontWeight.Bold)
+                    Text(localizedPathRecommendationAction(practiceRecommendation), fontWeight = FontWeight.Bold)
                 }
             }
         }
@@ -453,15 +458,15 @@ private fun PracticeRecommendationPanel(recommendation: PracticeRecommendation) 
         ) {
             Surface(shape = CircleShape, color = practiceRecommendationColor(recommendation.mode)) {
                 Text(
-                    recommendation.mode.label.take(1),
+                    localizedPracticeModeInitial(recommendation.mode),
                     modifier = Modifier.padding(horizontal = 9.dp, vertical = 5.dp),
                     style = MaterialTheme.typography.labelMedium,
                     fontWeight = FontWeight.Black
                 )
             }
             Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
-                Text(recommendation.title, style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Black)
-                Text(recommendation.message, style = MaterialTheme.typography.bodySmall)
+                Text(localizedPathRecommendationTitle(recommendation), style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Black)
+                Text(localizedPathRecommendationMessage(recommendation), style = MaterialTheme.typography.bodySmall)
             }
         }
     }
@@ -488,8 +493,8 @@ private fun LessonStartPreviewPanel(preview: LessonStartPreview) {
                 )
             }
             Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
-                Text(preview.title, style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Black)
-                Text(preview.message, style = MaterialTheme.typography.bodySmall)
+                Text(localizedLessonStartPreviewTitle(preview), style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Black)
+                Text(localizedLessonStartPreviewMessage(preview), style = MaterialTheme.typography.bodySmall)
             }
             Text(
                 "${preview.drillCount}",
@@ -521,8 +526,8 @@ private fun PathStartGuidancePanel(guidance: PathStartGuidance) {
                 )
             }
             Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
-                Text(guidance.title, style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Black)
-                Text(guidance.message, style = MaterialTheme.typography.bodySmall)
+                Text(localizedPathStartGuidanceTitle(guidance), style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Black)
+                Text(localizedPathStartGuidanceMessage(guidance), style = MaterialTheme.typography.bodySmall)
             }
         }
     }
@@ -541,8 +546,8 @@ private fun DailyRhythmPanel(rhythm: DailyRhythm) {
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(3.dp)) {
-                Text(rhythm.title, style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Black)
-                Text(rhythm.message, style = MaterialTheme.typography.bodySmall)
+                Text(localizedDailyRhythmTitle(rhythm), style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Black)
+                Text(localizedDailyRhythmMessage(rhythm), style = MaterialTheme.typography.bodySmall)
             }
             Column(horizontalAlignment = Alignment.End, verticalArrangement = Arrangement.spacedBy(6.dp)) {
                 Text("${rhythm.activeDays}/7", style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Black)
@@ -592,7 +597,7 @@ private fun LessonPhasePreviewRow(phases: List<LessonPhaseCount>) {
                         horizontalArrangement = Arrangement.spacedBy(6.dp)
                     ) {
                         Text(phase.count.toString(), style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Black)
-                        Text(phase.label, style = MaterialTheme.typography.labelSmall)
+                        Text(localizedLessonPhaseLabel(phase.label), style = MaterialTheme.typography.labelSmall)
                     }
                 }
             }
@@ -930,7 +935,7 @@ private fun LessonNode(
                 Text(lesson.subtitle, style = MaterialTheme.typography.bodyMedium)
                 Text(
                     if (unlocked) {
-                        stringResource(R.string.path_seen_mastery_status, learned, total, masteryLabel(averageMastery))
+                        stringResource(R.string.path_seen_mastery_status, learned, total, localizedMasteryLabel(averageMastery))
                     } else {
                         lockCopy?.message.orEmpty()
                     },
@@ -965,7 +970,7 @@ private fun LessonNodePhaseSummary(phases: List<LessonPhaseCount>) {
                     horizontalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
                     Text(phase.count.toString(), style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Black)
-                    Text(phase.label.take(1), style = MaterialTheme.typography.labelSmall)
+                    Text(localizedLessonPhaseShortLabel(phase.label), style = MaterialTheme.typography.labelSmall)
                 }
             }
         }
@@ -987,3 +992,229 @@ private fun DifficultyDots(difficulty: Int) {
         }
     }
 }
+
+@Composable
+private fun localizedStageProgressMessage(message: String): String {
+    if (!message.endsWith(" fluent")) return message
+    val labelAndCount = message.removeSuffix(" fluent")
+    val count = labelAndCount.substringAfterLast(" ", missingDelimiterValue = labelAndCount)
+    val label = labelAndCount.substringBeforeLast(" ", missingDelimiterValue = "")
+    if ("/" !in count) return message
+    return if (label.isBlank()) {
+        stringResource(R.string.path_stage_progress_all, count)
+    } else {
+        stringResource(R.string.path_stage_progress_stage, localizedLearningStageLabelText(label), count)
+    }
+}
+
+@Composable
+private fun localizedStageEmptyTitle(title: String): String =
+    when {
+        title.endsWith(" fluent") -> {
+            val label = title.removeSuffix(" fluent")
+            stringResource(R.string.path_stage_empty_fluent_title, localizedLearningStageLabelText(label))
+        }
+
+        title.startsWith("No open ") && title.endsWith(" lessons") -> {
+            val label = title.removePrefix("No open ").removeSuffix(" lessons")
+            stringResource(R.string.path_stage_empty_locked_title, localizedLearningStageLabelLower(label))
+        }
+
+        else -> title
+    }
+
+@Composable
+private fun localizedStageEmptyMessage(message: String): String =
+    when (message) {
+        "This stage is complete. Clear the filter to continue the path." -> stringResource(R.string.path_stage_empty_complete_message)
+        "Earlier rows still control this stage. Clear the filter to return to the next open lesson." -> stringResource(R.string.path_stage_empty_locked_message)
+        else -> message
+    }
+
+@Composable
+private fun localizedStageEmptyAction(actionLabel: String): String =
+    when (actionLabel) {
+        "Show all" -> stringResource(R.string.path_action_show_all)
+        else -> actionLabel
+    }
+
+@Composable
+private fun localizedMasteryLabel(averageMastery: Float): String =
+    when {
+        averageMastery >= 4f -> stringResource(R.string.path_mastery_fluent)
+        averageMastery >= 3f -> stringResource(R.string.path_mastery_contrast)
+        averageMastery >= 2f -> stringResource(R.string.path_mastery_recall)
+        averageMastery >= 1f -> stringResource(R.string.path_mastery_familiar)
+        else -> stringResource(R.string.path_mastery_new)
+    }
+
+@Composable
+private fun localizedDailyRhythmTitle(rhythm: DailyRhythm): String =
+    when (rhythm.title) {
+        "Today touched" -> stringResource(R.string.path_daily_today_title)
+        "Steady rhythm" -> stringResource(R.string.path_daily_steady_title)
+        "Warm start" -> stringResource(R.string.path_daily_warm_title)
+        "Fresh start" -> stringResource(R.string.path_daily_fresh_title)
+        else -> rhythm.title
+    }
+
+@Composable
+private fun localizedDailyRhythmMessage(rhythm: DailyRhythm): String =
+    when (rhythm.message) {
+        "Enough for today; review more only if it feels light." -> stringResource(R.string.path_daily_today_message)
+        "${rhythm.activeDays} of 7 days active without chasing a streak." -> stringResource(R.string.path_daily_steady_message, rhythm.activeDays)
+        "One short lesson keeps yesterday's recall warm." -> stringResource(R.string.path_daily_warm_message)
+        "Start with a tiny queue; consistency can stay low-pressure." -> stringResource(R.string.path_daily_fresh_message)
+        else -> rhythm.message
+    }
+
+@Composable
+private fun localizedPathStartGuidanceTitle(guidance: PathStartGuidance): String =
+    when (guidance.title) {
+        "Start with sound anchors" -> stringResource(R.string.path_start_guidance_anchor_title)
+        "Start at the first open node" -> stringResource(R.string.path_start_guidance_node_title)
+        else -> guidance.title
+    }
+
+@Composable
+private fun localizedPathStartGuidanceMessage(guidance: PathStartGuidance): String =
+    when (guidance.message) {
+        "Vowels make every row easier because each kana maps to one clear Japanese sound." -> stringResource(R.string.path_start_guidance_anchor_message)
+        "The path keeps new kana small, then brings mistakes back before they settle." -> stringResource(R.string.path_start_guidance_node_message)
+        else -> guidance.message
+    }
+
+@Composable
+private fun localizedPathRecommendationTitle(recommendation: PracticeRecommendation): String =
+    when (recommendation.title) {
+        "Due review" -> stringResource(R.string.path_recommendation_due_title)
+        "Repair weak kana" -> stringResource(R.string.path_recommendation_repair_title)
+        "Contrast drill" -> stringResource(R.string.path_recommendation_contrast_title)
+        "Writing reps" -> stringResource(R.string.path_recommendation_writing_title)
+        "Sound recall" -> stringResource(R.string.path_recommendation_sound_title)
+        else -> recommendation.title
+    }
+
+@Composable
+private fun localizedPathRecommendationMessage(recommendation: PracticeRecommendation): String =
+    when {
+        recommendation.message.endsWith(" kana are ready for spaced recall.") -> {
+            val count = recommendation.message.substringBefore(" kana").toIntOrNull() ?: return recommendation.message
+            stringResource(R.string.path_recommendation_due_message, count)
+        }
+
+        recommendation.message.endsWith(" kana need a quick repair pass.") -> {
+            val count = recommendation.message.substringBefore(" kana").toIntOrNull() ?: return recommendation.message
+            stringResource(R.string.path_recommendation_repair_message, count)
+        }
+
+        recommendation.message == "Separate lookalike kana before the next lesson." -> stringResource(R.string.path_recommendation_contrast_message)
+        recommendation.message == "Trace the shapes until the stroke pattern feels stable." -> stringResource(R.string.path_recommendation_writing_message)
+        recommendation.message == "Listen first so kana map directly to Japanese sound." -> stringResource(R.string.path_recommendation_sound_message)
+        else -> recommendation.message
+    }
+
+@Composable
+private fun localizedPathRecommendationAction(recommendation: PracticeRecommendation): String =
+    when (recommendation.actionLabel) {
+        "Review due" -> stringResource(R.string.path_recommendation_due_action)
+        "Repair" -> stringResource(R.string.path_recommendation_repair_action)
+        "Contrast" -> stringResource(R.string.path_recommendation_contrast_action)
+        "Write" -> stringResource(R.string.path_recommendation_writing_action)
+        "Listen" -> stringResource(R.string.path_recommendation_sound_action)
+        else -> recommendation.actionLabel
+    }
+
+@Composable
+private fun localizedPracticeModeInitial(mode: PracticeMode): String =
+    when (mode) {
+        PracticeMode.Weak -> stringResource(R.string.practice_mode_weak_label)
+        PracticeMode.Contrast -> stringResource(R.string.practice_mode_contrast_label)
+        PracticeMode.Sound -> stringResource(R.string.practice_mode_sound_label)
+        PracticeMode.Writing -> stringResource(R.string.practice_mode_writing_label)
+        PracticeMode.Speed -> stringResource(R.string.practice_mode_speed_label)
+        PracticeMode.Cross -> stringResource(R.string.practice_mode_cross_label)
+        PracticeMode.Mixed -> stringResource(R.string.practice_mode_mixed_label)
+    }.take(1)
+
+@Composable
+private fun localizedLessonStartPreviewTitle(preview: LessonStartPreview): String =
+    when {
+        preview.title.startsWith("First: ") -> stringResource(R.string.path_lesson_preview_title, localizedLessonStartLabel(preview.firstExerciseLabel))
+        else -> preview.title
+    }
+
+@Composable
+private fun localizedLessonStartPreviewMessage(preview: LessonStartPreview): String {
+    val prefix = "Begin with "
+    val delimiter = ", then continue through "
+    val suffix = " short drills."
+    if (!preview.message.startsWith(prefix) || !preview.message.endsWith(suffix) || delimiter !in preview.message) {
+        return preview.message
+    }
+    val prompt = preview.message.removePrefix(prefix).substringBefore(delimiter)
+    return stringResource(
+        R.string.path_lesson_preview_message,
+        localizedLessonStartPrompt(prompt),
+        preview.drillCount
+    )
+}
+
+@Composable
+private fun localizedLessonStartLabel(label: String): String =
+    when (label) {
+        "Read it" -> stringResource(R.string.exercise_kana_to_romaji_title)
+        "Find the kana" -> stringResource(R.string.exercise_romaji_to_kana_title)
+        "Hear it" -> stringResource(R.string.exercise_sound_to_kana_title)
+        "Match pairs" -> stringResource(R.string.exercise_pair_match_title)
+        "Write it" -> stringResource(R.string.exercise_trace_title)
+        else -> label
+    }
+
+@Composable
+private fun localizedLessonStartPrompt(prompt: String): String =
+    when {
+        prompt.startsWith("choose ") && " for " in prompt -> {
+            val kana = prompt.removePrefix("choose ").substringBefore(" for ")
+            val romaji = prompt.substringAfter(" for ")
+            stringResource(R.string.path_lesson_preview_choose, kana, romaji)
+        }
+
+        prompt.startsWith("read ") && " as " in prompt -> {
+            val kana = prompt.removePrefix("read ").substringBefore(" as ")
+            val romaji = prompt.substringAfter(" as ")
+            stringResource(R.string.path_lesson_preview_read, kana, romaji)
+        }
+
+        prompt.startsWith("listen for ") -> stringResource(R.string.path_lesson_preview_listen, prompt.removePrefix("listen for "))
+        prompt.startsWith("match ") && prompt.endsWith(" kana pairs") -> {
+            val count = prompt.removePrefix("match ").removeSuffix(" kana pairs").toIntOrNull() ?: return prompt
+            stringResource(R.string.path_lesson_preview_match, count)
+        }
+
+        prompt.startsWith("trace ") -> stringResource(R.string.path_lesson_preview_trace, prompt.removePrefix("trace "))
+        prompt == "start the lesson" -> stringResource(R.string.path_lesson_preview_start)
+        else -> prompt
+    }
+
+@Composable
+private fun localizedLessonPhaseLabel(label: String): String =
+    when (label) {
+        "Read" -> stringResource(R.string.path_phase_read)
+        "Hear" -> stringResource(R.string.path_phase_hear)
+        "Match" -> stringResource(R.string.path_phase_match)
+        "Write" -> stringResource(R.string.path_phase_write)
+        "Contrast" -> stringResource(R.string.path_phase_contrast)
+        else -> label
+    }
+
+@Composable
+private fun localizedLessonPhaseShortLabel(label: String): String =
+    when (label) {
+        "Read" -> stringResource(R.string.path_phase_read_short)
+        "Hear" -> stringResource(R.string.path_phase_hear_short)
+        "Match" -> stringResource(R.string.path_phase_match_short)
+        "Write" -> stringResource(R.string.path_phase_write_short)
+        "Contrast" -> stringResource(R.string.path_phase_contrast_short)
+        else -> label.take(1)
+    }

@@ -13,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 
@@ -58,10 +59,51 @@ fun StageChip(stage: LearningStage) {
         }
     ) {
         Text(
-            stage.label,
+            localizedLearningStageLabel(stage),
             modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
             style = MaterialTheme.typography.labelSmall,
             fontWeight = FontWeight.Bold
         )
     }
 }
+
+@Composable
+fun localizedLearningStageLabel(stage: LearningStage): String =
+    when (stage) {
+        LearningStage.Anchor -> stringResource(R.string.path_stage_anchor)
+        LearningStage.RegularRows -> stringResource(R.string.path_stage_rows)
+        LearningStage.ShapeHeavy -> stringResource(R.string.path_stage_shapes)
+        LearningStage.TailRows -> stringResource(R.string.path_stage_tail)
+        LearningStage.Voiced -> stringResource(R.string.path_stage_marks)
+        LearningStage.Combination -> stringResource(R.string.path_stage_blend)
+        LearningStage.Special -> stringResource(R.string.path_stage_special)
+        LearningStage.Confusable -> stringResource(R.string.path_stage_contrast)
+    }
+
+@Composable
+fun localizedLearningStageLabelText(label: String): String =
+    when (label) {
+        "Anchor" -> stringResource(R.string.path_stage_anchor)
+        "Rows" -> stringResource(R.string.path_stage_rows)
+        "Shapes" -> stringResource(R.string.path_stage_shapes)
+        "Tail" -> stringResource(R.string.path_stage_tail)
+        "Marks" -> stringResource(R.string.path_stage_marks)
+        "Blend" -> stringResource(R.string.path_stage_blend)
+        "Special" -> stringResource(R.string.path_stage_special)
+        "Contrast" -> stringResource(R.string.path_stage_contrast)
+        else -> label
+    }
+
+@Composable
+fun localizedLearningStageLabelLower(label: String): String =
+    when (label) {
+        "Anchor", "anchor" -> stringResource(R.string.path_stage_anchor_lower)
+        "Rows", "rows" -> stringResource(R.string.path_stage_rows_lower)
+        "Shapes", "shapes" -> stringResource(R.string.path_stage_shapes_lower)
+        "Tail", "tail" -> stringResource(R.string.path_stage_tail_lower)
+        "Marks", "marks" -> stringResource(R.string.path_stage_marks_lower)
+        "Blend", "blend" -> stringResource(R.string.path_stage_blend_lower)
+        "Special", "special" -> stringResource(R.string.path_stage_special_lower)
+        "Contrast", "contrast" -> stringResource(R.string.path_stage_contrast_lower)
+        else -> label
+    }
