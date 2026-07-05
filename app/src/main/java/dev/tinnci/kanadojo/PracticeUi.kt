@@ -297,8 +297,6 @@ private fun PracticeCompletionPanel(
     val nextStep = practiceCompletionNextStepFor(mode, stats)
     val repeatActionLabel = practiceRepeatActionLabelFor(mode)
     val compactRepeatActionLabel = practiceRepeatActionLabelFor(mode, compact = true)
-    val returnActionSemanticLabel = practiceReturnActionSemanticLabelFor()
-    val repeatActionSemanticLabel = practiceRepeatActionSemanticLabelFor(mode)
     val completionMetrics = practiceCompletionMetricsFor(outcomes, queueSize)
     val actionAvailability = practiceCompletionActionAvailabilityFor(action, queueSize)
     val disabledActionCopy = practiceCompletionDisabledActionCopyFor(action, actionAvailability)
@@ -375,10 +373,9 @@ private fun PracticeCompletionPanel(
             }
             if (stable) {
                 PracticeCompletionActionGroup(
+                    mode = mode,
                     repeatActionLabel = repeatActionLabel,
                     compactRepeatActionLabel = compactRepeatActionLabel,
-                    returnActionSemanticLabel = returnActionSemanticLabel,
-                    repeatActionSemanticLabel = repeatActionSemanticLabel,
                     actionAvailability = actionAvailability,
                     disabledActionCopy = disabledActionCopy,
                     reduceMotion = reduceMotion,
@@ -387,9 +384,9 @@ private fun PracticeCompletionPanel(
                 )
             } else {
                 PracticeRepeatRequiredActionGroup(
+                    mode = mode,
                     repeatActionLabel = repeatActionLabel,
                     compactRepeatActionLabel = compactRepeatActionLabel,
-                    repeatActionSemanticLabel = repeatActionSemanticLabel,
                     actionAvailability = actionAvailability,
                     disabledActionCopy = disabledActionCopy,
                     reduceMotion = reduceMotion,
@@ -402,10 +399,9 @@ private fun PracticeCompletionPanel(
 
 @Composable
 private fun PracticeCompletionActionGroup(
+    mode: PracticeMode,
     repeatActionLabel: String,
     compactRepeatActionLabel: String,
-    returnActionSemanticLabel: String,
-    repeatActionSemanticLabel: String,
     actionAvailability: PracticeCompletionActionAvailability,
     disabledActionCopy: PracticeCompletionDisabledActionCopy?,
     reduceMotion: Boolean,
@@ -417,7 +413,8 @@ private fun PracticeCompletionActionGroup(
         reduceMotion = reduceMotion
     )
     val actionButtons = practiceCompletionActionButtonMetadataInDisplayOrder(
-        completionAction = ReviewCompletionAction.ReturnToPath
+        completionAction = ReviewCompletionAction.ReturnToPath,
+        mode = mode
     )
     val returnActionButton = actionButtons[0]
     val repeatActionButton = actionButtons[1]
@@ -442,16 +439,13 @@ private fun PracticeCompletionActionGroup(
                 enabled = actionAvailability.returnToPathEnabled,
                 shape = RoundedCornerShape(18.dp),
                 modifier = Modifier.practiceCompletionActionButtonTouchTarget(
-                    actionSemanticLabel = practiceActionSemanticLabelWithRoleFor(
-                        returnActionButton.actionRoleLabel,
-                        returnActionSemanticLabel
-                    ),
+                    actionSemanticLabel = returnActionButton.accessibilitySemanticLabel,
                     stateDescription = practiceCompletionActionStateDescriptionFor(
                         enabled = actionAvailability.returnToPathEnabled,
                         disabledCopy = disabledActionCopy
                     ),
                     actionHint = practiceCompletionActionHintFor(
-                        actionSemanticLabel = returnActionSemanticLabel,
+                        actionSemanticLabel = returnActionButton.actionSemanticLabel,
                         enabled = actionAvailability.returnToPathEnabled,
                         disabledCopy = disabledActionCopy
                     ),
@@ -468,16 +462,13 @@ private fun PracticeCompletionActionGroup(
                 enabled = actionAvailability.repeatEnabled,
                 shape = RoundedCornerShape(18.dp),
                 modifier = Modifier.practiceCompletionActionButtonTouchTarget(
-                    actionSemanticLabel = practiceActionSemanticLabelWithRoleFor(
-                        repeatActionButton.actionRoleLabel,
-                        repeatActionSemanticLabel
-                    ),
+                    actionSemanticLabel = repeatActionButton.accessibilitySemanticLabel,
                     stateDescription = practiceCompletionActionStateDescriptionFor(
                         enabled = actionAvailability.repeatEnabled,
                         disabledCopy = disabledActionCopy
                     ),
                     actionHint = practiceCompletionActionHintFor(
-                        actionSemanticLabel = repeatActionSemanticLabel,
+                        actionSemanticLabel = repeatActionButton.actionSemanticLabel,
                         enabled = actionAvailability.repeatEnabled,
                         disabledCopy = disabledActionCopy
                     ),
@@ -495,9 +486,9 @@ private fun PracticeCompletionActionGroup(
 
 @Composable
 private fun PracticeRepeatRequiredActionGroup(
+    mode: PracticeMode,
     repeatActionLabel: String,
     compactRepeatActionLabel: String,
-    repeatActionSemanticLabel: String,
     actionAvailability: PracticeCompletionActionAvailability,
     disabledActionCopy: PracticeCompletionDisabledActionCopy?,
     reduceMotion: Boolean,
@@ -508,7 +499,8 @@ private fun PracticeRepeatRequiredActionGroup(
         reduceMotion = reduceMotion
     )
     val repeatActionButton = practiceCompletionActionButtonMetadataInDisplayOrder(
-        completionAction = ReviewCompletionAction.RepeatQueue
+        completionAction = ReviewCompletionAction.RepeatQueue,
+        mode = mode
     ).single()
     Surface(
         shape = RoundedCornerShape(20.dp),
@@ -535,16 +527,13 @@ private fun PracticeRepeatRequiredActionGroup(
                     contentColor = MaterialTheme.colorScheme.onError
                 ),
                 modifier = Modifier.practiceCompletionActionButtonTouchTarget(
-                    actionSemanticLabel = practiceActionSemanticLabelWithRoleFor(
-                        repeatActionButton.actionRoleLabel,
-                        repeatActionSemanticLabel
-                    ),
+                    actionSemanticLabel = repeatActionButton.accessibilitySemanticLabel,
                     stateDescription = practiceCompletionActionStateDescriptionFor(
                         enabled = actionAvailability.repeatEnabled,
                         disabledCopy = disabledActionCopy
                     ),
                     actionHint = practiceCompletionActionHintFor(
-                        actionSemanticLabel = repeatActionSemanticLabel,
+                        actionSemanticLabel = repeatActionButton.actionSemanticLabel,
                         enabled = actionAvailability.repeatEnabled,
                         disabledCopy = disabledActionCopy
                     ),

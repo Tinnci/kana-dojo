@@ -200,6 +200,8 @@ data class PracticeCompletionDisabledActionCopy(
 
 data class PracticeCompletionActionButtonMetadata(
     val actionRoleLabel: String,
+    val actionSemanticLabel: String,
+    val accessibilitySemanticLabel: String,
     val accessibilityTraversalIndex: Float
 )
 
@@ -820,16 +822,39 @@ fun practiceActionRoleLabelsInDisplayOrder(action: ReviewCompletionAction): List
 fun practiceCompletionActionTraversalIndicesInDisplayOrder(completionAction: ReviewCompletionAction): List<Float> =
     practiceActionRoleLabelsInDisplayOrder(completionAction).indices.map { it.toFloat() }
 
+fun practiceCompletionActionSemanticLabelsInDisplayOrder(
+    completionAction: ReviewCompletionAction,
+    mode: PracticeMode
+): List<String> =
+    when (completionAction) {
+        ReviewCompletionAction.ReturnToPath -> listOf(
+            practiceReturnActionSemanticLabelFor(),
+            practiceRepeatActionSemanticLabelFor(mode)
+        )
+
+        ReviewCompletionAction.RepeatQueue -> listOf(practiceRepeatActionSemanticLabelFor(mode))
+    }
+
 fun practiceCompletionActionButtonMetadataInDisplayOrder(
-    completionAction: ReviewCompletionAction
+    completionAction: ReviewCompletionAction,
+    mode: PracticeMode
 ): List<PracticeCompletionActionButtonMetadata> =
-    practiceActionRoleLabelsInDisplayOrder(completionAction)
-        .zip(practiceCompletionActionTraversalIndicesInDisplayOrder(completionAction)) { roleLabel, traversalIndex ->
+    practiceActionRoleLabelsInDisplayOrder(completionAction).let { roleLabels ->
+        val semanticLabels = practiceCompletionActionSemanticLabelsInDisplayOrder(completionAction, mode)
+        val traversalIndices = practiceCompletionActionTraversalIndicesInDisplayOrder(completionAction)
+
+        roleLabels.indices.map { index ->
+            val roleLabel = roleLabels[index]
+            val semanticLabel = semanticLabels[index]
+
             PracticeCompletionActionButtonMetadata(
                 actionRoleLabel = roleLabel,
-                accessibilityTraversalIndex = traversalIndex
+                actionSemanticLabel = semanticLabel,
+                accessibilitySemanticLabel = practiceActionSemanticLabelWithRoleFor(roleLabel, semanticLabel),
+                accessibilityTraversalIndex = traversalIndices[index]
             )
         }
+    }
 
 fun practiceCompletionNextStepFor(mode: PracticeMode, stats: LessonSessionStats): PracticeCompletionNextStep =
     when {

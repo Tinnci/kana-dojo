@@ -1510,7 +1510,10 @@ class KanaCurriculumTest {
         ReviewCompletionAction.entries.forEach { action ->
             assertEquals(
                 expectedUiActionCounts.getValue(action),
-                practiceCompletionActionButtonMetadataInDisplayOrder(completionAction = action).size
+                practiceCompletionActionButtonMetadataInDisplayOrder(
+                    completionAction = action,
+                    mode = PracticeMode.Mixed
+                ).size
             )
         }
     }
@@ -1520,7 +1523,10 @@ class KanaCurriculumTest {
         ReviewCompletionAction.entries.forEach { action ->
             val roleLabels = practiceActionRoleLabelsInDisplayOrder(action)
             val traversalIndices = practiceCompletionActionTraversalIndicesInDisplayOrder(completionAction = action)
-            val actionButtons = practiceCompletionActionButtonMetadataInDisplayOrder(completionAction = action)
+            val actionButtons = practiceCompletionActionButtonMetadataInDisplayOrder(
+                completionAction = action,
+                mode = PracticeMode.Mixed
+            )
 
             assertEquals(roleLabels, actionButtons.map { it.actionRoleLabel })
             assertEquals(traversalIndices, actionButtons.map { it.accessibilityTraversalIndex })
@@ -1528,9 +1534,44 @@ class KanaCurriculumTest {
     }
 
     @Test
+    fun practiceCompletionActionButtonMetadataKeepsSemanticLabelsWithRoles() {
+        val cleanActionButtons = practiceCompletionActionButtonMetadataInDisplayOrder(
+            completionAction = ReviewCompletionAction.ReturnToPath,
+            mode = PracticeMode.Mixed
+        )
+        val repeatActionButtons = practiceCompletionActionButtonMetadataInDisplayOrder(
+            completionAction = ReviewCompletionAction.RepeatQueue,
+            mode = PracticeMode.Sound
+        )
+
+        assertEquals(
+            listOf("Return to lesson path", "Repeat mixed recall queue"),
+            cleanActionButtons.map { it.actionSemanticLabel }
+        )
+        assertEquals(
+            listOf(
+                "Primary action: Return to lesson path",
+                "Optional repeat action: Repeat mixed recall queue"
+            ),
+            cleanActionButtons.map { it.accessibilitySemanticLabel }
+        )
+        assertEquals(
+            listOf("Repeat sound recall queue"),
+            repeatActionButtons.map { it.actionSemanticLabel }
+        )
+        assertEquals(
+            listOf("Repeat first action: Repeat sound recall queue"),
+            repeatActionButtons.map { it.accessibilitySemanticLabel }
+        )
+    }
+
+    @Test
     fun practiceCompletionActionButtonMetadataTraversalStaysWithinUiActionBounds() {
         ReviewCompletionAction.entries.forEach { action ->
-            val actionButtons = practiceCompletionActionButtonMetadataInDisplayOrder(completionAction = action)
+            val actionButtons = practiceCompletionActionButtonMetadataInDisplayOrder(
+                completionAction = action,
+                mode = PracticeMode.Mixed
+            )
             val upperBound = actionButtons.size.toFloat()
 
             assertTrue(actionButtons.all { it.accessibilityTraversalIndex >= 0f })
@@ -1541,7 +1582,10 @@ class KanaCurriculumTest {
     @Test
     fun practiceCompletionActionButtonMetadataStaysInTraversalOrder() {
         ReviewCompletionAction.entries.forEach { action ->
-            val actionButtons = practiceCompletionActionButtonMetadataInDisplayOrder(completionAction = action)
+            val actionButtons = practiceCompletionActionButtonMetadataInDisplayOrder(
+                completionAction = action,
+                mode = PracticeMode.Mixed
+            )
             val traversalIndices = actionButtons.map { it.accessibilityTraversalIndex }
 
             assertEquals(traversalIndices.sorted(), traversalIndices)
