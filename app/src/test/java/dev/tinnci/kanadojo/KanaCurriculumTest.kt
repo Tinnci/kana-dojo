@@ -1331,6 +1331,31 @@ class KanaCurriculumTest {
     }
 
     @Test
+    fun practiceCompletionActionButtonSemanticsStayMergedAcrossModes() {
+        PracticeMode.entries.forEach { mode ->
+            ReviewCompletionAction.entries.forEach { action ->
+                val actionButtons = practiceCompletionActionButtonMetadataInDisplayOrder(
+                    completionAction = action,
+                    mode = mode
+                )
+                val semantics = actionButtons.map {
+                    practiceCompletionActionButtonSemanticsFor(actionButton = it, enabled = true)
+                }
+
+                assertTrue(semantics.all { it.mergeDescendants })
+                assertEquals(
+                    actionButtons.map { it.accessibilitySemanticLabel },
+                    semantics.map { it.contentDescription }
+                )
+                assertEquals(
+                    actionButtons.map { it.accessibilityTraversalIndex },
+                    semantics.map { it.traversalIndex }
+                )
+            }
+        }
+    }
+
+    @Test
     fun practiceCompletionActionStateDescriptionsExplainAvailability() {
         val disabledCopy = PracticeCompletionDisabledActionCopy(
             title = "No repeat queue",
