@@ -4,6 +4,10 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -144,6 +148,11 @@ private fun KanaDojoApp() {
         ) { padding ->
             AnimatedContent(
                 targetState = currentTab,
+                transitionSpec = {
+                    val duration = if (reduceMotion) 0 else 160
+                    fadeIn(animationSpec = tween(durationMillis = duration)) togetherWith
+                        fadeOut(animationSpec = tween(durationMillis = duration))
+                },
                 label = "screen",
                 modifier = Modifier
                     .fillMaxSize()

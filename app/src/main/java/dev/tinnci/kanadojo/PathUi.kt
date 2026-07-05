@@ -168,7 +168,8 @@ fun LessonPathScreen(
                 nextLessonMastery = lessonAverageMastery(nextLesson, mastery),
                 snapshot = snapshot,
                 reviewCount = reviewCount,
-                dueReviewCount = dueReviewCount
+                dueReviewCount = dueReviewCount,
+                reduceMotion = reduceMotion
             )
         }
         completionFeedback?.let { feedback ->
@@ -241,7 +242,7 @@ fun LessonPathScreen(
             )
         }
         item {
-            ProgressSummaryPanel(snapshot = snapshot)
+            ProgressSummaryPanel(snapshot = snapshot, reduceMotion = reduceMotion)
         }
         item {
             StageFilterRow(
@@ -280,6 +281,7 @@ fun LessonPathScreen(
                 unlocked = unlocked,
                 lockCopy = lockCopy,
                 focus = focusedLesson,
+                reduceMotion = reduceMotion,
                 onStart = {
                     if (unlocked) {
                         onEarcon(if (focusedLesson) KanaEarcon.Start else KanaEarcon.Select)
@@ -664,8 +666,12 @@ private fun DueKanaPreviewRow(items: List<KanaItem>) {
 }
 
 @Composable
-private fun ProgressSummaryPanel(snapshot: ProgressSnapshot) {
-    val overall by animateFloatAsState(targetValue = snapshot.overall, label = "overallProgress")
+private fun ProgressSummaryPanel(snapshot: ProgressSnapshot, reduceMotion: Boolean) {
+    val overall by animateFloatAsState(
+        targetValue = snapshot.overall,
+        animationSpec = kanaMotionSpec(reduceMotion),
+        label = "overallProgress"
+    )
     Surface(
         shape = RoundedCornerShape(22.dp),
         color = MaterialTheme.colorScheme.surface,
@@ -702,10 +708,19 @@ private fun PathHeroPanel(
     nextLessonMastery: Float,
     snapshot: ProgressSnapshot,
     reviewCount: Int,
-    dueReviewCount: Int
+    dueReviewCount: Int,
+    reduceMotion: Boolean
 ) {
-    val overall by animateFloatAsState(targetValue = snapshot.overall, label = "pathHeroOverall")
-    val lessonProgress by animateFloatAsState(targetValue = (nextLessonMastery / 5f).coerceIn(0f, 1f), label = "pathHeroLesson")
+    val overall by animateFloatAsState(
+        targetValue = snapshot.overall,
+        animationSpec = kanaMotionSpec(reduceMotion),
+        label = "pathHeroOverall"
+    )
+    val lessonProgress by animateFloatAsState(
+        targetValue = (nextLessonMastery / 5f).coerceIn(0f, 1f),
+        animationSpec = kanaMotionSpec(reduceMotion),
+        label = "pathHeroLesson"
+    )
     val hasDueReview = dueReviewCount > 0
     val hasRepairReview = reviewCount > 0
     val heroColor by animateColorAsState(
@@ -714,6 +729,7 @@ private fun PathHeroPanel(
             hasRepairReview -> MaterialTheme.colorScheme.tertiaryContainer
             else -> MaterialTheme.colorScheme.primaryContainer
         },
+        animationSpec = kanaMotionSpec(reduceMotion),
         label = "pathHeroColor"
     )
     val priorityLabel = when {
@@ -867,12 +883,14 @@ private fun LessonNode(
     unlocked: Boolean,
     lockCopy: LessonLockCopy?,
     focus: Boolean,
+    reduceMotion: Boolean,
     onStart: () -> Unit
 ) {
     val phaseSummary = remember(lesson) { lessonPhaseSummaryFor(lesson) }
     val phaseTotal = phaseSummary.sumOf { it.count }
     val progress by animateFloatAsState(
         targetValue = (averageMastery / 5f).coerceIn(0f, 1f),
+        animationSpec = kanaMotionSpec(reduceMotion),
         label = "lessonProgress"
     )
     val complete = averageMastery >= 4f
@@ -885,6 +903,7 @@ private fun LessonNode(
             averageMastery >= 2f -> MaterialTheme.colorScheme.tertiaryContainer
             else -> MaterialTheme.colorScheme.secondaryContainer
         },
+        animationSpec = kanaMotionSpec(reduceMotion),
         label = "lessonNodeColor"
     )
     val cardColor by animateColorAsState(
@@ -893,14 +912,17 @@ private fun LessonNode(
             focus -> MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.36f)
             else -> MaterialTheme.colorScheme.surface
         },
+        animationSpec = kanaMotionSpec(reduceMotion),
         label = "lessonCardColor"
     )
     val cardElevation by animateDpAsState(
         targetValue = if (active) 4.dp else 0.dp,
+        animationSpec = kanaMotionSpec(reduceMotion),
         label = "lessonCardElevation"
     )
     val nodeScale by animateFloatAsState(
         targetValue = if (active) 1.06f else 1f,
+        animationSpec = kanaMotionSpec(reduceMotion),
         label = "lessonNodeScale"
     )
     val nodeContentColor = when {
@@ -921,7 +943,7 @@ private fun LessonNode(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .animateContentSize()
+                .then(if (reduceMotion) Modifier else Modifier.animateContentSize())
                 .padding(18.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {

@@ -1,5 +1,8 @@
 package dev.tinnci.kanadojo
 
+import androidx.compose.animation.core.AnimationSpec
+import androidx.compose.animation.core.snap
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -16,6 +19,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+
+internal fun <T> kanaMotionSpec(reduceMotion: Boolean, durationMillis: Int = 200): AnimationSpec<T> =
+    if (reduceMotion) snap() else tween(durationMillis = durationMillis)
 
 @Composable
 fun FocusMetric(label: String, value: Int, modifier: Modifier = Modifier) {

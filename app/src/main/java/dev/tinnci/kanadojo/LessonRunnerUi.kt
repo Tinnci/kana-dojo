@@ -181,7 +181,11 @@ private fun LessonComplete(
     onRepeat: () -> Unit,
     onReviewMistakes: () -> Unit
 ) {
-    val accuracy by animateFloatAsState(targetValue = stats.accuracy, label = "lessonAccuracy")
+    val accuracy by animateFloatAsState(
+        targetValue = stats.accuracy,
+        animationSpec = kanaMotionSpec(reduceMotion),
+        label = "lessonAccuracy"
+    )
     var entered by remember(lesson.index) { mutableStateOf(false) }
     LaunchedEffect(lesson.index) {
         entered = true
@@ -194,22 +198,27 @@ private fun LessonComplete(
             stats.accuracy >= 0.75f -> Color(0xFFFFF1BC)
             else -> Color(0xFFFFDFD6)
         },
+        animationSpec = kanaMotionSpec(reduceMotion),
         label = "completionColor"
     )
     val badgeScale by animateFloatAsState(
         targetValue = if (reduceMotion || entered) 1f else 0.88f,
+        animationSpec = kanaMotionSpec(reduceMotion),
         label = "completionBadgeScale"
     )
     val summaryAlpha by animateFloatAsState(
         targetValue = if (reduceMotion || entered) 1f else 0f,
+        animationSpec = kanaMotionSpec(reduceMotion),
         label = "completionSummaryAlpha"
     )
     val summaryScale by animateFloatAsState(
         targetValue = if (reduceMotion || entered) 1f else 0.96f,
+        animationSpec = kanaMotionSpec(reduceMotion),
         label = "completionSummaryScale"
     )
     val actionAlpha by animateFloatAsState(
         targetValue = if (reduceMotion || entered) 1f else 0f,
+        animationSpec = kanaMotionSpec(reduceMotion),
         label = "completionActionAlpha"
     )
     val message = when {
@@ -232,7 +241,7 @@ private fun LessonComplete(
         Spacer(Modifier.height(20.dp))
         Text(stringResource(R.string.lesson_completion_title), style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Black)
         Text(message, style = MaterialTheme.typography.bodyLarge, textAlign = TextAlign.Center)
-        CompletionSparkRow(visible = entered && !reduceMotion, cleanRun = stats.missed == 0)
+        CompletionSparkRow(visible = entered && !reduceMotion, cleanRun = stats.missed == 0, reduceMotion = reduceMotion)
         Spacer(Modifier.height(8.dp))
         StageChip(lesson.stage)
         Spacer(Modifier.height(18.dp))
@@ -438,13 +447,15 @@ private fun LessonCompleteBadge(kana: String, color: Color, scale: Float) {
 }
 
 @Composable
-private fun CompletionSparkRow(visible: Boolean, cleanRun: Boolean) {
+private fun CompletionSparkRow(visible: Boolean, cleanRun: Boolean, reduceMotion: Boolean) {
     val sparkScale by animateFloatAsState(
         targetValue = if (visible) 1f else 0.4f,
+        animationSpec = kanaMotionSpec(reduceMotion),
         label = "completionSparkScale"
     )
     val sparkAlpha by animateFloatAsState(
         targetValue = if (visible) 1f else 0f,
+        animationSpec = kanaMotionSpec(reduceMotion),
         label = "completionSparkAlpha"
     )
     val colors = if (cleanRun) {

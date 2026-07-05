@@ -1,6 +1,8 @@
 package dev.tinnci.kanadojo
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.expandVertically
@@ -92,6 +94,7 @@ fun ExerciseCard(
                         promptIsKana = true,
                         options = romajiOptions(exercise.items.first(), allItems),
                         correct = exercise.items.first().romaji,
+                        reduceMotion = reduceMotion,
                         onSpeak = {
                             onTaptic(KanaTaptic.Speak)
                             onSpeak(exercise.items.first().kana)
@@ -104,6 +107,7 @@ fun ExerciseCard(
                         promptIsKana = false,
                         options = kanaOptions(exercise.items.first(), allItems),
                         correct = exercise.items.first().kana,
+                        reduceMotion = reduceMotion,
                         onSpeak = {
                             onTaptic(KanaTaptic.Speak)
                             onSpeak(exercise.items.first().kana)
@@ -116,6 +120,7 @@ fun ExerciseCard(
                         options = kanaOptions(exercise.items.first(), allItems),
                         onSpeak = onSpeak,
                         onTaptic = onTaptic,
+                        reduceMotion = reduceMotion,
                         onAnswer = onAnswer
                     )
 
@@ -139,8 +144,16 @@ fun ExerciseCard(
             }
             AnimatedVisibility(
                 visible = feedback != null,
-                enter = fadeIn() + expandVertically(expandFrom = Alignment.Top) + scaleIn(initialScale = 0.96f),
-                exit = fadeOut() + shrinkVertically(shrinkTowards = Alignment.Top) + scaleOut(targetScale = 0.96f)
+                enter = if (reduceMotion) {
+                    EnterTransition.None
+                } else {
+                    fadeIn() + expandVertically(expandFrom = Alignment.Top) + scaleIn(initialScale = 0.96f)
+                },
+                exit = if (reduceMotion) {
+                    ExitTransition.None
+                } else {
+                    fadeOut() + shrinkVertically(shrinkTowards = Alignment.Top) + scaleOut(targetScale = 0.96f)
+                }
             ) {
                 feedback?.let {
                     FeedbackBanner(feedback = it)
@@ -148,8 +161,8 @@ fun ExerciseCard(
             }
             AnimatedVisibility(
                 visible = feedback != null,
-                enter = fadeIn() + expandVertically(expandFrom = Alignment.Top),
-                exit = fadeOut() + shrinkVertically(shrinkTowards = Alignment.Top)
+                enter = if (reduceMotion) EnterTransition.None else fadeIn() + expandVertically(expandFrom = Alignment.Top),
+                exit = if (reduceMotion) ExitTransition.None else fadeOut() + shrinkVertically(shrinkTowards = Alignment.Top)
             ) {
                 Button(
                     onClick = onContinue,
@@ -230,6 +243,7 @@ private fun ChoiceExercise(
     promptIsKana: Boolean,
     options: List<String>,
     correct: String,
+    reduceMotion: Boolean,
     onSpeak: () -> Unit,
     onAnswer: (Boolean) -> Unit
 ) {
@@ -263,6 +277,7 @@ private fun ChoiceExercise(
                     correct = option == correct,
                     selected = option == selectedOption,
                     fontSize = if (option.length == 1) 34 else 22,
+                    reduceMotion = reduceMotion,
                     onClick = {
                         if (selectedOption == null) {
                             selectedOption = option
@@ -281,6 +296,7 @@ private fun SoundChoiceExercise(
     options: List<String>,
     onSpeak: (String) -> Unit,
     onTaptic: (KanaTaptic) -> Unit,
+    reduceMotion: Boolean,
     onAnswer: (Boolean) -> Unit
 ) {
     var selectedOption by rememberSaveable(item.id) { mutableStateOf<String?>(null) }
@@ -320,6 +336,7 @@ private fun SoundChoiceExercise(
                     correct = option == item.kana,
                     selected = option == selectedOption,
                     fontSize = 34,
+                    reduceMotion = reduceMotion,
                     onClick = {
                         if (selectedOption == null) {
                             selectedOption = option
@@ -339,6 +356,7 @@ private fun AnswerOptionButton(
     correct: Boolean,
     selected: Boolean,
     fontSize: Int,
+    reduceMotion: Boolean,
     onClick: () -> Unit
 ) {
     val targetColor = when {
@@ -346,13 +364,18 @@ private fun AnswerOptionButton(
         answered && selected -> Color(0xFFFFDFD6)
         else -> MaterialTheme.colorScheme.surface
     }
-    val containerColor by animateColorAsState(targetValue = targetColor, label = "answerOptionColor")
+    val containerColor by animateColorAsState(
+        targetValue = targetColor,
+        animationSpec = kanaMotionSpec(reduceMotion),
+        label = "answerOptionColor"
+    )
     val scale by animateFloatAsState(
         targetValue = when {
             answered && correct -> 1.02f
             answered && selected -> 0.98f
             else -> 1f
         },
+        animationSpec = kanaMotionSpec(reduceMotion),
         label = "answerOptionScale"
     )
 

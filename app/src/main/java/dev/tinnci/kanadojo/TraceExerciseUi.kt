@@ -1,6 +1,8 @@
 package dev.tinnci.kanadojo
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.animateDpAsState
@@ -81,13 +83,19 @@ fun TraceKanaExercise(
     val traceScore = remember(tracePoints) { traceScoreFor(tracePoints) }
     val traceCues = remember(tracePoints, traceScore) { traceFeedbackCuesFor(tracePoints, traceScore) }
     val remediation = remember(traceScore) { traceRemediationFor(traceScore) }
-    val animatedScore by animateFloatAsState(targetValue = traceScore.progress, label = "traceScore")
+    val animatedScore by animateFloatAsState(
+        targetValue = traceScore.progress,
+        animationSpec = kanaMotionSpec(reduceMotion),
+        label = "traceScore"
+    )
     val guideAlpha by animateFloatAsState(
         targetValue = if (traceScore.ready || answered) 0.28f else 0.14f,
+        animationSpec = kanaMotionSpec(reduceMotion),
         label = "traceGuideAlpha"
     )
     val guideLineAlpha by animateFloatAsState(
         targetValue = if (traceScore.ready || answered) 0.24f else 0.13f,
+        animationSpec = kanaMotionSpec(reduceMotion),
         label = "traceGuideLineAlpha"
     )
     val padBorderColor by animateColorAsState(
@@ -96,6 +104,7 @@ fun TraceKanaExercise(
             traceScore.ready -> MaterialTheme.colorScheme.primary
             else -> MaterialTheme.colorScheme.outlineVariant
         },
+        animationSpec = kanaMotionSpec(reduceMotion),
         label = "tracePadBorder"
     )
     val padBackgroundColor by animateColorAsState(
@@ -104,14 +113,17 @@ fun TraceKanaExercise(
             traceScore.ready -> Color(0xFFF2FAF1)
             else -> Color(0xFFFFFBF3)
         },
+        animationSpec = kanaMotionSpec(reduceMotion),
         label = "tracePadBackground"
     )
     val strokeColor by animateColorAsState(
         targetValue = if (answered && !traceScore.ready) Color(0xFF9B2D20) else Color(0xFF2F5D50),
+        animationSpec = kanaMotionSpec(reduceMotion),
         label = "traceStroke"
     )
     val borderWidth by animateDpAsState(
         targetValue = if (traceScore.ready || answered) 3.dp else 2.dp,
+        animationSpec = kanaMotionSpec(reduceMotion),
         label = "traceBorderWidth"
     )
 
@@ -198,12 +210,12 @@ fun TraceKanaExercise(
                 }
             }
         }
-        TraceScorePanel(score = animatedScore, ready = traceScore.ready, message = traceScore.message)
+        TraceScorePanel(score = animatedScore, ready = traceScore.ready, message = traceScore.message, reduceMotion = reduceMotion)
         TraceCuePanel(cues = traceCues)
         AnimatedVisibility(
             visible = showRemediation && remediation != null,
-            enter = fadeIn() + expandVertically(expandFrom = Alignment.Top),
-            exit = fadeOut() + shrinkVertically(shrinkTowards = Alignment.Top)
+            enter = if (reduceMotion) EnterTransition.None else fadeIn() + expandVertically(expandFrom = Alignment.Top),
+            exit = if (reduceMotion) ExitTransition.None else fadeOut() + shrinkVertically(shrinkTowards = Alignment.Top)
         ) {
             remediation?.let { copy ->
                 TraceRemediationPanel(
@@ -270,8 +282,8 @@ fun TraceKanaExercise(
         }
         AnimatedVisibility(
             visible = showComparison && points.isNotEmpty(),
-            enter = fadeIn() + expandVertically(expandFrom = Alignment.Top),
-            exit = fadeOut() + shrinkVertically(shrinkTowards = Alignment.Top)
+            enter = if (reduceMotion) EnterTransition.None else fadeIn() + expandVertically(expandFrom = Alignment.Top),
+            exit = if (reduceMotion) ExitTransition.None else fadeOut() + shrinkVertically(shrinkTowards = Alignment.Top)
         ) {
             TraceComparisonPanel(
                 item = item,
@@ -463,9 +475,10 @@ private fun TraceComparisonTile(label: String, modifier: Modifier = Modifier, co
 }
 
 @Composable
-private fun TraceScorePanel(score: Float, ready: Boolean, message: String) {
+private fun TraceScorePanel(score: Float, ready: Boolean, message: String, reduceMotion: Boolean) {
     val panelColor by animateColorAsState(
         targetValue = if (ready) Color(0xFFDCEBDD) else MaterialTheme.colorScheme.surfaceVariant,
+        animationSpec = kanaMotionSpec(reduceMotion),
         label = "tracePanelColor"
     )
     Surface(

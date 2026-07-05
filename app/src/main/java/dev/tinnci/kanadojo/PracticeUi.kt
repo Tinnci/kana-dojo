@@ -266,7 +266,8 @@ fun MistakePracticeScreen(
             stats = sessionStats,
             completed = currentIndex,
             queueSize = practiceItems.size,
-            goal = sessionGoal
+            goal = sessionGoal,
+            reduceMotion = reduceMotion
         )
         ExerciseCard(
             exercise = exercise,
@@ -324,7 +325,11 @@ private fun PracticeCompletionPanel(
     onReturnToPath: () -> Unit,
     onRepeat: () -> Unit
 ) {
-    val accuracy by animateFloatAsState(targetValue = stats.accuracy, label = "practiceCompletionAccuracy")
+    val accuracy by animateFloatAsState(
+        targetValue = stats.accuracy,
+        animationSpec = kanaMotionSpec(reduceMotion),
+        label = "practiceCompletionAccuracy"
+    )
     val action = reviewCompletionActionFor(stats)
     val stable = action == ReviewCompletionAction.ReturnToPath
     val nextStep = practiceCompletionNextStepFor(mode, stats)
@@ -696,12 +701,12 @@ private fun practiceCompletionActionGroupEntranceModifier(key: String, reduceMot
     }
     val alpha by animateFloatAsState(
         targetValue = if (reduceMotion || entered) 1f else 0f,
-        animationSpec = tween(durationMillis = 200),
+        animationSpec = kanaMotionSpec(reduceMotion),
         label = "practiceActionGroupAlpha"
     )
     val scale by animateFloatAsState(
         targetValue = if (reduceMotion || entered) 1f else 0.98f,
-        animationSpec = tween(durationMillis = 200),
+        animationSpec = kanaMotionSpec(reduceMotion),
         label = "practiceActionGroupScale"
     )
     return Modifier.graphicsLayer(alpha = alpha, scaleX = scale, scaleY = scale)
@@ -750,12 +755,12 @@ private fun PracticeActionRationalePanel(
     val iconContainerColor = if (repeatRequired) Color(0xFFFFDFD6) else Color(0xFFDCEBDD)
     val panelAlpha by animateFloatAsState(
         targetValue = if (reduceMotion || entered) 1f else 0f,
-        animationSpec = tween(durationMillis = 200),
+        animationSpec = kanaMotionSpec(reduceMotion),
         label = "practiceActionRationaleAlpha"
     )
     val panelScale by animateFloatAsState(
         targetValue = if (reduceMotion || entered) 1f else 0.98f,
-        animationSpec = tween(durationMillis = 200),
+        animationSpec = kanaMotionSpec(reduceMotion),
         label = "practiceActionRationaleScale"
     )
     Surface(
@@ -794,12 +799,12 @@ private fun PracticeOutcomeGuidancePanel(copy: PracticeOutcomeGuidanceCopy, redu
     }
     val panelAlpha by animateFloatAsState(
         targetValue = if (reduceMotion || entered) 1f else 0f,
-        animationSpec = tween(durationMillis = 200),
+        animationSpec = kanaMotionSpec(reduceMotion),
         label = "practiceOutcomeGuidanceAlpha"
     )
     val panelScale by animateFloatAsState(
         targetValue = if (reduceMotion || entered) 1f else 0.98f,
-        animationSpec = tween(durationMillis = 200),
+        animationSpec = kanaMotionSpec(reduceMotion),
         label = "practiceOutcomeGuidanceScale"
     )
     val needsRepeat = copy.title == "Still shaky" || copy.title == "Repair split"
@@ -1142,16 +1147,24 @@ private fun PracticeCompletionNextStepPanel(
         practiceModeColor(mode).copy(alpha = 0.76f)
     }
     val targetIconColor = if (repeatRequired) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.primary
-    val containerColor by animateColorAsState(targetValue = targetContainerColor, label = "practiceCompletionNextStepTone")
-    val iconColor by animateColorAsState(targetValue = targetIconColor, label = "practiceCompletionNextStepIconTone")
+    val containerColor by animateColorAsState(
+        targetValue = targetContainerColor,
+        animationSpec = kanaMotionSpec(reduceMotion),
+        label = "practiceCompletionNextStepTone"
+    )
+    val iconColor by animateColorAsState(
+        targetValue = targetIconColor,
+        animationSpec = kanaMotionSpec(reduceMotion),
+        label = "practiceCompletionNextStepIconTone"
+    )
     val panelAlpha by animateFloatAsState(
         targetValue = if (reduceMotion || entered) 1f else 0f,
-        animationSpec = tween(durationMillis = 220),
+        animationSpec = kanaMotionSpec(reduceMotion, durationMillis = 220),
         label = "practiceCompletionNextStepAlpha"
     )
     val panelScale by animateFloatAsState(
         targetValue = if (reduceMotion || entered) 1f else 0.98f,
-        animationSpec = tween(durationMillis = 220),
+        animationSpec = kanaMotionSpec(reduceMotion, durationMillis = 220),
         label = "practiceCompletionNextStepScale"
     )
 
@@ -1411,7 +1424,8 @@ private fun PracticeQueueIntent(state: PracticeQueueIntentState, reduceMotion: B
             weakCount = state.weakCount,
             dueCount = state.dueCount,
             contrastCount = state.contrastCount,
-            explanation = state.explanation
+            explanation = state.explanation,
+            reduceMotion = reduceMotion
         )
         return
     }
@@ -1428,7 +1442,8 @@ private fun PracticeQueueIntent(state: PracticeQueueIntentState, reduceMotion: B
             weakCount = intent.weakCount,
             dueCount = intent.dueCount,
             contrastCount = intent.contrastCount,
-            explanation = intent.explanation
+            explanation = intent.explanation,
+            reduceMotion = reduceMotion
         )
     }
 }
@@ -1441,11 +1456,13 @@ private fun PracticeQueuePanel(
     weakCount: Int,
     dueCount: Int,
     contrastCount: Int,
-    explanation: PracticeQueueExplanation
+    explanation: PracticeQueueExplanation,
+    reduceMotion: Boolean
 ) {
     val accentColor = practiceModeColor(mode)
     val containerColor by animateColorAsState(
         targetValue = accentColor.copy(alpha = 0.28f),
+        animationSpec = kanaMotionSpec(reduceMotion),
         label = "practiceQueueColor"
     )
     Surface(
@@ -1588,9 +1605,14 @@ private fun PracticeSessionPanel(
     stats: LessonSessionStats,
     completed: Int,
     queueSize: Int,
-    goal: PracticeSessionGoal
+    goal: PracticeSessionGoal,
+    reduceMotion: Boolean
 ) {
-    val accuracy by animateFloatAsState(targetValue = stats.accuracy, label = "practiceAccuracy")
+    val accuracy by animateFloatAsState(
+        targetValue = stats.accuracy,
+        animationSpec = kanaMotionSpec(reduceMotion),
+        label = "practiceAccuracy"
+    )
     Surface(
         shape = RoundedCornerShape(18.dp),
         color = MaterialTheme.colorScheme.surfaceVariant,
