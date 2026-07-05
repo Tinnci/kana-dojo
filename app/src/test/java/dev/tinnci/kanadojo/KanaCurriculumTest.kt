@@ -1701,6 +1701,27 @@ class KanaCurriculumTest {
     }
 
     @Test
+    fun practiceCompletionActionButtonMetadataProvidesRoleChipLabels() {
+        val cleanActionButtons = practiceCompletionActionButtonMetadataInDisplayOrder(
+            completionAction = ReviewCompletionAction.ReturnToPath,
+            mode = PracticeMode.Mixed
+        )
+        val repeatActionButtons = practiceCompletionActionButtonMetadataInDisplayOrder(
+            completionAction = ReviewCompletionAction.RepeatQueue,
+            mode = PracticeMode.Mixed
+        )
+
+        assertEquals(
+            listOf("Primary", "Optional repeat"),
+            cleanActionButtons.map { it.actionRoleLabel }
+        )
+        assertEquals(
+            listOf("Repeat first"),
+            repeatActionButtons.map { it.actionRoleLabel }
+        )
+    }
+
+    @Test
     fun practiceCompletionActionButtonMetadataKeepsSemanticLabelsWithRoles() {
         val cleanActionButtons = practiceCompletionActionButtonMetadataInDisplayOrder(
             completionAction = ReviewCompletionAction.ReturnToPath,

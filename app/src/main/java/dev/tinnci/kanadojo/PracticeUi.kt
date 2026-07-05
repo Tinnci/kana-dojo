@@ -433,7 +433,7 @@ private fun PracticeCompletionActionGroup(
                 .fillMaxWidth()
                 .padding(8.dp)
         ) {
-            PracticeActionRoleChip(returnActionButton.actionRoleLabel)
+            PracticeActionRoleChip(returnActionButton)
             Button(
                 onClick = onReturnToPath,
                 enabled = actionAvailability.returnToPathEnabled,
@@ -457,7 +457,7 @@ private fun PracticeCompletionActionGroup(
                 Spacer(Modifier.width(6.dp))
                 PracticeActionButtonLabel(practiceReturnActionLabelFor(compact = true))
             }
-            PracticeActionRoleChip(repeatActionButton.actionRoleLabel)
+            PracticeActionRoleChip(repeatActionButton)
             FilledTonalButton(
                 onClick = onRepeat,
                 enabled = actionAvailability.repeatEnabled,
@@ -519,7 +519,7 @@ private fun PracticeRepeatRequiredActionGroup(
                 .fillMaxWidth()
                 .padding(8.dp)
         ) {
-            PracticeActionRoleChip(repeatActionButton.actionRoleLabel)
+            PracticeActionRoleChip(repeatActionButton)
             Button(
                 onClick = onRepeat,
                 enabled = actionAvailability.repeatEnabled,
@@ -605,6 +605,11 @@ private fun PracticeActionButtonLabel(label: String) {
         maxLines = 1,
         overflow = TextOverflow.Ellipsis
     )
+}
+
+@Composable
+private fun PracticeActionRoleChip(actionButton: PracticeCompletionActionButtonMetadata) {
+    PracticeActionRoleChip(actionButton.actionRoleLabel)
 }
 
 @Composable
