@@ -41,6 +41,42 @@ Implementation rules:
 - Exercise screens should prefer one strong prompt over multiple competing panels.
 - Expressive color should keep semantic meaning stable across the app.
 
+## Material Layout, Buttons, And Elevation
+
+Source check:
+
+- Material 3 elevation: https://m3.material.io/styles/elevation/overview
+- Material 3 buttons: https://m3.material.io/components/buttons/overview
+- Android Compose Material 3: https://developer.android.com/develop/ui/compose/designsystems/material3
+- Android adaptive layouts: https://developer.android.com/develop/ui/compose/layouts/adaptive/support-different-display-sizes
+- Android Compose buttons: https://developer.android.com/develop/ui/compose/components/button
+- Android Compose cards: https://developer.android.com/develop/ui/compose/components/card
+
+Layout rules for Kana Dojo:
+
+- Design from available window space, not physical device names. Compact width uses a single vertical learning lane; medium and expanded widths may split reference or review context into a supporting pane.
+- Keep app-level layout switches explicit. The path, chart, and practice screens should receive the chosen layout mode instead of each nested card independently guessing the whole app structure.
+- Use local measurement only for local reflow: answer grids, kana preview rows, and metric tiles can adapt inside their own bounds, but they must not change the screen's primary action.
+- Preserve state across layout changes. Resizing, rotation, and future foldable support must not reset lesson progress, trace strokes, selected practice mode, or review queues.
+- Keep compact screens dense but breathable: 16 dp outer padding, 8 to 12 dp internal spacing for repeated controls, and stable fixed-format areas for prompts, answer grids, trace pads, and progress surfaces.
+
+Button rules for Kana Dojo:
+
+- Use one high-emphasis action per screen. In Compose this is usually `Button` for Start, Continue, Check, or Return to path.
+- Use `FilledTonalButton` for significant secondary actions that can sit beside the primary action, such as Repeat, Listen, or Practice mode actions.
+- Use `OutlinedButton` for medium-emphasis alternatives that should remain visible without competing with the primary action, such as switching scripts or opening optional review context.
+- Use `TextButton` for low-emphasis exits and auxiliary actions, such as Skip for now, Close, or secondary settings links.
+- Use `ElevatedButton` sparingly. It is for actions that need separation from a busy or similarly colored surface, not a default way to make every important button feel stronger.
+- Let disabled buttons be disabled through Material state, then add concise unavailable copy nearby when the reason affects learning flow.
+
+Elevation rules for Kana Dojo:
+
+- Elevation must explain hierarchy: base screen at the lowest surface, cards and lesson nodes slightly raised only when interactive, and temporary overlays or menus above both.
+- Prefer color and outline for semantic state before adding shadow. Mastery, weak items, selected modes, and incorrect answers should not rely on elevation alone.
+- Keep repeated lists mostly flat. Do not make every lesson, kana tile, metric, and chip float at once; one active item can rise while siblings stay calmer.
+- Use higher elevation only for transient or focused surfaces: active next lesson, pressed/dragged trace surface, menus, dialogs, and completion action groups.
+- Pair elevation changes with short motion under 300 ms and respect reduced motion by keeping final hierarchy visible without animated travel.
+
 ## Duolingo-Like Learning Feel
 
 Use these mechanics:
