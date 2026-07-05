@@ -69,6 +69,21 @@ You can also let Gradle install the debug build:
 ./gradlew :app:installDebug
 ```
 
+To launch and capture a quick visual check from the CLI:
+
+```sh
+mkdir -p artifacts/screenshots
+adb shell am start -n dev.tinnci.kanadojo/.MainActivity
+adb exec-out screencap -p > artifacts/screenshots/path.png
+```
+
+If the screenshot is black or empty, check whether the device is locked or dozing before treating it as an app rendering issue:
+
+```sh
+adb shell dumpsys power | rg "mWakefulness|Display Power"
+adb shell dumpsys window | rg "mCurrentFocus|mFocusedApp|mDreamingLockscreen"
+```
+
 ## Clean Build Outputs
 
 ```sh

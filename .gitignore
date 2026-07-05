@@ -21,6 +21,7 @@ captures/
 *.keystore
 
 # Runtime dumps and logs
+artifacts/
 *.hprof
 *.log
 hs_err_pid*
