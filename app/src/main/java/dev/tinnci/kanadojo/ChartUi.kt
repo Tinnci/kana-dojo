@@ -34,6 +34,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -53,8 +54,11 @@ fun KanaChartScreen(
 ) {
     val items = remember(script) { itemsFor(script) }
     val rows = remember(items) { items.map { it.row }.distinct() }
-    var selectedRow by remember(script) { mutableStateOf<String?>(null) }
-    var tappedItem by remember(script) { mutableStateOf<KanaItem?>(null) }
+    var selectedRow by rememberSaveable(script) { mutableStateOf<String?>(null) }
+    var tappedItemId by rememberSaveable(script) { mutableStateOf<String?>(null) }
+    val tappedItem = remember(items, tappedItemId) {
+        items.firstOrNull { it.id == tappedItemId }
+    }
     val visibleItems = remember(items, selectedRow) {
         selectedRow?.let { row -> items.filter { it.row == row } } ?: items
     }
@@ -80,7 +84,7 @@ fun KanaChartScreen(
                 onTaptic = onTaptic,
                 onRowChange = {
                     selectedRow = it
-                    tappedItem = null
+                    tappedItemId = null
                 }
             )
         }
@@ -110,7 +114,7 @@ fun KanaChartScreen(
                 onClick = {
                     onEarcon(KanaEarcon.Select)
                     onTaptic(KanaTaptic.Select)
-                    tappedItem = item
+                    tappedItemId = item.id
                     onSpeak(item.kana)
                 },
                 shape = RoundedCornerShape(20.dp),

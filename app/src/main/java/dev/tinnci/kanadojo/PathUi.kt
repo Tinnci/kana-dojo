@@ -43,6 +43,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -71,11 +72,12 @@ fun LessonPathScreen(
     val lessons = remember(script) { lessonsFor(script) }
     val scriptItems = remember(script) { itemsFor(script) }
     val snapshot = progressSnapshot(scriptItems, mastery)
-    var activeLesson by remember(script) { mutableStateOf<KanaLesson?>(null) }
+    var activeLessonIndex by rememberSaveable(script) { mutableStateOf<Int?>(null) }
     var resumeCue by remember(script) { mutableStateOf<LessonResumeCue?>(null) }
     var completedLessonResult by remember(script) { mutableStateOf<CompletedLessonResult?>(null) }
-    var selectedStage by remember(script) { mutableStateOf<LearningStage?>(null) }
     val nextLesson = nextPathLesson(lessons, mastery) ?: lessons.first()
+    val activeLesson = activeLessonIndex?.let { index -> lessons.firstOrNull { it.index == index } }
+    var selectedStage by rememberSaveable(script) { mutableStateOf<LearningStage?>(null) }
     val lessonStages = remember(lessons) { lessons.map { it.stage }.distinct() }
     val visibleLessons = remember(lessons, selectedStage) {
         selectedStage?.let { stage -> lessons.filter { it.stage == stage } } ?: lessons
@@ -118,7 +120,7 @@ fun LessonPathScreen(
     }
 
     if (activeLesson != null) {
-        val runningLesson = activeLesson!!
+        val runningLesson = activeLesson
         LessonRunner(
             lesson = runningLesson,
             allItems = itemsFor(script),
@@ -133,21 +135,21 @@ fun LessonPathScreen(
                 onEarcon(KanaEarcon.Navigate)
                 onTaptic(KanaTaptic.Navigate)
                 resumeCue = cue
-                activeLesson = null
+                activeLessonIndex = null
             },
             onLessonComplete = { stats ->
                 onEarcon(KanaEarcon.Continue)
                 onTaptic(KanaTaptic.Continue)
                 resumeCue = null
                 completedLessonResult = CompletedLessonResult(runningLesson, stats)
-                activeLesson = null
+                activeLessonIndex = null
             },
             onReviewMistakes = {
                 onEarcon(KanaEarcon.Review)
                 onTaptic(KanaTaptic.Review)
                 resumeCue = null
                 completedLessonResult = null
-                activeLesson = null
+                activeLessonIndex = null
                 onOpenPractice(PracticeMode.Weak)
             }
         )
@@ -182,7 +184,7 @@ fun LessonPathScreen(
                                     ?.let {
                                         onEarcon(KanaEarcon.Start)
                                         onTaptic(KanaTaptic.Start)
-                                        activeLesson = it
+                                        activeLessonIndex = it.index
                                     }
                             }
 
@@ -206,7 +208,7 @@ fun LessonPathScreen(
                             onTaptic(KanaTaptic.Start)
                             resumeCue = null
                             completedLessonResult = null
-                            activeLesson = lesson
+                            activeLessonIndex = lesson.index
                         }
                     }
                 )
@@ -228,7 +230,7 @@ fun LessonPathScreen(
                     onTaptic(KanaTaptic.Start)
                     resumeCue = null
                     completedLessonResult = null
-                    activeLesson = nextLesson
+                    activeLessonIndex = nextLesson.index
                 },
                 onReview = {
                     onEarcon(KanaEarcon.Review)
@@ -284,7 +286,7 @@ fun LessonPathScreen(
                         onTaptic(if (focusedLesson) KanaTaptic.Start else KanaTaptic.Select)
                         resumeCue = null
                         completedLessonResult = null
-                        activeLesson = lesson
+                        activeLessonIndex = lesson.index
                     }
                 }
             )

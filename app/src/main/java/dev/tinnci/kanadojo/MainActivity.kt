@@ -17,6 +17,7 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -40,12 +41,12 @@ private fun KanaDojoApp() {
     val mistakes = remember { mutableStateListOf<String>() }
     val reviewDueEpochDays = remember { mutableStateMapOf<String, Long>() }
     var practiceEpochDays by remember { mutableStateOf(progressStore.loadPracticeEpochDays()) }
-    var selectedScript by remember { mutableStateOf(Script.Hiragana) }
-    var currentTab by remember { mutableStateOf(ScreenTab.Lessons) }
-    var requestedPracticeMode by remember { mutableStateOf(PracticeMode.Weak) }
-    var reduceMotion by remember { mutableStateOf(progressStore.loadReduceMotion()) }
-    var soundEnabled by remember { mutableStateOf(progressStore.loadSoundEnabled()) }
-    var hapticsEnabled by remember { mutableStateOf(progressStore.loadHapticsEnabled()) }
+    var selectedScript by rememberSaveable { mutableStateOf(Script.Hiragana) }
+    var currentTab by rememberSaveable { mutableStateOf(ScreenTab.Lessons) }
+    var requestedPracticeMode by rememberSaveable { mutableStateOf(PracticeMode.Weak) }
+    var reduceMotion by rememberSaveable { mutableStateOf(progressStore.loadReduceMotion()) }
+    var soundEnabled by rememberSaveable { mutableStateOf(progressStore.loadSoundEnabled()) }
+    var hapticsEnabled by rememberSaveable { mutableStateOf(progressStore.loadHapticsEnabled()) }
     val today = currentEpochDay()
 
     LaunchedEffect(today) {

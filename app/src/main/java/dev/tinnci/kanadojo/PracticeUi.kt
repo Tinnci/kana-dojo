@@ -45,6 +45,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -83,7 +84,7 @@ fun MistakePracticeScreen(
     onReturnToPath: () -> Unit
 ) {
     val scriptItems = remember(script) { itemsFor(script) }
-    var selectedMode by remember(script, initialMode) { mutableStateOf(initialMode) }
+    var selectedMode by rememberSaveable(script, initialMode) { mutableStateOf(initialMode) }
     val mistakeSnapshot = mistakeIds.toList()
     val masterySnapshot = mastery.toMap()
     val dueSnapshot = reviewDueEpochDays.toMap()
@@ -146,7 +147,7 @@ fun MistakePracticeScreen(
         )
     }
     val fallbackMode = if ("fallback" in queueExplanation.title.lowercase()) selectedMode else null
-    var showIntro by remember(selectedMode, queueSignature) { mutableStateOf(true) }
+    var showIntro by rememberSaveable(selectedMode, queueSignature) { mutableStateOf(true) }
     val intro = reviewIntroCopyFor(
         mode = selectedMode,
         dueCount = dueCount,
