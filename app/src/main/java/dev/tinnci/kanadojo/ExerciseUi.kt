@@ -90,12 +90,12 @@ fun ExerciseCard(
             Box(modifier = Modifier.weight(1f)) {
                 when (exercise.kind) {
                     ExerciseKind.KanaToRomaji -> ChoiceExercise(
+                        exercise = exercise,
                         prompt = exercise.items.first().kana,
                         promptIsKana = true,
                         options = romajiOptions(exercise.items.first(), allItems),
                         correct = exercise.items.first().romaji,
                         reduceMotion = reduceMotion,
-                        autoSpeakOnEnter = false,
                         onAutoSpeak = {
                             onSpeak(exercise.items.first().kana)
                         },
@@ -107,12 +107,12 @@ fun ExerciseCard(
                     )
 
                     ExerciseKind.RomajiToKana -> ChoiceExercise(
+                        exercise = exercise,
                         prompt = exercise.items.first().romaji,
                         promptIsKana = false,
                         options = kanaOptions(exercise.items.first(), allItems),
                         correct = exercise.items.first().kana,
                         reduceMotion = reduceMotion,
-                        autoSpeakOnEnter = true,
                         onAutoSpeak = {
                             onSpeak(exercise.items.first().kana)
                         },
@@ -143,6 +143,8 @@ fun ExerciseCard(
                     ExerciseKind.TraceKana -> TraceKanaExercise(
                         item = exercise.items.first(),
                         answered = feedback != null,
+                        autoSpeakOnEnter = shouldAutoSpeakOnExerciseEnter(exercise),
+                        manualSpeakEnabled = shouldOfferManualSpeak(exercise),
                         onEarcon = onEarcon,
                         onTaptic = onTaptic,
                         reduceMotion = reduceMotion,
@@ -255,17 +257,20 @@ private fun FeedbackBanner(feedback: AnswerFeedback) {
 
 @Composable
 private fun ChoiceExercise(
+    exercise: Exercise,
     prompt: String,
     promptIsKana: Boolean,
     options: List<String>,
     correct: String,
     reduceMotion: Boolean,
-    autoSpeakOnEnter: Boolean,
     onAutoSpeak: () -> Unit,
     onManualSpeak: () -> Unit,
     onAnswer: (Boolean) -> Unit
 ) {
     var selectedOption by rememberSaveable(prompt, correct) { mutableStateOf<String?>(null) }
+    val autoSpeakOnEnter = shouldAutoSpeakOnExerciseEnter(exercise)
+    val speakAfterCorrectChoice = shouldSpeakAfterCorrectChoice(exercise)
+    val manualSpeakEnabled = shouldOfferManualSpeak(exercise)
 
     LaunchedEffect(prompt, correct, autoSpeakOnEnter) {
         if (autoSpeakOnEnter) {
@@ -282,10 +287,12 @@ private fun ChoiceExercise(
                 textAlign = TextAlign.Center,
                 modifier = Modifier.fillMaxWidth()
             )
-            FilledTonalButton(onClick = onManualSpeak) {
-                Icon(Icons.Outlined.PlayArrow, contentDescription = null)
-                Spacer(Modifier.width(8.dp))
-                Text(stringResource(R.string.exercise_hear_action))
+            if (manualSpeakEnabled) {
+                FilledTonalButton(onClick = onManualSpeak) {
+                    Icon(Icons.Outlined.PlayArrow, contentDescription = null)
+                    Spacer(Modifier.width(8.dp))
+                    Text(stringResource(R.string.exercise_hear_action))
+                }
             }
         }
         LazyVerticalGrid(
@@ -306,7 +313,7 @@ private fun ChoiceExercise(
                     onClick = {
                         if (selectedOption == null) {
                             selectedOption = option
-                            if (!autoSpeakOnEnter && option == correct) {
+                            if (speakAfterCorrectChoice && option == correct) {
                                 onAutoSpeak()
                             }
                             onAnswer(option == correct)
@@ -488,7 +495,9 @@ private fun PairMatchExercise(
                 label = { it.kana },
                 onSelect = {
                     if (!answered) {
-                        onSpeak(it.kana)
+                        if (shouldSpeakForPairMatchSelection(it)) {
+                            onSpeak(it.kana)
+                        }
                         selectedKanaId = it.id
                     }
                 },
@@ -501,7 +510,9 @@ private fun PairMatchExercise(
                 label = { it.romaji },
                 onSelect = {
                     if (!answered) {
-                        onSpeak(it.kana)
+                        if (shouldSpeakForPairMatchSelection(it)) {
+                            onSpeak(it.kana)
+                        }
                         selectedRomajiId = it.id
                     }
                 },

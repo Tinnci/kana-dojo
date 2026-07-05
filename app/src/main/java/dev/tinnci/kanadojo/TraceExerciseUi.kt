@@ -68,6 +68,8 @@ import androidx.compose.ui.unit.sp
 fun TraceKanaExercise(
     item: KanaItem,
     answered: Boolean,
+    autoSpeakOnEnter: Boolean,
+    manualSpeakEnabled: Boolean,
     onEarcon: (KanaEarcon) -> Unit,
     onTaptic: (KanaTaptic) -> Unit,
     reduceMotion: Boolean,
@@ -133,8 +135,10 @@ fun TraceKanaExercise(
         replayProgress.snapTo(1f)
     }
 
-    LaunchedEffect(item.id) {
-        onSpeak(item.kana)
+    LaunchedEffect(item.id, autoSpeakOnEnter) {
+        if (autoSpeakOnEnter) {
+            onSpeak(item.kana)
+        }
     }
 
     LaunchedEffect(replayNonce, reduceMotion) {
@@ -152,11 +156,13 @@ fun TraceKanaExercise(
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(item.romaji, style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Black)
             Spacer(Modifier.weight(1f))
-            IconButton(onClick = {
-                onTaptic(KanaTaptic.Speak)
-                onSpeak(item.kana)
-            }) {
-                Icon(Icons.Outlined.PlayArrow, contentDescription = stringResource(R.string.trace_hear_content_description))
+            if (manualSpeakEnabled) {
+                IconButton(onClick = {
+                    onTaptic(KanaTaptic.Speak)
+                    onSpeak(item.kana)
+                }) {
+                    Icon(Icons.Outlined.PlayArrow, contentDescription = stringResource(R.string.trace_hear_content_description))
+                }
             }
         }
         Box(

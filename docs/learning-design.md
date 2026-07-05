@@ -179,6 +179,12 @@ Dense lessons still use capped exercise counts, but the sequencer should expose 
 
 When a learner misses inside a lesson, the queue should not only append a random mistake drill at the end. It should insert one immediate repair prompt next, then keep the remaining planned lesson intact, then add a delayed retry at the end. The immediate prompt should usually flip the direction, for example a missed romaji-to-kana prompt becomes kana-to-romaji, while a missed listening or tracing prompt first returns to visual recognition. The delayed retry should use the missed skill again when available so the learner proves the repair held.
 
+## Audio Prompt Timing
+
+Audio should support memory without turning every task into the same listen-and-tap exercise. Listen-first prompts, romaji-to-kana prompts, and guided trace prompts can auto-play on entry because they strengthen the symbol-to-sound link. Kana-to-romaji prompts should not auto-play on entry; they should play after a correct answer so the learner first reads the kana, then hears confirmation. Pair matching should speak only when the learner taps an item, mirroring Duolingo's lightweight reinforcement on selection.
+
+Special small kana and length marks should not auto-play as standalone audio. Their pronunciation depends on word context, so the lesson should treat them as visual and writing symbols until word-level practice exists.
+
 ## Session Structure
 
 A good short session is 3 to 5 minutes:

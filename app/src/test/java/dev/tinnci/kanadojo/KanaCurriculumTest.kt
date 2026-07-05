@@ -96,6 +96,38 @@ class KanaCurriculumTest {
     }
 
     @Test
+    fun audioPromptPolicyAutoSpeaksSoundRecallAndGuidedTrace() {
+        val item = itemsFor(Script.Hiragana).first()
+
+        assertTrue(shouldAutoSpeakOnExerciseEnter(Exercise(ExerciseKind.RomajiToKana, listOf(item))))
+        assertTrue(shouldAutoSpeakOnExerciseEnter(Exercise(ExerciseKind.SoundToKana, listOf(item))))
+        assertTrue(shouldAutoSpeakOnExerciseEnter(Exercise(ExerciseKind.TraceKana, listOf(item))))
+        assertFalse(shouldAutoSpeakOnExerciseEnter(Exercise(ExerciseKind.KanaToRomaji, listOf(item))))
+        assertFalse(shouldAutoSpeakOnExerciseEnter(Exercise(ExerciseKind.PairMatch, listOf(item))))
+    }
+
+    @Test
+    fun audioPromptPolicySpeaksAfterCorrectKanaReadingOnly() {
+        val item = itemsFor(Script.Hiragana).first()
+
+        assertTrue(shouldSpeakAfterCorrectChoice(Exercise(ExerciseKind.KanaToRomaji, listOf(item))))
+        assertFalse(shouldSpeakAfterCorrectChoice(Exercise(ExerciseKind.RomajiToKana, listOf(item))))
+        assertFalse(shouldSpeakAfterCorrectChoice(Exercise(ExerciseKind.SoundToKana, listOf(item))))
+    }
+
+    @Test
+    fun audioPromptPolicySkipsStandaloneSpecialSymbols() {
+        val special = lessonsFor(Script.Katakana).last().items.first()
+
+        assertFalse(supportsAudioPrompt(special))
+        assertFalse(shouldAutoSpeakOnExerciseEnter(Exercise(ExerciseKind.RomajiToKana, listOf(special))))
+        assertFalse(shouldAutoSpeakOnExerciseEnter(Exercise(ExerciseKind.TraceKana, listOf(special))))
+        assertFalse(shouldSpeakAfterCorrectChoice(Exercise(ExerciseKind.KanaToRomaji, listOf(special))))
+        assertFalse(shouldOfferManualSpeak(Exercise(ExerciseKind.TraceKana, listOf(special))))
+        assertFalse(shouldSpeakForPairMatchSelection(special))
+    }
+
+    @Test
     fun countSnapshotTokensRoundTripAndIncrementStableCounts() {
         val tokens = countSnapshotTokens(mapOf("h-a" to 2, "h-i" to 1))
         val incremented = incrementCountSnapshotToken(tokens, "h-a")
