@@ -10,7 +10,7 @@ private const val DenseListeningTargetSize = 6
 private const val DenseWritingTargetSize = 5
 
 fun buildLessonExercises(lesson: KanaLesson): List<Exercise> =
-    lessonExercisePlanFor(lesson).exercises
+    sequenceLessonExercises(lesson, lessonExercisePlanFor(lesson))
 
 fun lessonStartPreviewFor(lesson: KanaLesson): LessonStartPreview {
     val exercises = buildLessonExercises(lesson)
@@ -97,9 +97,7 @@ private data class LessonExercisePlan(
     val pairs: List<Exercise>,
     val writing: List<Exercise>,
     val contrast: List<Exercise>
-) {
-    val exercises: List<Exercise> = recognition + listening + pairs + writing + contrast
-}
+)
 
 private fun lessonExercisePlanFor(lesson: KanaLesson): LessonExercisePlan {
     val recognition = recognitionExercisesFor(lesson)
@@ -150,6 +148,110 @@ private fun pairMatchExercisesFor(items: List<KanaItem>): List<Exercise> {
 
     return chunks.map { Exercise(ExerciseKind.PairMatch, it) }
 }
+
+private fun sequenceLessonExercises(lesson: KanaLesson, plan: LessonExercisePlan): List<Exercise> {
+    val recognition = plan.recognition.toMutableList()
+    val listening = plan.listening.toMutableList()
+    val pairs = plan.pairs.toMutableList()
+    val writing = plan.writing.toMutableList()
+    val exercises = mutableListOf<Exercise>()
+    val introduced = mutableSetOf<String>()
+
+    fun MutableList<Exercise>.removeFirstMatching(predicate: (Exercise) -> Boolean): Exercise? {
+        val index = indexOfFirst(predicate)
+        return if (index >= 0) removeAt(index) else null
+    }
+
+    fun addExercise(exercise: Exercise?) {
+        if (exercise == null) return
+        exercises += exercise
+        if (exercise.kind != ExerciseKind.PairMatch && exercise.kind != ExerciseKind.TraceKana) {
+            introduced += exercise.items.map { it.id }
+        }
+    }
+
+    fun addPairIfReady(): Boolean {
+        val pair = pairs.firstOrNull() ?: return false
+        if (!pair.items.all { it.id in introduced }) return false
+        exercises += pairs.removeAt(0)
+        return true
+    }
+
+    fun addReadyWriting(limit: Int) {
+        repeat(limit) {
+            val writingExercise = writing.removeFirstMatching { exercise ->
+                exercise.items.all { it.id in introduced }
+            } ?: return
+            exercises += writingExercise
+        }
+    }
+
+    lesson.items.forEach { item ->
+        addExercise(recognition.removeFirstMatching {
+            it.kind == ExerciseKind.RomajiToKana && it.items.firstOrNull()?.id == item.id
+        })
+        addExercise(listening.removeFirstMatching { it.items.firstOrNull()?.id == item.id })
+        addExercise(recognition.removeFirstMatching {
+            it.kind == ExerciseKind.KanaToRomaji && it.items.firstOrNull()?.id == item.id
+        })
+
+        if (addPairIfReady()) {
+            addReadyWriting(writingBurstAfterPairFor(lesson.stage))
+        }
+    }
+
+    while (pairs.isNotEmpty() || writing.isNotEmpty() || recognition.isNotEmpty() || listening.isNotEmpty()) {
+        if (addPairIfReady()) {
+            addReadyWriting(writingBurstAfterPairFor(lesson.stage))
+            continue
+        }
+
+        val writingBeforeLeftovers = writing.removeFirstMatching { exercise ->
+            exercise.items.all { it.id in introduced }
+        }
+        if (writingBeforeLeftovers != null) {
+            exercises += writingBeforeLeftovers
+            continue
+        }
+
+        val nextRecognition = recognition.removeFirstOrNull()
+        if (nextRecognition != null) {
+            addExercise(nextRecognition)
+            continue
+        }
+
+        val nextListening = listening.removeFirstOrNull()
+        if (nextListening != null) {
+            addExercise(nextListening)
+            continue
+        }
+
+        val blockedPair = pairs.removeFirstOrNull()
+        if (blockedPair != null) {
+            exercises += blockedPair
+            continue
+        }
+
+        val blockedWriting = writing.removeFirstOrNull()
+        if (blockedWriting != null) {
+            exercises += blockedWriting
+        }
+    }
+
+    return exercises + plan.contrast
+}
+
+private fun writingBurstAfterPairFor(stage: LearningStage): Int =
+    when (stage) {
+        LearningStage.Anchor,
+        LearningStage.RegularRows -> 1
+        LearningStage.ShapeHeavy,
+        LearningStage.TailRows,
+        LearningStage.Voiced,
+        LearningStage.Combination,
+        LearningStage.Special,
+        LearningStage.Confusable -> 2
+    }
 
 private fun ExerciseKind.lessonStartLabel(): String =
     when (this) {

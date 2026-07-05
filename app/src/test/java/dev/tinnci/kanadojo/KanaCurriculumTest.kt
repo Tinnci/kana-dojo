@@ -879,17 +879,58 @@ class KanaCurriculumTest {
     }
 
     @Test
-    fun lessonExercisesUseDeliberateRecognitionListeningMatchingWritingPace() {
+    fun lessonExercisesInterleaveRecognitionListeningMatchingAndWritingPace() {
         val lesson = lessonsFor(Script.Hiragana).first()
         val exercises = buildLessonExercises(lesson)
         val firstSound = exercises.indexOfFirst { it.kind == ExerciseKind.SoundToKana }
         val firstPair = exercises.indexOfFirst { it.kind == ExerciseKind.PairMatch }
         val firstTrace = exercises.indexOfFirst { it.kind == ExerciseKind.TraceKana }
 
-        assertTrue(exercises.take(lesson.items.size * 2).all { it.kind == ExerciseKind.RomajiToKana || it.kind == ExerciseKind.KanaToRomaji })
+        assertEquals(ExerciseKind.RomajiToKana, exercises.first().kind)
+        assertTrue(exercises.take(lesson.items.size).any { it.kind == ExerciseKind.SoundToKana })
+        assertTrue(exercises.take(lesson.items.size).any { it.kind == ExerciseKind.KanaToRomaji })
         assertTrue(firstSound > 0)
         assertTrue(firstSound < firstPair)
         assertTrue(firstPair < firstTrace)
+    }
+
+    @Test
+    fun pairMatchExercisesWaitForTheirKanaToBeIntroduced() {
+        val lessons = lessonsFor(Script.Hiragana) + lessonsFor(Script.Katakana)
+
+        lessons.forEach { lesson ->
+            val introduced = mutableSetOf<String>()
+            buildLessonExercises(lesson).forEach { exercise ->
+                if (exercise.kind == ExerciseKind.PairMatch) {
+                    assertTrue(
+                        "${lesson.scriptLabel()} ${lesson.index} matched before introduction: ${exercise.items.map { it.id }}",
+                        exercise.items.all { it.id in introduced }
+                    )
+                }
+                if (exercise.kind != ExerciseKind.PairMatch && exercise.kind != ExerciseKind.TraceKana) {
+                    introduced += exercise.items.map { it.id }
+                }
+            }
+        }
+    }
+
+    @Test
+    fun traceExercisesWaitForKanaRecognitionExposure() {
+        val lessons = lessonsFor(Script.Hiragana) + lessonsFor(Script.Katakana)
+
+        lessons.forEach { lesson ->
+            val introduced = mutableSetOf<String>()
+            buildLessonExercises(lesson).forEach { exercise ->
+                if (exercise.kind == ExerciseKind.TraceKana) {
+                    assertTrue(
+                        "${lesson.scriptLabel()} ${lesson.index} traced before introduction: ${exercise.items.map { it.id }}",
+                        exercise.items.all { it.id in introduced }
+                    )
+                } else if (exercise.kind != ExerciseKind.PairMatch) {
+                    introduced += exercise.items.map { it.id }
+                }
+            }
+        }
     }
 
     @Test

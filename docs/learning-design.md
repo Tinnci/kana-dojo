@@ -166,6 +166,17 @@ Use these exercise types in increasing difficulty:
 
 Writing implementation note: trace practice is guided shape scoring, not full handwriting recognition. It should check meaningful coverage, direction changes, and kana-specific checkpoints where available. If the app later adds ML Kit Digital Ink or another handwriting recognizer, the UI should present that as recognition with model download, language support, confidence, and fallback states instead of silently replacing the guided-trace score.
 
+## Lesson Sequencing
+
+Separate lesson generation into two responsibilities:
+
+- The exercise plan decides the amount of reading, listening, matching, writing, and contrast work.
+- The sequencer decides the actual order shown to the learner.
+
+This keeps the path predictable while avoiding a test-like block of all reading prompts followed by all listening prompts. A new kana should be introduced with visual recognition, linked to sound quickly when audio is available, checked in the reverse direction, then placed into pair matching after every symbol in that pair has appeared. Writing should wait until the kana has already been seen or heard, because tracing before recognition turns the exercise into copying instead of recall.
+
+Dense lessons still use capped exercise counts, but the sequencer should expose enough of the group before pair matching, then sprinkle short writing bursts after matched chunks. Confusable contrast remains at the end so it acts as deliberate reinforcement after the core lesson, not as the learner's first exposure.
+
 ## Session Structure
 
 A good short session is 3 to 5 minutes:
