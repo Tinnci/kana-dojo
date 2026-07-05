@@ -915,6 +915,144 @@ private fun localizedPracticeModeBadge(badge: String): String =
     }
 
 @Composable
+private fun localizedPracticeQueueSourceTitle(sourceCue: PracticeQueueSourceCue): String =
+    when (sourceCue.title) {
+        "Both scripts" -> stringResource(R.string.practice_queue_source_cross_title)
+        "Hiragana recommended" -> stringResource(
+            R.string.practice_queue_source_recommended_title,
+            stringResource(R.string.script_hiragana)
+        )
+        "Katakana recommended" -> stringResource(
+            R.string.practice_queue_source_recommended_title,
+            stringResource(R.string.script_katakana)
+        )
+        "Hiragana" -> stringResource(R.string.script_hiragana)
+        "Katakana" -> stringResource(R.string.script_katakana)
+        else -> sourceCue.title
+    }
+
+@Composable
+private fun localizedPracticeQueueSourceMessage(sourceCue: PracticeQueueSourceCue): String =
+    when (sourceCue.message) {
+        "This queue can pull hiragana and katakana together." -> stringResource(R.string.practice_queue_source_cross_message)
+        "This queue follows the path recommendation for the selected script." -> stringResource(R.string.practice_queue_source_recommended_message)
+        "This queue uses the currently selected script." -> stringResource(R.string.practice_queue_source_script_message)
+        else -> sourceCue.message
+    }
+
+@Composable
+private fun localizedPracticeQueueExplanationTitle(explanation: PracticeQueueExplanation): String =
+    when (explanation.title) {
+        "Nothing queued" -> stringResource(R.string.practice_queue_empty_title)
+        "Due recall first" -> stringResource(R.string.practice_queue_due_title)
+        "Mistake repair" -> stringResource(R.string.practice_queue_mistake_title)
+        "Low-mastery fallback" -> stringResource(R.string.practice_queue_low_mastery_title)
+        "Seen kana audio" -> stringResource(R.string.practice_queue_sound_seen_title)
+        "Sound-safe fallback" -> stringResource(R.string.practice_queue_sound_fallback_title)
+        "Lookalike focus" -> stringResource(R.string.practice_queue_lookalike_title)
+        "Contrast fallback" -> stringResource(R.string.practice_queue_contrast_fallback_title)
+        "Writing priority" -> stringResource(R.string.practice_queue_writing_title)
+        "Fast recall" -> stringResource(R.string.practice_queue_speed_title)
+        "Both scripts" -> stringResource(R.string.practice_queue_cross_title)
+        "Mixed recall" -> stringResource(R.string.practice_queue_mixed_title)
+        else -> explanation.title
+    }
+
+@Composable
+private fun localizedPracticeQueueExplanationMessage(explanation: PracticeQueueExplanation): String =
+    when (explanation.message) {
+        "Start or finish a lesson first, then practice will have kana to work with." -> stringResource(R.string.practice_queue_empty_message)
+        "This queue mixes due spaced-review kana with any recent mistakes." -> stringResource(R.string.practice_queue_due_message)
+        "This queue starts from recent misses, then keeps low-mastery kana warm." -> stringResource(R.string.practice_queue_mistake_message)
+        "No due or missed kana, so this queue uses the lowest-mastery symbols." -> stringResource(R.string.practice_queue_low_mastery_message)
+        "Sound recall uses kana you have already seen at least once." -> stringResource(R.string.practice_queue_sound_seen_message)
+        "No seen kana yet, so this queue previews kana that support audio prompts." -> stringResource(R.string.practice_queue_sound_fallback_message)
+        "This queue targets kana with known visual confusions." -> stringResource(R.string.practice_queue_lookalike_message)
+        "No lookalikes are available here, so this queue uses low-mastery kana." -> stringResource(R.string.practice_queue_contrast_fallback_message)
+        "Trace practice starts with the least stable kana first." -> stringResource(R.string.practice_queue_writing_message)
+        "Speed rounds prefer recall-ready kana, with early kana as fallback." -> stringResource(R.string.practice_queue_speed_message)
+        "Cross-script practice mixes recall-ready hiragana and katakana." -> stringResource(R.string.practice_queue_cross_message)
+        "Mixed practice rotates reading, sound, and writing prompts." -> stringResource(R.string.practice_queue_mixed_message)
+        else -> explanation.message
+    }
+
+@Composable
+private fun localizedPracticeGoalTitle(goal: PracticeSessionGoal): String =
+    when (goal.title) {
+        "Build a queue" -> stringResource(R.string.practice_goal_build_title)
+        "Clear due recall" -> stringResource(R.string.practice_goal_due_title)
+        "Repair misses" -> stringResource(R.string.practice_goal_repair_title)
+        "Lift low mastery" -> stringResource(R.string.practice_goal_low_mastery_title)
+        "Separate lookalikes" -> stringResource(R.string.practice_goal_lookalike_title)
+        "Sharpen contrast" -> stringResource(R.string.practice_goal_contrast_title)
+        "Hear before reading" -> stringResource(R.string.practice_goal_sound_title)
+        "Stabilize shapes" -> stringResource(R.string.practice_goal_writing_title)
+        "Keep recall fast" -> stringResource(R.string.practice_goal_speed_title)
+        "Switch scripts cleanly" -> stringResource(R.string.practice_goal_cross_title)
+        "Stay flexible" -> stringResource(R.string.practice_goal_mixed_title)
+        else -> goal.title
+    }
+
+@Composable
+private fun localizedPracticeGoalMessage(goal: PracticeSessionGoal): String =
+    when (goal.message) {
+        "Complete a lesson first so practice has kana to measure." -> stringResource(R.string.practice_goal_build_message)
+        "Turn shaky kana into clean or repaired by the end." -> stringResource(R.string.practice_goal_repair_message)
+        "Move the least stable kana toward recall." -> stringResource(R.string.practice_goal_low_mastery_message)
+        "Keep confusable kana distinct through every prompt." -> stringResource(R.string.practice_goal_lookalike_message)
+        "Use the fallback queue to find the next visual weakness." -> stringResource(R.string.practice_goal_contrast_message)
+        "Choose kana from sound before relying on written hints." -> stringResource(R.string.practice_goal_sound_message)
+        "Trace each kana only after the stroke path feels deliberate." -> stringResource(R.string.practice_goal_writing_message)
+        "Answer familiar kana without slowing down for labels." -> stringResource(R.string.practice_goal_speed_message)
+        "Read hiragana and katakana in one rhythm." -> stringResource(R.string.practice_goal_cross_message)
+        "Rotate reading, sound, and writing without losing accuracy." -> stringResource(R.string.practice_goal_mixed_message)
+        else -> {
+            val reps = goal.message
+                .takeIf { it.startsWith("Finish ") && it.endsWith(" reps with no missed due kana.") }
+                ?.removePrefix("Finish ")
+                ?.removeSuffix(" reps with no missed due kana.")
+                ?.toIntOrNull()
+            if (reps != null) {
+                stringResource(R.string.practice_goal_due_message, reps)
+            } else {
+                goal.message
+            }
+        }
+    }
+
+@Composable
+private fun localizedPracticeIntroTitle(intro: PracticeIntroCopy): String =
+    when (intro.title) {
+        "Due recall" -> stringResource(R.string.practice_intro_due_title)
+        "Mistake repair" -> stringResource(R.string.practice_intro_mistake_title)
+        "Low-mastery repair" -> stringResource(R.string.practice_intro_low_mastery_title)
+        "Weak repair" -> stringResource(R.string.practice_mode_weak_title)
+        "Lookalike contrast" -> stringResource(R.string.practice_mode_contrast_title)
+        "Sound recall" -> stringResource(R.string.practice_mode_sound_title)
+        "Writing reps" -> stringResource(R.string.practice_mode_writing_title)
+        "Speed round" -> stringResource(R.string.practice_mode_speed_title)
+        "Both scripts" -> stringResource(R.string.practice_mode_cross_title)
+        "Mixed recall" -> stringResource(R.string.practice_mode_mixed_title)
+        else -> intro.title
+    }
+
+@Composable
+private fun localizedPracticeIntroSubtitle(intro: PracticeIntroCopy): String =
+    when (intro.subtitle) {
+        "Start with kana whose spacing has matured today." -> stringResource(R.string.practice_intro_due_subtitle)
+        "Replay missed kana before they settle into the wrong shape." -> stringResource(R.string.practice_intro_mistake_subtitle)
+        "Build shaky kana toward stable recall." -> stringResource(R.string.practice_intro_low_mastery_subtitle)
+        "Replay misses and low-mastery kana." -> stringResource(R.string.practice_mode_weak_subtitle)
+        "Separate symbols that are easy to confuse." -> stringResource(R.string.practice_mode_contrast_subtitle)
+        "Choose kana from Japanese audio first." -> stringResource(R.string.practice_mode_sound_subtitle)
+        "Trace symbols until the shape feels familiar." -> stringResource(R.string.practice_mode_writing_subtitle)
+        "Fast recognition with familiar kana." -> stringResource(R.string.practice_mode_speed_subtitle)
+        "Read hiragana and katakana in one queue." -> stringResource(R.string.practice_mode_cross_subtitle)
+        "Keep familiar kana fast and automatic." -> stringResource(R.string.practice_mode_mixed_subtitle)
+        else -> intro.subtitle
+    }
+
+@Composable
 private fun PracticeCompletionMetricTile(metric: PracticeCompletionMetric, modifier: Modifier = Modifier) {
     Surface(
         shape = RoundedCornerShape(14.dp),
@@ -1140,8 +1278,8 @@ private fun PracticeIntroPanel(
             verticalArrangement = Arrangement.spacedBy(14.dp)
         ) {
             Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                Text(intro.title, style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Black)
-                Text(intro.subtitle, style = MaterialTheme.typography.bodyMedium)
+                Text(localizedPracticeIntroTitle(intro), style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Black)
+                Text(localizedPracticeIntroSubtitle(intro), style = MaterialTheme.typography.bodyMedium)
             }
             PracticeGoalLine(goal)
             LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
@@ -1196,8 +1334,8 @@ private fun PracticeGoalLine(goal: PracticeSessionGoal, modifier: Modifier = Mod
         ) {
             Icon(Icons.Outlined.CheckCircle, contentDescription = null, modifier = Modifier.size(18.dp))
             Column(verticalArrangement = Arrangement.spacedBy(1.dp)) {
-                Text(goal.title, style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Black)
-                Text(goal.message, style = MaterialTheme.typography.bodySmall)
+                Text(localizedPracticeGoalTitle(goal), style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Black)
+                Text(localizedPracticeGoalMessage(goal), style = MaterialTheme.typography.bodySmall)
             }
         }
     }
@@ -1313,7 +1451,7 @@ private fun PracticeQueuePanel(
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Column(modifier = Modifier.weight(1f)) {
                         Text(localizedPracticeModeTitle(mode), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Black)
-                        Text(sourceCue.title, style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        Text(localizedPracticeQueueSourceTitle(sourceCue), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     }
                     Text(queueSize.toString(), style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Black)
                 }
@@ -1343,7 +1481,7 @@ private fun PracticeQueueSourcePanel(sourceCue: PracticeQueueSourceCue) {
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             Icon(Icons.Outlined.GridView, contentDescription = null, modifier = Modifier.size(16.dp))
-            Text(sourceCue.message, style = MaterialTheme.typography.bodySmall)
+            Text(localizedPracticeQueueSourceMessage(sourceCue), style = MaterialTheme.typography.bodySmall)
         }
     }
 }
@@ -1359,8 +1497,8 @@ private fun PracticeQueueExplanationPanel(explanation: PracticeQueueExplanation)
             modifier = Modifier.padding(horizontal = 10.dp, vertical = 8.dp),
             verticalArrangement = Arrangement.spacedBy(2.dp)
         ) {
-            Text(explanation.title, style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Black)
-            Text(explanation.message, style = MaterialTheme.typography.bodySmall)
+            Text(localizedPracticeQueueExplanationTitle(explanation), style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Black)
+            Text(localizedPracticeQueueExplanationMessage(explanation), style = MaterialTheme.typography.bodySmall)
         }
     }
 }
@@ -1378,8 +1516,8 @@ private fun PracticeEmptyState(explanation: PracticeQueueExplanation) {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Icon(Icons.Outlined.School, contentDescription = null)
-            Text(explanation.title, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Black)
-            Text(explanation.message, style = MaterialTheme.typography.bodyMedium)
+            Text(localizedPracticeQueueExplanationTitle(explanation), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Black)
+            Text(localizedPracticeQueueExplanationMessage(explanation), style = MaterialTheme.typography.bodyMedium)
         }
     }
 }
