@@ -823,8 +823,8 @@ private fun PracticeActionRationalePanel(
                 Icon(icon, contentDescription = null, tint = tint, modifier = Modifier.size(18.dp))
             }
             Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(1.dp)) {
-                Text(copy.title, style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Black)
-                Text(copy.message, style = MaterialTheme.typography.bodySmall)
+                Text(localizedPracticeActionRationaleTitle(copy.title), style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Black)
+                Text(localizedPracticeActionRationaleMessage(copy.message), style = MaterialTheme.typography.bodySmall)
             }
         }
     }
@@ -871,8 +871,8 @@ private fun PracticeOutcomeGuidancePanel(copy: PracticeOutcomeGuidanceCopy, redu
                 Icon(icon, contentDescription = null, tint = iconTint, modifier = Modifier.size(17.dp))
             }
             Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
-                Text(copy.title, style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Black)
-                Text(copy.message, style = MaterialTheme.typography.bodySmall)
+                Text(localizedPracticeOutcomeGuidanceTitle(copy.title), style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Black)
+                Text(localizedPracticeOutcomeGuidanceMessage(copy.message), style = MaterialTheme.typography.bodySmall)
             }
         }
     }
@@ -941,6 +941,46 @@ private fun localizedPracticeCompletionToneLabel(toneLabel: String): String =
         "Total" -> stringResource(R.string.practice_tone_total)
         "Review" -> stringResource(R.string.practice_tone_review)
         else -> toneLabel
+    }
+
+@Composable
+private fun localizedPracticeOutcomeGuidanceTitle(title: String): String =
+    when (title) {
+        "No outcome yet" -> stringResource(R.string.practice_outcome_no_outcome_title)
+        "Repair split" -> stringResource(R.string.practice_outcome_repair_split_title)
+        "Still shaky" -> stringResource(R.string.practice_outcome_still_shaky_title)
+        "Repair held" -> stringResource(R.string.practice_outcome_repair_held_title)
+        "Clean set" -> stringResource(R.string.practice_outcome_clean_set_title)
+        else -> title
+    }
+
+@Composable
+private fun localizedPracticeOutcomeGuidanceMessage(message: String): String =
+    when (message) {
+        "Finish one pass so this summary can separate clean, repaired, and shaky kana." -> stringResource(R.string.practice_outcome_no_outcome_message)
+        "Repaired kana improved in this pass; shaky kana still need one more repeat." -> stringResource(R.string.practice_outcome_repair_split_message)
+        "These kana missed without a clean answer. Repeat before adding new material." -> stringResource(R.string.practice_outcome_still_shaky_message)
+        "Missed kana came back correctly. Review them later instead of drilling now." -> stringResource(R.string.practice_outcome_repair_held_message)
+        "No repair needed. Keep momentum with the path or a mixed queue." -> stringResource(R.string.practice_outcome_clean_set_message)
+        else -> message
+    }
+
+@Composable
+private fun localizedPracticeActionRationaleTitle(title: String): String =
+    when (title) {
+        "Path is ready" -> stringResource(R.string.practice_action_path_ready_title)
+        "Measure first" -> stringResource(R.string.practice_action_measure_first_title)
+        "Repeat first" -> stringResource(R.string.practice_action_repeat_first_title)
+        else -> title
+    }
+
+@Composable
+private fun localizedPracticeActionRationaleMessage(message: String): String =
+    when (message) {
+        "A clean queue means new prompts can build on this recall; repeat is optional." -> stringResource(R.string.practice_action_path_ready_message)
+        "Run the queue once so the app can separate clean and shaky kana." -> stringResource(R.string.practice_action_measure_first_message)
+        "Missed kana are still fresh; one more pass protects the next lesson." -> stringResource(R.string.practice_action_repeat_first_message)
+        else -> message
     }
 
 @Composable

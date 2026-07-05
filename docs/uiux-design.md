@@ -324,9 +324,11 @@ Implemented:
 - Added tested compact outcome tone labels to practice completion metrics.
 - Added tested compact accuracy tone copy to practice completion.
 - Added tested compact repaired-versus-shaky guidance copy to practice completion.
+- Added resource-backed English and Simplified Chinese copy for practice completion outcome guidance.
 - Added reduced-motion-aware entrance motion to practice outcome guidance.
 - Added compact outcome guidance icon tones for repaired and shaky states.
 - Added tested compact completion action rationale copy for return-to-path versus repeat.
+- Added resource-backed English and Simplified Chinese copy for practice completion action rationale.
 - Added reduced-motion-aware entrance motion to practice action rationale.
 - Added compact action icon tone for clean return-to-path completions.
 - Added compact action icon tone for repeat-required completions.
