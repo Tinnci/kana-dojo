@@ -20,6 +20,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 
+enum class KanaLayoutMode {
+    Compact,
+    Expanded
+}
+
 internal fun <T> kanaMotionSpec(reduceMotion: Boolean, durationMillis: Int = 200): AnimationSpec<T> =
     if (reduceMotion) snap() else tween(durationMillis = durationMillis)
 

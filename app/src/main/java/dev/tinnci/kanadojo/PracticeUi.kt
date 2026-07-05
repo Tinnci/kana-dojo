@@ -72,6 +72,7 @@ import androidx.compose.ui.unit.sp
 @Composable
 fun MistakePracticeScreen(
     script: Script,
+    layoutMode: KanaLayoutMode,
     initialMode: PracticeMode,
     allItems: List<KanaItem>,
     mistakeIds: List<String>,
@@ -179,9 +180,10 @@ fun MistakePracticeScreen(
             )
         }
     }
+    val outerPadding = if (layoutMode == KanaLayoutMode.Expanded) 24.dp else 20.dp
 
     if (practiceItems.isEmpty()) {
-        Box(modifier = Modifier.fillMaxSize().padding(20.dp), contentAlignment = Alignment.Center) {
+        Box(modifier = Modifier.fillMaxSize().padding(outerPadding), contentAlignment = Alignment.Center) {
             PracticeEmptyState(explanation = queueExplanation)
         }
         return
@@ -191,7 +193,7 @@ fun MistakePracticeScreen(
         modifier = Modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
-            .padding(20.dp),
+            .padding(outerPadding),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         PracticeHeroPanel(

@@ -4,7 +4,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -53,6 +52,7 @@ import androidx.compose.ui.unit.sp
 @Composable
 fun KanaChartScreen(
     script: Script,
+    layoutMode: KanaLayoutMode,
     mastery: Map<String, Int>,
     onSpeak: (String) -> Unit,
     onEarcon: (KanaEarcon) -> Unit,
@@ -73,54 +73,49 @@ fun KanaChartScreen(
     val contrastSummary = chartContrastSummaryCopyFor(selectedRow, items)
     val tapFeedback = tappedItem?.let { chartTapFeedbackFor(it) }
 
-    BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
-        if (maxWidth >= 720.dp) {
-            ChartExpandedContent(
-                script = script,
-                progressCopy = progressCopy,
-                rows = rows,
-                selectedRow = selectedRow,
-                tapFeedback = tapFeedback,
-                rowGuidance = rowGuidance,
-                contrastSummary = contrastSummary,
-                visibleItems = visibleItems,
-                mastery = mastery,
-                tappedItem = tappedItem,
-                onEarcon = onEarcon,
-                onTaptic = onTaptic,
-                onRowChange = {
-                    selectedRow = it
-                    tappedItemId = null
-                },
-                onItemTap = { item ->
-                    tappedItemId = item.id
-                    onSpeak(item.kana)
-                }
-            )
-        } else {
-            ChartCompactContent(
-                script = script,
-                progressCopy = progressCopy,
-                rows = rows,
-                selectedRow = selectedRow,
-                tapFeedback = tapFeedback,
-                rowGuidance = rowGuidance,
-                contrastSummary = contrastSummary,
-                visibleItems = visibleItems,
-                mastery = mastery,
-                tappedItem = tappedItem,
-                onEarcon = onEarcon,
-                onTaptic = onTaptic,
-                onRowChange = {
-                    selectedRow = it
-                    tappedItemId = null
-                },
-                onItemTap = { item ->
-                    tappedItemId = item.id
-                    onSpeak(item.kana)
-                }
-            )
-        }
+    val onRowChange: (String?) -> Unit = {
+        selectedRow = it
+        tappedItemId = null
+    }
+    val onItemTap: (KanaItem) -> Unit = { item ->
+        tappedItemId = item.id
+        onSpeak(item.kana)
+    }
+
+    if (layoutMode == KanaLayoutMode.Expanded) {
+        ChartExpandedContent(
+            script = script,
+            progressCopy = progressCopy,
+            rows = rows,
+            selectedRow = selectedRow,
+            tapFeedback = tapFeedback,
+            rowGuidance = rowGuidance,
+            contrastSummary = contrastSummary,
+            visibleItems = visibleItems,
+            mastery = mastery,
+            tappedItem = tappedItem,
+            onEarcon = onEarcon,
+            onTaptic = onTaptic,
+            onRowChange = onRowChange,
+            onItemTap = onItemTap
+        )
+    } else {
+        ChartCompactContent(
+            script = script,
+            progressCopy = progressCopy,
+            rows = rows,
+            selectedRow = selectedRow,
+            tapFeedback = tapFeedback,
+            rowGuidance = rowGuidance,
+            contrastSummary = contrastSummary,
+            visibleItems = visibleItems,
+            mastery = mastery,
+            tappedItem = tappedItem,
+            onEarcon = onEarcon,
+            onTaptic = onTaptic,
+            onRowChange = onRowChange,
+            onItemTap = onItemTap
+        )
     }
 }
 

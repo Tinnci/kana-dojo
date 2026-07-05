@@ -18,6 +18,8 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationRail
+import androidx.compose.material3.NavigationRailItem
 import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.material3.SingleChoiceSegmentedButtonRow
@@ -115,19 +117,38 @@ fun KanaBottomBar(currentTab: ScreenTab, onTabChange: (ScreenTab) -> Unit) {
                 selected = currentTab == tab,
                 onClick = { onTabChange(tab) },
                 icon = {
-                    Icon(
-                        imageVector = when (tab) {
-                            ScreenTab.Lessons -> Icons.Outlined.School
-                            ScreenTab.Chart -> Icons.Outlined.GridView
-                            ScreenTab.Mistakes -> Icons.Outlined.Replay
-                        },
-                        contentDescription = stringResource(tab.labelResId)
-                    )
+                    ScreenTabIcon(tab)
                 },
                 label = { Text(stringResource(tab.labelResId)) }
             )
         }
     }
+}
+
+@Composable
+fun KanaNavigationRail(currentTab: ScreenTab, onTabChange: (ScreenTab) -> Unit) {
+    NavigationRail(containerColor = MaterialTheme.colorScheme.surface) {
+        ScreenTab.entries.forEach { tab ->
+            NavigationRailItem(
+                selected = currentTab == tab,
+                onClick = { onTabChange(tab) },
+                icon = { ScreenTabIcon(tab) },
+                label = { Text(stringResource(tab.labelResId)) }
+            )
+        }
+    }
+}
+
+@Composable
+private fun ScreenTabIcon(tab: ScreenTab) {
+    Icon(
+        imageVector = when (tab) {
+            ScreenTab.Lessons -> Icons.Outlined.School
+            ScreenTab.Chart -> Icons.Outlined.GridView
+            ScreenTab.Mistakes -> Icons.Outlined.Replay
+        },
+        contentDescription = stringResource(tab.labelResId)
+    )
 }
 
 private val ScreenTab.labelResId: Int

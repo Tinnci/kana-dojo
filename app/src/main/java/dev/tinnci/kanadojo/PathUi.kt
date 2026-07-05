@@ -57,6 +57,7 @@ import androidx.compose.ui.unit.sp
 @Composable
 fun LessonPathScreen(
     script: Script,
+    layoutMode: KanaLayoutMode,
     mastery: Map<String, Int>,
     mistakeIds: List<String>,
     reviewDueEpochDays: Map<String, Long>,
@@ -158,7 +159,7 @@ fun LessonPathScreen(
 
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(20.dp),
+        contentPadding = PaddingValues(if (layoutMode == KanaLayoutMode.Expanded) 24.dp else 20.dp),
         verticalArrangement = Arrangement.spacedBy(14.dp)
     ) {
         item {

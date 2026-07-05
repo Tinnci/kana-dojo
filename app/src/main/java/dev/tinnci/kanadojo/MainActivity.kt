@@ -9,6 +9,8 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
@@ -26,6 +28,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.unit.dp
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -90,123 +93,139 @@ private fun KanaDojoApp() {
         practiceEpochDays = progressStore.loadPracticeEpochDays(today)
     }
     KanaTheme {
-        Scaffold(
-            topBar = {
-                KanaTopBar(
-                    selectedScript = selectedScript,
-                    reduceMotion = reduceMotion,
-                    soundEnabled = soundEnabled,
-                    hapticsEnabled = hapticsEnabled,
-                    onSettingsOpen = {
-                        playEarcon(KanaEarcon.Select)
-                        playTaptic(KanaTaptic.Select)
-                    },
-                    onScriptChange = {
-                        playEarcon(KanaEarcon.Navigate)
-                        playTaptic(KanaTaptic.Navigate)
-                        selectedScript = it
-                    },
-                    onReduceMotionChange = {
-                        playEarcon(KanaEarcon.Select)
-                        playTaptic(if (it) KanaTaptic.ToggleOn else KanaTaptic.ToggleOff)
-                        reduceMotion = it
-                        progressStore.setReduceMotion(it)
-                    },
-                    onSoundEnabledChange = {
-                        playTaptic(if (it) KanaTaptic.ToggleOn else KanaTaptic.ToggleOff)
-                        soundEnabled = it
-                        progressStore.setSoundEnabled(it)
-                        if (it) {
-                            earcons.enabled = true
-                            playEarcon(KanaEarcon.Select)
-                        }
-                    },
-                    onHapticsEnabledChange = {
-                        playEarcon(KanaEarcon.Select)
-                        if (it) {
-                            performKanaTaptic(haptic, KanaTaptic.ToggleOn)
-                        } else {
-                            playTaptic(KanaTaptic.ToggleOff)
-                        }
-                        hapticsEnabled = it
-                        progressStore.setHapticsEnabled(it)
-                    }
-                )
-            },
-            bottomBar = {
-                KanaBottomBar(
-                    currentTab = currentTab,
-                    onTabChange = {
-                        if (currentTab != it) {
-                            playEarcon(KanaEarcon.Navigate)
-                            playTaptic(KanaTaptic.Navigate)
-                        }
-                        currentTab = it
-                    }
-                )
+        BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
+            val layoutMode = if (maxWidth >= 840.dp) KanaLayoutMode.Expanded else KanaLayoutMode.Compact
+            val onTabChange: (ScreenTab) -> Unit = { tab ->
+                if (currentTab != tab) {
+                    playEarcon(KanaEarcon.Navigate)
+                    playTaptic(KanaTaptic.Navigate)
+                }
+                currentTab = tab
             }
-        ) { padding ->
-            AnimatedContent(
-                targetState = currentTab,
-                transitionSpec = {
-                    val duration = if (reduceMotion) 0 else 160
-                    fadeIn(animationSpec = tween(durationMillis = duration)) togetherWith
-                        fadeOut(animationSpec = tween(durationMillis = duration))
-                },
-                label = "screen",
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(padding)
-                    .background(MaterialTheme.colorScheme.background)
-            ) { tab ->
-                when (tab) {
-                    ScreenTab.Lessons -> LessonPathScreen(
-                        script = selectedScript,
-                        mastery = mastery,
-                        mistakeIds = mistakes,
-                        reviewDueEpochDays = reviewDueEpochDays,
-                        practiceEpochDays = practiceEpochDays,
-                        currentEpochDay = today,
-                        onSpeak = speakKana,
-                        onEarcon = playEarcon,
-                        onTaptic = playTaptic,
+
+            Scaffold(
+                topBar = {
+                    KanaTopBar(
+                        selectedScript = selectedScript,
                         reduceMotion = reduceMotion,
-                        onOpenPractice = { mode ->
-                            playEarcon(KanaEarcon.Review)
-                            playTaptic(KanaTaptic.Review)
-                            requestedPracticeMode = mode
-                            currentTab = ScreenTab.Mistakes
+                        soundEnabled = soundEnabled,
+                        hapticsEnabled = hapticsEnabled,
+                        onSettingsOpen = {
+                            playEarcon(KanaEarcon.Select)
+                            playTaptic(KanaTaptic.Select)
                         },
-                        onResult = markResult
-                    )
-
-                    ScreenTab.Chart -> KanaChartScreen(
-                        script = selectedScript,
-                        mastery = mastery,
-                        onSpeak = speakKana,
-                        onEarcon = playEarcon,
-                        onTaptic = playTaptic
-                    )
-
-                    ScreenTab.Mistakes -> MistakePracticeScreen(
-                        script = selectedScript,
-                        initialMode = requestedPracticeMode,
-                        allItems = allItems,
-                        mistakeIds = mistakes,
-                        mastery = mastery,
-                        reviewDueEpochDays = reviewDueEpochDays,
-                        currentEpochDay = today,
-                        onSpeak = speakKana,
-                        onEarcon = playEarcon,
-                        onTaptic = playTaptic,
-                        reduceMotion = reduceMotion,
-                        onResult = markResult,
-                        onReturnToPath = {
+                        onScriptChange = {
                             playEarcon(KanaEarcon.Navigate)
                             playTaptic(KanaTaptic.Navigate)
-                            currentTab = ScreenTab.Lessons
+                            selectedScript = it
+                        },
+                        onReduceMotionChange = {
+                            playEarcon(KanaEarcon.Select)
+                            playTaptic(if (it) KanaTaptic.ToggleOn else KanaTaptic.ToggleOff)
+                            reduceMotion = it
+                            progressStore.setReduceMotion(it)
+                        },
+                        onSoundEnabledChange = {
+                            playTaptic(if (it) KanaTaptic.ToggleOn else KanaTaptic.ToggleOff)
+                            soundEnabled = it
+                            progressStore.setSoundEnabled(it)
+                            if (it) {
+                                earcons.enabled = true
+                                playEarcon(KanaEarcon.Select)
+                            }
+                        },
+                        onHapticsEnabledChange = {
+                            playEarcon(KanaEarcon.Select)
+                            if (it) {
+                                performKanaTaptic(haptic, KanaTaptic.ToggleOn)
+                            } else {
+                                playTaptic(KanaTaptic.ToggleOff)
+                            }
+                            hapticsEnabled = it
+                            progressStore.setHapticsEnabled(it)
                         }
                     )
+                },
+                bottomBar = {
+                    if (layoutMode == KanaLayoutMode.Compact) {
+                        KanaBottomBar(currentTab = currentTab, onTabChange = onTabChange)
+                    }
+                }
+            ) { padding ->
+                Row(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(padding)
+                        .background(MaterialTheme.colorScheme.background)
+                ) {
+                    if (layoutMode == KanaLayoutMode.Expanded) {
+                        KanaNavigationRail(currentTab = currentTab, onTabChange = onTabChange)
+                    }
+                    AnimatedContent(
+                        targetState = currentTab,
+                        transitionSpec = {
+                            val duration = if (reduceMotion) 0 else 160
+                            fadeIn(animationSpec = tween(durationMillis = duration)) togetherWith
+                                fadeOut(animationSpec = tween(durationMillis = duration))
+                        },
+                        label = "screen",
+                        modifier = Modifier
+                            .weight(1f)
+                            .fillMaxSize()
+                    ) { tab ->
+                        when (tab) {
+                            ScreenTab.Lessons -> LessonPathScreen(
+                                script = selectedScript,
+                                layoutMode = layoutMode,
+                                mastery = mastery,
+                                mistakeIds = mistakes,
+                                reviewDueEpochDays = reviewDueEpochDays,
+                                practiceEpochDays = practiceEpochDays,
+                                currentEpochDay = today,
+                                onSpeak = speakKana,
+                                onEarcon = playEarcon,
+                                onTaptic = playTaptic,
+                                reduceMotion = reduceMotion,
+                                onOpenPractice = { mode ->
+                                    playEarcon(KanaEarcon.Review)
+                                    playTaptic(KanaTaptic.Review)
+                                    requestedPracticeMode = mode
+                                    currentTab = ScreenTab.Mistakes
+                                },
+                                onResult = markResult
+                            )
+
+                            ScreenTab.Chart -> KanaChartScreen(
+                                script = selectedScript,
+                                layoutMode = layoutMode,
+                                mastery = mastery,
+                                onSpeak = speakKana,
+                                onEarcon = playEarcon,
+                                onTaptic = playTaptic
+                            )
+
+                            ScreenTab.Mistakes -> MistakePracticeScreen(
+                                script = selectedScript,
+                                layoutMode = layoutMode,
+                                initialMode = requestedPracticeMode,
+                                allItems = allItems,
+                                mistakeIds = mistakes,
+                                mastery = mastery,
+                                reviewDueEpochDays = reviewDueEpochDays,
+                                currentEpochDay = today,
+                                onSpeak = speakKana,
+                                onEarcon = playEarcon,
+                                onTaptic = playTaptic,
+                                reduceMotion = reduceMotion,
+                                onResult = markResult,
+                                onReturnToPath = {
+                                    playEarcon(KanaEarcon.Navigate)
+                                    playTaptic(KanaTaptic.Navigate)
+                                    currentTab = ScreenTab.Lessons
+                                }
+                            )
+                        }
+                    }
                 }
             }
         }
