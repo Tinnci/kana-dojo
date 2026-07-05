@@ -7,8 +7,8 @@ This document records the implementation choices for future writing work so the 
 ## Current Implementation
 
 - UI input: Compose `Canvas` with drag gesture collection in `TraceExerciseUi`.
-- Stroke persistence: simple `TracePoint` snapshot tokens for save/restore during a session.
-- Scoring: in-repo guided scoring in `TraceScoring`, using path length, spread, occupied grid cells, turn changes, and optional kana-specific checkpoints.
+- Stroke persistence: simple `TracePoint` snapshot tokens for save/restore during a session, including explicit stroke-start markers so multi-stroke kana are not replayed or scored as one continuous path.
+- Scoring: in-repo guided scoring in `TraceScoring`, using path length, spread, occupied grid cells, turn changes, optional kana-specific checkpoints, and stroke-count expectations for selected confusable or stroke-sensitive kana.
 - UX claim: "guided trace scoring", not "handwriting recognition".
 
 This is the right baseline for early kana learning because learners need shape confidence before unconstrained handwriting checks.
@@ -37,6 +37,7 @@ Use this for:
 - richer brush rendering
 - structured stroke data
 - future replay/comparison polish
+- cleaner stroke-start data feeding the existing guided scoring contract
 
 Do not use this as a recognizer. AndroidX Ink handles ink, not kana correctness.
 

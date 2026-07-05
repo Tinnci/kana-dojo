@@ -128,20 +128,23 @@ class TraceScoringTest {
     @Test
     fun kaTraceRequiresRightSideMarkCoverage() {
         val ka = hiraganaItems.first { it.kana == "か" }
-        val missingRightMark = listOf(
-            TracePoint(145f, 150f),
-            TracePoint(240f, 150f),
-            TracePoint(230f, 230f),
-            TracePoint(190f, 330f),
-            TracePoint(150f, 430f),
-            TracePoint(260f, 420f),
-            TracePoint(315f, 330f),
-            TracePoint(300f, 230f),
-            TracePoint(250f, 180f),
-            TracePoint(180f, 160f),
-            TracePoint(150f, 150f),
-            TracePoint(220f, 220f),
-            TracePoint(300f, 320f)
+        val missingRightMark = withStrokeStarts(
+            points = listOf(
+                TracePoint(145f, 150f),
+                TracePoint(240f, 150f),
+                TracePoint(230f, 230f),
+                TracePoint(190f, 330f),
+                TracePoint(150f, 430f),
+                TracePoint(260f, 420f),
+                TracePoint(315f, 330f),
+                TracePoint(300f, 230f),
+                TracePoint(250f, 180f),
+                TracePoint(180f, 160f),
+                TracePoint(150f, 150f),
+                TracePoint(220f, 220f),
+                TracePoint(300f, 320f)
+            ),
+            strokeStartIndexes = intArrayOf(0, 3, 10)
         )
 
         val score = traceScoreFor(missingRightMark, ka, TraceBounds(600f, 600f))
@@ -153,7 +156,38 @@ class TraceScoringTest {
     @Test
     fun kaTraceWithMainShapeAndRightMarkCanBecomeReady() {
         val ka = hiraganaItems.first { it.kana == "か" }
-        val points = listOf(
+        val points = withStrokeStarts(
+            points = listOf(
+                TracePoint(150f, 220f),
+                TracePoint(240f, 220f),
+                TracePoint(310f, 220f),
+                TracePoint(290f, 290f),
+                TracePoint(250f, 360f),
+                TracePoint(205f, 445f),
+                TracePoint(300f, 440f),
+                TracePoint(375f, 395f),
+                TracePoint(382f, 305f),
+                TracePoint(340f, 240f),
+                TracePoint(275f, 220f),
+                TracePoint(430f, 210f),
+                TracePoint(480f, 270f),
+                TracePoint(500f, 330f),
+                TracePoint(470f, 275f),
+                TracePoint(445f, 230f)
+            ),
+            strokeStartIndexes = intArrayOf(0, 3, 11)
+        )
+
+        val score = traceScoreFor(points, ka, TraceBounds(600f, 600f))
+
+        assertTrue(score.ready)
+        assertEquals("Looks ready to check.", score.message)
+    }
+
+    @Test
+    fun profiledKanaNeedVisibleStrokeBreaks() {
+        val ka = hiraganaItems.first { it.kana == "か" }
+        val singleStrokeKa = listOf(
             TracePoint(150f, 220f),
             TracePoint(240f, 220f),
             TracePoint(310f, 220f),
@@ -172,10 +206,10 @@ class TraceScoringTest {
             TracePoint(445f, 230f)
         )
 
-        val score = traceScoreFor(points, ka, TraceBounds(600f, 600f))
+        val score = traceScoreFor(singleStrokeKa, ka, TraceBounds(600f, 600f))
 
-        assertTrue(score.ready)
-        assertEquals("Looks ready to check.", score.message)
+        assertFalse(score.ready)
+        assertEquals("Lift and start the next stroke.", score.message)
     }
 
     @Test
@@ -198,6 +232,33 @@ class TraceScoringTest {
 
         assertTrue(cues.any { it.label == "Direction" && "right" in it.message })
         assertTrue(cues.any { it.label == "Coverage" && "ghost shape" in it.message })
+    }
+
+    @Test
+    fun traceFeedbackDescribesStrokeBreaksForProfiledKana() {
+        val ka = hiraganaItems.first { it.kana == "か" }
+        val oneStroke = listOf(
+            TracePoint(150f, 220f, startsStroke = true),
+            TracePoint(240f, 220f),
+            TracePoint(310f, 220f)
+        )
+        val threeStrokes = listOf(
+            TracePoint(150f, 220f, startsStroke = true),
+            TracePoint(240f, 220f),
+            TracePoint(310f, 220f),
+            TracePoint(290f, 290f, startsStroke = true),
+            TracePoint(250f, 360f),
+            TracePoint(205f, 445f),
+            TracePoint(430f, 210f, startsStroke = true),
+            TracePoint(480f, 270f),
+            TracePoint(500f, 330f)
+        )
+
+        val oneStrokeCues = traceFeedbackCuesFor(oneStroke, traceScoreFor(oneStroke, ka, TraceBounds(600f, 600f)), ka)
+        val threeStrokeCues = traceFeedbackCuesFor(threeStrokes, traceScoreFor(threeStrokes, ka, TraceBounds(600f, 600f)), ka)
+
+        assertTrue(oneStrokeCues.any { it.label == "Strokes" && it.message == "Lift between separate strokes." })
+        assertTrue(threeStrokeCues.any { it.label == "Strokes" && it.message == "Stroke breaks are visible." })
     }
 
     @Test
@@ -268,4 +329,9 @@ class TraceScoringTest {
 
         assertEquals(null, traceGuidanceFor(item))
     }
+
+    private fun withStrokeStarts(points: List<TracePoint>, strokeStartIndexes: IntArray): List<TracePoint> =
+        points.mapIndexed { index, point ->
+            point.copy(startsStroke = index in strokeStartIndexes)
+        }
 }

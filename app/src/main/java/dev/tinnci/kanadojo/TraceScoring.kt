@@ -39,7 +39,8 @@ private data class TraceCheckpoint(
 
 private data class TraceShapeProfile(
     val checkpoints: List<TraceCheckpoint>,
-    val requiredCoverage: Float = 0.78f
+    val requiredCoverage: Float = 0.78f,
+    val expectedStrokeCount: Int? = null
 )
 
 fun traceScoreFor(points: List<TracePoint>): TraceScore =
@@ -64,6 +65,9 @@ private fun calculateTraceScore(points: List<TracePoint>, item: KanaItem?, bound
     val turnScore = significantTurnScore(points)
     val profile = item?.let { traceShapeProfileFor(it) }
     val profileScore = profile?.let { traceProfileScore(points, bounds, it) }
+    val strokeScore = profile?.expectedStrokeCount?.let { expected ->
+        (strokeCountFor(points) / expected.toFloat()).coerceIn(0f, 1f)
+    }
     val baseProgress = (
         pointScore * 0.18f +
             lengthScore * 0.24f +
@@ -74,17 +78,25 @@ private fun calculateTraceScore(points: List<TracePoint>, item: KanaItem?, bound
     val progress = if (profileScore == null) {
         baseProgress
     } else {
-        (baseProgress * 0.62f + profileScore * 0.38f).coerceIn(0f, 1f)
+        val shapeProgress = (baseProgress * 0.62f + profileScore * 0.38f).coerceIn(0f, 1f)
+        if (strokeScore == null) {
+            shapeProgress
+        } else {
+            (shapeProgress * 0.84f + strokeScore * 0.16f).coerceIn(0f, 1f)
+        }
     }
     val profileReady = profile == null || (profileScore ?: 0f) >= profile.requiredCoverage
+    val strokeReady = profile?.expectedStrokeCount == null || strokeCountFor(points) >= profile.expectedStrokeCount
     val ready = progress >= 0.72f &&
         points.size > 12 &&
         pathLength > 220f &&
         cellScore >= 0.45f &&
         turnScore >= 0.20f &&
-        profileReady
+        profileReady &&
+        strokeReady
     val message = when {
         ready -> "Looks ready to check."
+        !strokeReady -> "Lift and start the next stroke."
         !profileReady -> "Use more of the ghost shape."
         spread < 0.18f -> "Use more of the ghost shape."
         lengthScore < 0.55f -> "Add a little more stroke length."
@@ -130,6 +142,13 @@ private fun tracePathLength(points: List<TracePoint>): Float =
         .filterNot { (_, b) -> b.startsStroke }
         .sumOf { (a, b) -> hypot((a.x - b.x).toDouble(), (a.y - b.y).toDouble()) }
         .toFloat()
+
+private fun strokeCountFor(points: List<TracePoint>): Int =
+    if (points.isEmpty()) {
+        0
+    } else {
+        points.count { it.startsStroke }.coerceAtLeast(1)
+    }
 
 private fun traceProfileScore(points: List<TracePoint>, bounds: TraceBounds?, profile: TraceShapeProfile): Float {
     val normalized = normalizedTracePoints(points, bounds)
@@ -185,7 +204,54 @@ private fun traceShapeProfileFor(item: KanaItem): TraceShapeProfile? =
                 TraceCheckpoint(0.76f, 0.36f),
                 TraceCheckpoint(0.82f, 0.52f)
             ),
-            requiredCoverage = 0.82f
+            requiredCoverage = 0.82f,
+            expectedStrokeCount = 3
+        )
+
+        "シ" -> TraceShapeProfile(
+            checkpoints = listOf(
+                TraceCheckpoint(0.34f, 0.34f),
+                TraceCheckpoint(0.38f, 0.50f),
+                TraceCheckpoint(0.28f, 0.70f),
+                TraceCheckpoint(0.56f, 0.56f),
+                TraceCheckpoint(0.76f, 0.42f)
+            ),
+            requiredCoverage = 0.74f,
+            expectedStrokeCount = 3
+        )
+
+        "ツ" -> TraceShapeProfile(
+            checkpoints = listOf(
+                TraceCheckpoint(0.34f, 0.32f),
+                TraceCheckpoint(0.50f, 0.36f),
+                TraceCheckpoint(0.36f, 0.34f),
+                TraceCheckpoint(0.56f, 0.56f),
+                TraceCheckpoint(0.72f, 0.72f)
+            ),
+            requiredCoverage = 0.74f,
+            expectedStrokeCount = 3
+        )
+
+        "ソ" -> TraceShapeProfile(
+            checkpoints = listOf(
+                TraceCheckpoint(0.34f, 0.34f),
+                TraceCheckpoint(0.64f, 0.30f),
+                TraceCheckpoint(0.54f, 0.54f),
+                TraceCheckpoint(0.42f, 0.76f)
+            ),
+            requiredCoverage = 0.74f,
+            expectedStrokeCount = 2
+        )
+
+        "ン" -> TraceShapeProfile(
+            checkpoints = listOf(
+                TraceCheckpoint(0.30f, 0.34f),
+                TraceCheckpoint(0.30f, 0.72f),
+                TraceCheckpoint(0.54f, 0.56f),
+                TraceCheckpoint(0.76f, 0.42f)
+            ),
+            requiredCoverage = 0.74f,
+            expectedStrokeCount = 2
         )
 
         else -> null
@@ -202,7 +268,11 @@ fun traceRemediationFor(score: TraceScore): TraceRemediationCopy? =
         )
     }
 
-fun traceFeedbackCuesFor(points: List<TracePoint>, score: TraceScore = traceScoreFor(points)): List<TraceFeedbackCue> {
+fun traceFeedbackCuesFor(
+    points: List<TracePoint>,
+    score: TraceScore = traceScoreFor(points),
+    item: KanaItem? = null
+): List<TraceFeedbackCue> {
     if (points.isEmpty()) {
         return listOf(
             TraceFeedbackCue("Start", "Place the first stroke on the ghost kana."),
@@ -218,6 +288,14 @@ fun traceFeedbackCuesFor(points: List<TracePoint>, score: TraceScore = traceScor
     val start = points.first()
     val end = points.last()
     val direction = directionLabelFor(start, end)
+    val expectedStrokes = item?.let { traceShapeProfileFor(it) }?.expectedStrokeCount
+    val strokeCue = expectedStrokes?.let { expected ->
+        if (strokeCountFor(points) >= expected) {
+            TraceFeedbackCue("Strokes", "Stroke breaks are visible.")
+        } else {
+            TraceFeedbackCue("Strokes", "Lift between separate strokes.")
+        }
+    }
     val coverage = when {
         score.ready -> "Coverage is broad enough to check."
         width < 90f || height < 90f -> "Use more of the ghost shape before checking."
@@ -225,7 +303,7 @@ fun traceFeedbackCuesFor(points: List<TracePoint>, score: TraceScore = traceScor
     }
     return listOf(
         TraceFeedbackCue("Start", "Start marker is shown on your first touch."),
-        TraceFeedbackCue("Direction", "Your main movement trends $direction."),
+        strokeCue ?: TraceFeedbackCue("Direction", "Your main movement trends $direction."),
         TraceFeedbackCue("Coverage", coverage)
     )
 }

@@ -84,7 +84,7 @@ fun TraceKanaExercise(
     val replayProgress = remember(item.id) { Animatable(1f) }
     val tracePoints = remember(pointTokens) { tracePointsFromSnapshotTokens(pointTokens) }
     val traceScore = remember(tracePoints, traceBounds, item) { traceScoreFor(tracePoints, item, traceBounds) }
-    val traceCues = remember(tracePoints, traceScore) { traceFeedbackCuesFor(tracePoints, traceScore) }
+    val traceCues = remember(tracePoints, traceScore, item) { traceFeedbackCuesFor(tracePoints, traceScore, item) }
     val remediation = remember(traceScore) { traceRemediationFor(traceScore) }
     val animatedScore by animateFloatAsState(
         targetValue = traceScore.progress,
@@ -545,6 +545,7 @@ private fun localizedTraceScoreMessage(message: String): String =
         "Looks ready to check." -> stringResource(R.string.trace_score_ready)
         "Use more of the ghost shape." -> stringResource(R.string.trace_score_more_shape)
         "Add a little more stroke length." -> stringResource(R.string.trace_score_more_length)
+        "Lift and start the next stroke." -> stringResource(R.string.trace_score_next_stroke)
         "Keep tracing until the score fills." -> stringResource(R.string.trace_score_keep_tracing)
         else -> message
     }
@@ -554,6 +555,7 @@ private fun localizedTraceCueLabel(label: String): String =
     when (label) {
         "Start" -> stringResource(R.string.trace_cue_start)
         "Direction" -> stringResource(R.string.trace_cue_direction)
+        "Strokes" -> stringResource(R.string.trace_cue_strokes)
         "Coverage" -> stringResource(R.string.trace_cue_coverage)
         else -> label
     }
@@ -564,6 +566,8 @@ private fun localizedTraceCueMessage(message: String): String =
         "Place the first stroke on the ghost kana." -> stringResource(R.string.trace_cue_empty_start)
         "Move slowly enough that the stroke path is visible." -> stringResource(R.string.trace_cue_empty_direction)
         "Start marker is shown on your first touch." -> stringResource(R.string.trace_cue_start_marker)
+        "Lift between separate strokes." -> stringResource(R.string.trace_cue_lift_between_strokes)
+        "Stroke breaks are visible." -> stringResource(R.string.trace_cue_stroke_breaks_visible)
         "Coverage is broad enough to check." -> stringResource(R.string.trace_coverage_ready)
         "Use more of the ghost shape before checking." -> stringResource(R.string.trace_coverage_more_shape)
         "Coverage is close; add the missing edges." -> stringResource(R.string.trace_coverage_close)
