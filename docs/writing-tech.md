@@ -9,6 +9,7 @@ This document records the implementation choices for future writing work so the 
 - UI input: Compose `Canvas` with drag gesture collection in `TraceExerciseUi`.
 - Stroke persistence: simple `TracePoint` snapshot tokens for save/restore during a session, including explicit stroke-start markers so multi-stroke kana are not replayed or scored as one continuous path.
 - Scoring: in-repo guided scoring in `TraceScoring`, using path length, spread, occupied grid cells, turn changes, optional kana-specific checkpoints, and stroke-count expectations for selected confusable or stroke-sensitive kana.
+- Assessment boundary: `WritingAssessment` records whether an engine can claim guided trace scoring, template shape comparison, or true handwriting recognition. Tests require ML Kit-style recognition to expose model-management needs and keep guided trace from claiming free handwriting recognition.
 - UX claim: "guided trace scoring", not "handwriting recognition".
 
 This is the right baseline for early kana learning because learners need shape confidence before unconstrained handwriting checks.
@@ -70,6 +71,18 @@ Use only if we are willing to support:
 - dependency and GPL distribution review
 
 If added, keep it behind a separate implementation boundary or build flavor. Do not silently replace guided trace scoring with ML Kit results.
+
+## Implementation Boundary
+
+Writing assessment has three explicit engine classes in code:
+
+| Engine | Learner-facing claim | Model management | Free handwriting recognition |
+| --- | --- | --- | --- |
+| `GuidedTrace` | guided trace scoring | no | no |
+| `TemplateSimilarity` | shape similarity | no | no |
+| `MlKitDigitalInk` | handwriting recognition | yes | yes |
+
+This boundary lets the lesson UI keep using guided trace today while future recognizer work adds model download, unavailable, and fallback states before it changes the learner-facing claim.
 
 ## Current Decision
 
