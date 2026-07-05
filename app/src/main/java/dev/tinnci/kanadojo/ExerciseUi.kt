@@ -54,6 +54,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -144,7 +145,7 @@ fun ExerciseCard(
                         .fillMaxWidth()
                         .height(56.dp)
                 ) {
-                    Text("Continue", fontWeight = FontWeight.Bold)
+                    Text(stringResource(R.string.action_continue), fontWeight = FontWeight.Bold)
                 }
             }
         }
@@ -154,11 +155,11 @@ fun ExerciseCard(
 @Composable
 private fun ExerciseHeader(kind: ExerciseKind) {
     val (title, subtitle) = when (kind) {
-        ExerciseKind.KanaToRomaji -> "Read it" to "Choose the matching sound."
-        ExerciseKind.RomajiToKana -> "Find the kana" to "Choose the symbol for this sound."
-        ExerciseKind.SoundToKana -> "Hear it" to "Choose the kana you heard."
-        ExerciseKind.PairMatch -> "Match pairs" to "Pair each kana with its sound."
-        ExerciseKind.TraceKana -> "Write it" to "Trace the kana and check your stroke shape."
+        ExerciseKind.KanaToRomaji -> stringResource(R.string.exercise_kana_to_romaji_title) to stringResource(R.string.exercise_kana_to_romaji_subtitle)
+        ExerciseKind.RomajiToKana -> stringResource(R.string.exercise_romaji_to_kana_title) to stringResource(R.string.exercise_romaji_to_kana_subtitle)
+        ExerciseKind.SoundToKana -> stringResource(R.string.exercise_sound_to_kana_title) to stringResource(R.string.exercise_sound_to_kana_subtitle)
+        ExerciseKind.PairMatch -> stringResource(R.string.exercise_pair_match_title) to stringResource(R.string.exercise_pair_match_subtitle)
+        ExerciseKind.TraceKana -> stringResource(R.string.exercise_trace_title) to stringResource(R.string.exercise_trace_subtitle)
     }
     Row(verticalAlignment = Alignment.CenterVertically) {
         Box(
@@ -195,9 +196,16 @@ private fun FeedbackBanner(feedback: AnswerFeedback) {
             )
             Spacer(Modifier.width(10.dp))
             Column {
-                Text(if (feedback.correct) "Nice. Keep going." else "Correct answer: ${feedback.answer}", fontWeight = FontWeight.Bold)
+                Text(
+                    if (feedback.correct) {
+                        stringResource(R.string.exercise_feedback_correct)
+                    } else {
+                        stringResource(R.string.exercise_feedback_answer, feedback.answer)
+                    },
+                    fontWeight = FontWeight.Bold
+                )
                 if (!feedback.correct) {
-                    Text("This will come back soon.", style = MaterialTheme.typography.bodySmall)
+                    Text(stringResource(R.string.exercise_feedback_retry), style = MaterialTheme.typography.bodySmall)
                 }
             }
         }
@@ -226,7 +234,7 @@ private fun ChoiceExercise(
             FilledTonalButton(onClick = onSpeak) {
                 Icon(Icons.Outlined.PlayArrow, contentDescription = null)
                 Spacer(Modifier.width(8.dp))
-                Text("Hear it")
+                Text(stringResource(R.string.exercise_hear_action))
             }
         }
         LazyVerticalGrid(
@@ -275,7 +283,11 @@ private fun SoundChoiceExercise(
                 shape = CircleShape,
                 modifier = Modifier.size(116.dp)
             ) {
-                Icon(Icons.Outlined.PlayArrow, contentDescription = "Play sound", modifier = Modifier.size(52.dp))
+                Icon(
+                    Icons.Outlined.PlayArrow,
+                    contentDescription = stringResource(R.string.exercise_play_sound_content_description),
+                    modifier = Modifier.size(52.dp)
+                )
             }
         }
         LazyVerticalGrid(

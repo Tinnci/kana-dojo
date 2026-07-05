@@ -150,4 +150,20 @@
     <string name="trace_comparison_model">范例</string>
     <string name="trace_comparison_yours">我的</string>
     <string name="trace_score_title">书写分</string>
+    <string name="action_continue">继续</string>
+    <string name="exercise_kana_to_romaji_title">读出来</string>
+    <string name="exercise_kana_to_romaji_subtitle">选择匹配的读音。</string>
+    <string name="exercise_romaji_to_kana_title">找到假名</string>
+    <string name="exercise_romaji_to_kana_subtitle">选择这个读音对应的符号。</string>
+    <string name="exercise_sound_to_kana_title">听出来</string>
+    <string name="exercise_sound_to_kana_subtitle">选择你听到的假名。</string>
+    <string name="exercise_pair_match_title">配对练习</string>
+    <string name="exercise_pair_match_subtitle">把每个假名和它的读音配对。</string>
+    <string name="exercise_trace_title">写出来</string>
+    <string name="exercise_trace_subtitle">描写假名，并检查笔画形状。</string>
+    <string name="exercise_feedback_correct">很好，继续。</string>
+    <string name="exercise_feedback_answer">正确答案：%1$s</string>
+    <string name="exercise_feedback_retry">它很快会再次出现。</string>
+    <string name="exercise_hear_action">听一下</string>
+    <string name="exercise_play_sound_content_description">播放声音</string>
 </resources>

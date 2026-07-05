@@ -150,4 +150,20 @@
     <string name="trace_comparison_model">Model</string>
     <string name="trace_comparison_yours">Yours</string>
     <string name="trace_score_title">Trace score</string>
+    <string name="action_continue">Continue</string>
+    <string name="exercise_kana_to_romaji_title">Read it</string>
+    <string name="exercise_kana_to_romaji_subtitle">Choose the matching sound.</string>
+    <string name="exercise_romaji_to_kana_title">Find the kana</string>
+    <string name="exercise_romaji_to_kana_subtitle">Choose the symbol for this sound.</string>
+    <string name="exercise_sound_to_kana_title">Hear it</string>
+    <string name="exercise_sound_to_kana_subtitle">Choose the kana you heard.</string>
+    <string name="exercise_pair_match_title">Match pairs</string>
+    <string name="exercise_pair_match_subtitle">Pair each kana with its sound.</string>
+    <string name="exercise_trace_title">Write it</string>
+    <string name="exercise_trace_subtitle">Trace the kana and check your stroke shape.</string>
+    <string name="exercise_feedback_correct">Nice. Keep going.</string>
+    <string name="exercise_feedback_answer">Correct answer: %1$s</string>
+    <string name="exercise_feedback_retry">This will come back soon.</string>
+    <string name="exercise_hear_action">Hear it</string>
+    <string name="exercise_play_sound_content_description">Play sound</string>
 </resources>
