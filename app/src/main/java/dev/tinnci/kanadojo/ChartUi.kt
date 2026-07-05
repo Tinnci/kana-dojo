@@ -228,9 +228,7 @@ private fun ChartHeader(script: Script, progressCopy: ChartProgressCopy) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Column(modifier = Modifier.weight(1f)) {
-                Text(stringResource(R.string.chart_header_label), style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Bold)
-                Text(stringResource(R.string.chart_header_title, script.label), style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Black)
-                Text(stringResource(R.string.chart_header_message), style = MaterialTheme.typography.bodyMedium)
+                Text(stringResource(R.string.chart_header_title, script.label), style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Black)
             }
             Text(progressCopy.message, style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Black)
         }

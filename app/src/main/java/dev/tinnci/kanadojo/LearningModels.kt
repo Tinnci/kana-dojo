@@ -5,10 +5,10 @@ enum class Script(val label: String) {
     Katakana("Katakana")
 }
 
-enum class ScreenTab(val label: String) {
-    Lessons("Lessons"),
-    Chart("Chart"),
-    Mistakes("Practice")
+enum class ScreenTab {
+    Lessons,
+    Chart,
+    Mistakes
 }
 
 enum class ExerciseKind {

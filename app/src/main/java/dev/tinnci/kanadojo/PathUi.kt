@@ -361,7 +361,6 @@ private fun DailyFocusPanel(
 ) {
     val phaseSummary = remember(lesson) { lessonPhaseSummaryFor(lesson) }
     val startPreview = remember(lesson) { lessonStartPreviewFor(lesson) }
-    val lessonKana = remember(lesson) { lesson.items.joinToString(" ") { it.kana } }
     Surface(
         shape = RoundedCornerShape(22.dp),
         color = MaterialTheme.colorScheme.primaryContainer,
@@ -385,11 +384,12 @@ private fun DailyFocusPanel(
                 }
                 Spacer(Modifier.width(16.dp))
                 Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                    Text(stringResource(R.string.path_next_lesson_label), style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Bold)
-                    Text(lesson.title, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Black)
+                    Text(lesson.title, style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Black)
                     Text(
-                        stringResource(R.string.path_next_lesson_message, lessonKana),
-                        style = MaterialTheme.typography.bodyMedium
+                        lesson.items.joinToString(" ") { it.kana },
+                        style = MaterialTheme.typography.titleMedium,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.78f)
                     )
                 }
             }
@@ -432,7 +432,7 @@ private fun DailyFocusPanel(
                 ) {
                     Icon(Icons.Outlined.Replay, contentDescription = null)
                     Spacer(Modifier.width(8.dp))
-                    Text(stringResource(R.string.action_optional_practice_format, stringResource(R.string.action_optional_practice), practiceRecommendation.actionLabel))
+                    Text(practiceRecommendation.actionLabel, fontWeight = FontWeight.Bold)
                 }
             }
         }

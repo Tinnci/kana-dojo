@@ -31,6 +31,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 
@@ -52,32 +53,32 @@ fun KanaTopBar(
         colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background),
         title = {
             Column {
-                Text("Kana Dojo", fontWeight = FontWeight.Black)
-                Text("guided kana drills", style = MaterialTheme.typography.labelMedium)
+                Text(stringResource(R.string.app_name), fontWeight = FontWeight.Black)
+                Text(stringResource(R.string.app_subtitle), style = MaterialTheme.typography.labelMedium)
             }
         },
         actions = {
             Row(modifier = Modifier.padding(end = 8.dp)) {
                 IconButton(onClick = { settingsOpen = true }) {
-                    Icon(Icons.Outlined.Settings, contentDescription = "Settings")
+                    Icon(Icons.Outlined.Settings, contentDescription = stringResource(R.string.settings_content_description))
                 }
                 DropdownMenu(expanded = settingsOpen, onDismissRequest = { settingsOpen = false }) {
                     DropdownMenuItem(
-                        text = { Text("Sound") },
+                        text = { Text(stringResource(R.string.settings_sound)) },
                         onClick = { onSoundEnabledChange(!soundEnabled) },
                         trailingIcon = {
                             Switch(checked = soundEnabled, onCheckedChange = onSoundEnabledChange)
                         }
                     )
                     DropdownMenuItem(
-                        text = { Text("Reduced motion") },
+                        text = { Text(stringResource(R.string.settings_reduced_motion)) },
                         onClick = { onReduceMotionChange(!reduceMotion) },
                         trailingIcon = {
                             Switch(checked = reduceMotion, onCheckedChange = onReduceMotionChange)
                         }
                     )
                     DropdownMenuItem(
-                        text = { Text("Haptics") },
+                        text = { Text(stringResource(R.string.settings_haptics)) },
                         onClick = { onHapticsEnabledChange(!hapticsEnabled) },
                         trailingIcon = {
                             Switch(checked = hapticsEnabled, onCheckedChange = onHapticsEnabledChange)
@@ -95,8 +96,8 @@ fun KanaTopBar(
                         label = {
                             Text(
                                 when (script) {
-                                    Script.Hiragana -> "Hira"
-                                    Script.Katakana -> "Kata"
+                                    Script.Hiragana -> stringResource(R.string.script_hiragana_short)
+                                    Script.Katakana -> stringResource(R.string.script_katakana_short)
                                 }
                             )
                         }
@@ -121,11 +122,18 @@ fun KanaBottomBar(currentTab: ScreenTab, onTabChange: (ScreenTab) -> Unit) {
                             ScreenTab.Chart -> Icons.Outlined.GridView
                             ScreenTab.Mistakes -> Icons.Outlined.Replay
                         },
-                        contentDescription = tab.label
+                        contentDescription = stringResource(tab.labelResId)
                     )
                 },
-                label = { Text(tab.label) }
+                label = { Text(stringResource(tab.labelResId)) }
             )
         }
     }
 }
+
+private val ScreenTab.labelResId: Int
+    get() = when (this) {
+        ScreenTab.Lessons -> R.string.tab_lessons
+        ScreenTab.Chart -> R.string.tab_chart
+        ScreenTab.Mistakes -> R.string.tab_practice
+    }

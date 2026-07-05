@@ -171,8 +171,8 @@ Implemented:
 - Clean lesson completions preview the next unlocked lesson before returning to the path.
 - Data-driven path hero that previews the next lesson, overall progress, lesson progress, and review pressure.
 - Material-aligned path elevation pass: active next lesson is raised while regular lesson cards stay flat, and the hero uses tone instead of decorative gradient.
-- Resource-backed English and Simplified Chinese strings for the top path, practice, and chart entry points instead of mixed-language labels.
-- Start focus is communicated through layout hierarchy: raised primary panels, large kana anchors, prominent titles, and full-width primary actions.
+- Resource-backed English and Simplified Chinese strings for essential actions on the top path, practice, and chart entry points.
+- Starting priority is communicated through layout hierarchy: raised primary panels, large kana anchors, prominent titles, and full-width primary actions.
 - Reduced-motion top-bar toggle that disables trace replay animation while keeping comparison available.
 - Persisted reduced-motion preference.
 - Persisted sound toggle that quiets speech playback without changing lessons.

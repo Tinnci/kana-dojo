@@ -1053,9 +1053,7 @@ private fun PracticeIntroPanel(
             verticalArrangement = Arrangement.spacedBy(14.dp)
         ) {
             Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                Text(stringResource(R.string.practice_intro_label), style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Bold)
-                Text(stringResource(R.string.practice_intro_title), style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Black)
-                Text(intro.title, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Black)
+                Text(intro.title, style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Black)
                 Text(intro.subtitle, style = MaterialTheme.typography.bodyMedium)
             }
             PracticeGoalLine(goal)

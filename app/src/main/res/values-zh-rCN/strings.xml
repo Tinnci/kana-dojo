@@ -1,17 +1,19 @@
 <resources>
     <string name="app_name">Kana Dojo</string>
-    <string name="path_next_lesson_label">下一课</string>
-    <string name="path_next_lesson_message">先学假名：%1$s。课程短、反馈即时，之后只复习需要巩固的内容。</string>
+    <string name="app_subtitle">假名引导练习</string>
+    <string name="settings_content_description">设置</string>
+    <string name="settings_sound">声音</string>
+    <string name="settings_reduced_motion">减少动态效果</string>
+    <string name="settings_haptics">触感反馈</string>
+    <string name="script_hiragana_short">平假</string>
+    <string name="script_katakana_short">片假</string>
+    <string name="tab_lessons">课程</string>
+    <string name="tab_chart">假名表</string>
+    <string name="tab_practice">练习</string>
     <string name="action_start_lesson">开始课程</string>
-    <string name="action_optional_practice">可选练习</string>
-    <string name="action_optional_practice_format">%1$s：%2$s</string>
-    <string name="practice_intro_label">推荐练习</string>
-    <string name="practice_intro_title">开始练习</string>
     <string name="action_review_due">复习到期内容</string>
     <string name="action_repair_mistakes">修复错题</string>
     <string name="action_start_repair">开始巩固</string>
     <string name="action_start_practice">开始练习</string>
-    <string name="chart_header_label">参考表</string>
     <string name="chart_header_title">%1$s 假名表</string>
-    <string name="chart_header_message">点按假名可听发音；想让记忆进度计入学习时，再回到课程。</string>
 </resources>
