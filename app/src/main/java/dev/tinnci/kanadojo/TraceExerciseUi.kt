@@ -283,8 +283,8 @@ private fun TraceCuePanel(cues: List<TraceFeedbackCue>) {
                     modifier = Modifier.padding(horizontal = 10.dp, vertical = 8.dp),
                     verticalArrangement = Arrangement.spacedBy(3.dp)
                 ) {
-                    Text(cue.label, style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Black)
-                    Text(cue.message, style = MaterialTheme.typography.bodySmall)
+                    Text(localizedTraceCueLabel(cue.label), style = MaterialTheme.typography.labelSmall, fontWeight = FontWeight.Black)
+                    Text(localizedTraceCueMessage(cue.message), style = MaterialTheme.typography.bodySmall)
                 }
             }
         }
@@ -305,11 +305,11 @@ private fun TraceRemediationPanel(remediation: TraceRemediationCopy, onRetry: ()
         ) {
             Icon(Icons.Outlined.TouchApp, contentDescription = null, tint = Color(0xFF9B2D20))
             Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(3.dp)) {
-                Text(remediation.title, style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Black)
-                Text(remediation.message, style = MaterialTheme.typography.bodySmall)
+                Text(localizedTraceRemediationTitle(remediation.title), style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Black)
+                Text(localizedTraceRemediationMessage(remediation.message), style = MaterialTheme.typography.bodySmall)
             }
             OutlinedButton(onClick = onRetry) {
-                Text(remediation.actionLabel)
+                Text(localizedTraceRemediationAction(remediation.actionLabel))
             }
         }
     }
@@ -466,7 +466,80 @@ private fun TraceScorePanel(score: Float, ready: Boolean, message: String) {
                 Text("${(score * 100).toInt()}%", style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Black)
             }
             LinearProgressIndicator(progress = { score }, modifier = Modifier.fillMaxWidth())
-            Text(message, style = MaterialTheme.typography.bodyMedium)
+            Text(localizedTraceScoreMessage(message), style = MaterialTheme.typography.bodyMedium)
         }
     }
 }
+
+@Composable
+private fun localizedTraceScoreMessage(message: String): String =
+    when (message) {
+        "Trace over the ghost kana." -> stringResource(R.string.trace_score_empty)
+        "Looks ready to check." -> stringResource(R.string.trace_score_ready)
+        "Use more of the ghost shape." -> stringResource(R.string.trace_score_more_shape)
+        "Add a little more stroke length." -> stringResource(R.string.trace_score_more_length)
+        "Keep tracing until the score fills." -> stringResource(R.string.trace_score_keep_tracing)
+        else -> message
+    }
+
+@Composable
+private fun localizedTraceCueLabel(label: String): String =
+    when (label) {
+        "Start" -> stringResource(R.string.trace_cue_start)
+        "Direction" -> stringResource(R.string.trace_cue_direction)
+        "Coverage" -> stringResource(R.string.trace_cue_coverage)
+        else -> label
+    }
+
+@Composable
+private fun localizedTraceCueMessage(message: String): String =
+    when (message) {
+        "Place the first stroke on the ghost kana." -> stringResource(R.string.trace_cue_empty_start)
+        "Move slowly enough that the stroke path is visible." -> stringResource(R.string.trace_cue_empty_direction)
+        "Start marker is shown on your first touch." -> stringResource(R.string.trace_cue_start_marker)
+        "Coverage is broad enough to check." -> stringResource(R.string.trace_coverage_ready)
+        "Use more of the ghost shape before checking." -> stringResource(R.string.trace_coverage_more_shape)
+        "Coverage is close; add the missing edges." -> stringResource(R.string.trace_coverage_close)
+        else -> localizedTraceDirectionCueMessage(message)
+    }
+
+@Composable
+private fun localizedTraceDirectionCueMessage(message: String): String {
+    val prefix = "Your main movement trends "
+    if (!message.startsWith(prefix)) return message
+    val direction = message.removePrefix(prefix).removeSuffix(".")
+    return stringResource(R.string.trace_cue_direction_message, localizedTraceDirection(direction))
+}
+
+@Composable
+private fun localizedTraceDirection(direction: String): String =
+    when (direction) {
+        "in a small area" -> stringResource(R.string.trace_direction_small_area)
+        "to the right" -> stringResource(R.string.trace_direction_right)
+        "to the left" -> stringResource(R.string.trace_direction_left)
+        "downward" -> stringResource(R.string.trace_direction_downward)
+        "upward" -> stringResource(R.string.trace_direction_upward)
+        else -> direction
+    }
+
+@Composable
+private fun localizedTraceRemediationTitle(title: String): String =
+    when (title) {
+        "Shape needs one more pass" -> stringResource(R.string.trace_remediation_title)
+        else -> title
+    }
+
+@Composable
+private fun localizedTraceRemediationMessage(message: String): String {
+    val suffix = " Compare the model, then retry the stroke."
+    val scoreMessage = message.removeSuffix(suffix)
+    if (scoreMessage == message) return message
+    return stringResource(R.string.trace_remediation_message, localizedTraceScoreMessage(scoreMessage))
+}
+
+@Composable
+private fun localizedTraceRemediationAction(action: String): String =
+    when (action) {
+        "Retry trace" -> stringResource(R.string.trace_remediation_action)
+        else -> action
+    }
