@@ -915,6 +915,34 @@ class KanaCurriculumTest {
     }
 
     @Test
+    fun denseCombinationLessonsUseShortSessionPacing() {
+        val lesson = lessonsFor(Script.Hiragana).first { it.index == 20 }
+        val exercises = buildLessonExercises(lesson)
+        val summary = lessonPhaseSummaryFor(lesson).associate { it.label to it.count }
+
+        assertEquals(9, lesson.items.size)
+        assertEquals(14, summary["Read"])
+        assertEquals(6, summary["Hear"])
+        assertEquals(2, summary["Match"])
+        assertEquals(5, summary["Write"])
+        assertEquals(summary.values.sum(), exercises.size)
+        assertTrue("Dense blend lesson should stay short enough for one session", exercises.size <= 30)
+    }
+
+    @Test
+    fun specialLessonsCapWritingAndOmitAudio() {
+        val lesson = lessonsFor(Script.Katakana).last()
+        val exercises = buildLessonExercises(lesson)
+        val summary = lessonPhaseSummaryFor(lesson).associate { it.label to it.count }
+
+        assertEquals(14, summary["Read"])
+        assertEquals(null, summary["Hear"])
+        assertEquals(5, summary["Write"])
+        assertEquals(summary.values.sum(), exercises.size)
+        assertTrue("Special-symbol lesson should stay short enough for one session", exercises.size <= 25)
+    }
+
+    @Test
     fun lessonStartPreviewNamesFirstGeneratedExercise() {
         val lesson = lessonsFor(Script.Hiragana).first()
         val preview = lessonStartPreviewFor(lesson)
@@ -1017,6 +1045,31 @@ class KanaCurriculumTest {
         val lesson = lessonsFor(Script.Katakana).first { it.stage == LearningStage.Confusable }
 
         assertEquals(buildLessonExercises(lesson).size, lessonPhaseSummaryFor(lesson).sumOf { it.count })
+    }
+
+    @Test
+    fun allLessonQueuesStayWithinShortSessionBudget() {
+        val lessons = lessonsFor(Script.Hiragana) + lessonsFor(Script.Katakana)
+
+        lessons.forEach { lesson ->
+            assertTrue(
+                "${lesson.scriptLabel()} ${lesson.index} generated ${buildLessonExercises(lesson).size} drills",
+                buildLessonExercises(lesson).size <= 30
+            )
+        }
+    }
+
+    @Test
+    fun everyLessonPhaseSummaryMatchesGeneratedQueue() {
+        val lessons = lessonsFor(Script.Hiragana) + lessonsFor(Script.Katakana)
+
+        lessons.forEach { lesson ->
+            assertEquals(
+                "${lesson.scriptLabel()} ${lesson.index}",
+                buildLessonExercises(lesson).size,
+                lessonPhaseSummaryFor(lesson).sumOf { it.count }
+            )
+        }
     }
 
     @Test
@@ -2462,4 +2515,7 @@ class KanaCurriculumTest {
         assertEquals(setOf("repaired"), outcomes.repairedIds)
         assertEquals(setOf("shaky"), outcomes.shakyIds)
     }
+
+    private fun KanaLesson.scriptLabel(): String =
+        items.firstOrNull()?.script?.name.orEmpty()
 }

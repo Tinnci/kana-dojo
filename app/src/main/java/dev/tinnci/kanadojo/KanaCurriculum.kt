@@ -4,24 +4,13 @@ import kotlin.random.Random
 
 private const val PairMatchTargetSize = 4
 private const val MinimumPairMatchSize = 2
+private const val RecognitionTargetSize = 10
+private const val DenseRecognitionTargetSize = 14
+private const val DenseListeningTargetSize = 6
+private const val DenseWritingTargetSize = 5
 
-fun buildLessonExercises(lesson: KanaLesson): List<Exercise> {
-    val recognition = lesson.items.flatMap { item ->
-        buildList {
-            add(Exercise(ExerciseKind.RomajiToKana, listOf(item)))
-            add(Exercise(ExerciseKind.KanaToRomaji, listOf(item)))
-        }
-    }
-    val listening = lesson.items
-        .filter { supportsAudioPrompt(it) }
-        .map { Exercise(ExerciseKind.SoundToKana, listOf(it)) }
-    val pairs = pairMatchExercisesFor(lesson.items)
-    val writing = lesson.items.take(writingCountFor(lesson)).map { Exercise(ExerciseKind.TraceKana, listOf(it)) }
-    val contrastItems = contrastItemsFor(lesson)
-    val contrast = contrastItems
-        .flatMap { listOf(Exercise(ExerciseKind.RomajiToKana, listOf(it)), Exercise(ExerciseKind.TraceKana, listOf(it))) }
-    return recognition + listening + pairs + writing + contrast
-}
+fun buildLessonExercises(lesson: KanaLesson): List<Exercise> =
+    lessonExercisePlanFor(lesson).exercises
 
 fun lessonStartPreviewFor(lesson: KanaLesson): LessonStartPreview {
     val exercises = buildLessonExercises(lesson)
@@ -91,14 +80,64 @@ fun pathCompletionFeedbackFor(
         )
     }
 
-fun lessonPhaseSummaryFor(lesson: KanaLesson): List<LessonPhaseCount> =
-    listOf(
-        LessonPhaseCount("Read", lesson.items.size * 2),
-        LessonPhaseCount("Hear", lesson.items.count { supportsAudioPrompt(it) }),
-        LessonPhaseCount("Match", pairMatchExercisesFor(lesson.items).size),
-        LessonPhaseCount("Write", writingCountFor(lesson)),
-        LessonPhaseCount("Contrast", contrastItemsFor(lesson).size * 2)
+fun lessonPhaseSummaryFor(lesson: KanaLesson): List<LessonPhaseCount> {
+    val plan = lessonExercisePlanFor(lesson)
+    return listOf(
+        LessonPhaseCount("Read", plan.recognition.size),
+        LessonPhaseCount("Hear", plan.listening.size),
+        LessonPhaseCount("Match", plan.pairs.size),
+        LessonPhaseCount("Write", plan.writing.size),
+        LessonPhaseCount("Contrast", plan.contrast.size)
     ).filter { it.count > 0 }
+}
+
+private data class LessonExercisePlan(
+    val recognition: List<Exercise>,
+    val listening: List<Exercise>,
+    val pairs: List<Exercise>,
+    val writing: List<Exercise>,
+    val contrast: List<Exercise>
+) {
+    val exercises: List<Exercise> = recognition + listening + pairs + writing + contrast
+}
+
+private fun lessonExercisePlanFor(lesson: KanaLesson): LessonExercisePlan {
+    val recognition = recognitionExercisesFor(lesson)
+    val listening = listeningExercisesFor(lesson)
+    val pairs = pairMatchExercisesFor(lesson.items)
+    val writing = writingExercisesFor(lesson)
+    val contrast = contrastExercisesFor(lesson)
+    return LessonExercisePlan(
+        recognition = recognition,
+        listening = listening,
+        pairs = pairs,
+        writing = writing,
+        contrast = contrast
+    )
+}
+
+private fun recognitionExercisesFor(lesson: KanaLesson): List<Exercise> {
+    val target = recognitionTargetFor(lesson)
+    val primary = lesson.items.map { Exercise(ExerciseKind.RomajiToKana, listOf(it)) }
+    val remaining = (target - primary.size).coerceAtLeast(0)
+    val reverse = lesson.items.take(remaining).map { Exercise(ExerciseKind.KanaToRomaji, listOf(it)) }
+    return primary + reverse
+}
+
+private fun listeningExercisesFor(lesson: KanaLesson): List<Exercise> =
+    lesson.items
+        .filter { supportsAudioPrompt(it) }
+        .take(listeningTargetFor(lesson))
+        .map { Exercise(ExerciseKind.SoundToKana, listOf(it)) }
+
+private fun writingExercisesFor(lesson: KanaLesson): List<Exercise> =
+    lesson.items
+        .take(writingCountFor(lesson))
+        .map { Exercise(ExerciseKind.TraceKana, listOf(it)) }
+
+private fun contrastExercisesFor(lesson: KanaLesson): List<Exercise> =
+    contrastItemsFor(lesson)
+        .flatMap { listOf(Exercise(ExerciseKind.RomajiToKana, listOf(it)), Exercise(ExerciseKind.TraceKana, listOf(it))) }
 
 private fun pairMatchExercisesFor(items: List<KanaItem>): List<Exercise> {
     if (items.size < MinimumPairMatchSize) return emptyList()
@@ -128,9 +167,22 @@ private fun writingCountFor(lesson: KanaLesson): Int =
         LearningStage.ShapeHeavy -> 4
         LearningStage.TailRows -> lesson.items.size
         LearningStage.Voiced -> lesson.items.size
-        LearningStage.Combination -> lesson.items.size
-        LearningStage.Special -> lesson.items.size
+        LearningStage.Combination -> minOf(lesson.items.size, DenseWritingTargetSize)
+        LearningStage.Special -> minOf(lesson.items.size, DenseWritingTargetSize)
         LearningStage.Confusable -> lesson.items.size
+    }
+
+private fun recognitionTargetFor(lesson: KanaLesson): Int =
+    when (lesson.stage) {
+        LearningStage.Combination,
+        LearningStage.Special -> DenseRecognitionTargetSize
+        else -> RecognitionTargetSize
+    }.coerceAtMost(lesson.items.size * 2)
+
+private fun listeningTargetFor(lesson: KanaLesson): Int =
+    when (lesson.stage) {
+        LearningStage.Combination -> DenseListeningTargetSize
+        else -> lesson.items.size
     }
 
 private fun contrastItemsFor(lesson: KanaLesson): List<KanaItem> =

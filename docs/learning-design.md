@@ -177,4 +177,6 @@ A good short session is 3 to 5 minutes:
 - 2 to 3 trace prompts.
 - 1 final mistake replay.
 
+Dense lesson pacing: combination and special-symbol lessons can contain more than five new symbols, so the main lesson should cap recognition, listening, and trace prompts instead of expanding every exercise type for every item. The goal is a complete first pass, not exhaustive production in one run. Writing practice should pick up the remaining low-mastery or untraced symbols after the lesson so dense groups still get shape practice without turning the path lesson into a long session.
+
 Do not add kanji until both hiragana and katakana base tables are stable. Kana fluency should be a separate milestone.
