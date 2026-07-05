@@ -284,9 +284,10 @@ Implemented:
 - Added tested compact completion action-button accessibility action-button semantic merge mode audit.
 - Added tested compact completion action-button accessibility action-button semantic merge disabled-copy audit.
 - Added tested compact completion action-button accessibility action-button semantic merge traversal audit.
+- Added tested compact completion action-button accessibility action-button semantic merge role audit.
 
 ## Next Polish Pass
 
 Implement next:
 
-- Add compact completion action-button accessibility action-button semantic merge role audit.
+- Add compact completion action-button accessibility action-button semantic merge fallback audit.

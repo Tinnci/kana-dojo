@@ -538,11 +538,16 @@ private fun Modifier.practiceCompletionActionButtonTouchTarget(
         .heightIn(min = 48.dp)
         .semantics(mergeDescendants = semantics.mergeDescendants) {
             contentDescription = semantics.contentDescription
-            role = Role.Button
+            role = semantics.role.toComposeRole()
             this.stateDescription = semantics.stateDescription
             traversalIndex = semantics.traversalIndex
             onClick(label = semantics.clickLabel, action = null)
         }
+
+private fun PracticeAccessibilityRole.toComposeRole(): Role =
+    when (this) {
+        PracticeAccessibilityRole.Button -> Role.Button
+    }
 
 private fun Modifier.practiceCompletionActionGroupSummary(action: ReviewCompletionAction): Modifier =
     semantics {

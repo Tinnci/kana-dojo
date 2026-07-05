@@ -1321,6 +1321,7 @@ class KanaCurriculumTest {
         assertEquals("Available", returnSemantics.stateDescription)
         assertEquals("Activate Return to lesson path", returnSemantics.clickLabel)
         assertEquals(0f, returnSemantics.traversalIndex)
+        assertEquals(PracticeAccessibilityRole.Button, returnSemantics.role)
         assertTrue(disabledRepeatSemantics.mergeDescendants)
         assertEquals("Repeat first action: Repeat sound recall queue", disabledRepeatSemantics.contentDescription)
         assertEquals(
@@ -1328,6 +1329,7 @@ class KanaCurriculumTest {
             disabledRepeatSemantics.stateDescription
         )
         assertEquals("Action unavailable: No repeat queue", disabledRepeatSemantics.clickLabel)
+        assertEquals(PracticeAccessibilityRole.Button, disabledRepeatSemantics.role)
     }
 
     @Test
@@ -1351,6 +1353,22 @@ class KanaCurriculumTest {
                     actionButtons.map { it.accessibilityTraversalIndex },
                     semantics.map { it.traversalIndex }
                 )
+            }
+        }
+    }
+
+    @Test
+    fun practiceCompletionActionButtonSemanticsExposeButtonRoleAcrossModes() {
+        PracticeMode.entries.forEach { mode ->
+            ReviewCompletionAction.entries.forEach { action ->
+                val semantics = practiceCompletionActionButtonMetadataInDisplayOrder(
+                    completionAction = action,
+                    mode = mode
+                ).map { actionButton ->
+                    practiceCompletionActionButtonSemanticsFor(actionButton = actionButton, enabled = true)
+                }
+
+                assertTrue(semantics.all { it.role == PracticeAccessibilityRole.Button })
             }
         }
     }

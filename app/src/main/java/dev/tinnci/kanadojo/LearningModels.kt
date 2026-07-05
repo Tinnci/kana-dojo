@@ -210,8 +210,13 @@ data class PracticeCompletionActionButtonSemantics(
     val stateDescription: String,
     val clickLabel: String,
     val traversalIndex: Float,
+    val role: PracticeAccessibilityRole = PracticeAccessibilityRole.Button,
     val mergeDescendants: Boolean = true
 )
+
+enum class PracticeAccessibilityRole {
+    Button
+}
 
 enum class PracticeActionRoleTone {
     Primary,
