@@ -1468,6 +1468,60 @@ class KanaCurriculumTest {
     }
 
     @Test
+    fun practiceCompletionActionButtonSemanticsReflectActionAvailability() {
+        val cleanAvailability = practiceCompletionActionAvailabilityFor(
+            action = ReviewCompletionAction.ReturnToPath,
+            queueSize = 0
+        )
+        val cleanDisabledCopy = practiceCompletionDisabledActionCopyFor(
+            action = ReviewCompletionAction.ReturnToPath,
+            availability = cleanAvailability
+        )
+        val cleanActionButtons = practiceCompletionActionButtonMetadataInDisplayOrder(
+            completionAction = ReviewCompletionAction.ReturnToPath,
+            mode = PracticeMode.Mixed
+        )
+        val pathSemantics = practiceCompletionActionButtonSemanticsFor(
+            actionButton = cleanActionButtons.first(),
+            enabled = cleanAvailability.returnToPathEnabled,
+            disabledCopy = cleanDisabledCopy
+        )
+        val optionalRepeatSemantics = practiceCompletionActionButtonSemanticsFor(
+            actionButton = cleanActionButtons.last(),
+            enabled = cleanAvailability.repeatEnabled,
+            disabledCopy = cleanDisabledCopy
+        )
+
+        assertEquals("Available", pathSemantics.stateDescription)
+        assertEquals("Activate Return to lesson path", pathSemantics.clickLabel)
+        assertEquals(
+            "Unavailable: No repeat queue. There are no kana in this queue yet, so repeat is disabled.",
+            optionalRepeatSemantics.stateDescription
+        )
+        assertEquals("Action unavailable: No repeat queue", optionalRepeatSemantics.clickLabel)
+
+        val repeatAvailability = practiceCompletionActionAvailabilityFor(
+            action = ReviewCompletionAction.RepeatQueue,
+            queueSize = 4
+        )
+        val requiredRepeatActionButton = practiceCompletionActionButtonMetadataInDisplayOrder(
+            completionAction = ReviewCompletionAction.RepeatQueue,
+            mode = PracticeMode.Sound
+        ).single()
+        val requiredRepeatSemantics = practiceCompletionActionButtonSemanticsFor(
+            actionButton = requiredRepeatActionButton,
+            enabled = repeatAvailability.repeatEnabled,
+            disabledCopy = practiceCompletionDisabledActionCopyFor(
+                action = ReviewCompletionAction.RepeatQueue,
+                availability = repeatAvailability
+            )
+        )
+
+        assertEquals("Available", requiredRepeatSemantics.stateDescription)
+        assertEquals("Activate Repeat sound recall queue", requiredRepeatSemantics.clickLabel)
+    }
+
+    @Test
     fun practiceCompletionActionStateDescriptionsExplainAvailability() {
         val disabledCopy = PracticeCompletionDisabledActionCopy(
             title = "No repeat queue",
