@@ -108,6 +108,7 @@ private fun KanaDojoApp() {
                 topBar = {
                     if (!shellNavigationHidden) {
                         KanaTopBar(
+                            layoutMode = layoutMode,
                             selectedScript = selectedScript,
                             reduceMotion = reduceMotion,
                             soundEnabled = soundEnabled,

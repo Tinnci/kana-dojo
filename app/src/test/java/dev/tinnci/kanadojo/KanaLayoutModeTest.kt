@@ -18,4 +18,11 @@ class KanaLayoutModeTest {
         assertEquals(KanaLayoutMode.Compact, kanaLayoutModeFor(840.dp, 479.dp))
         assertEquals(KanaLayoutMode.Expanded, kanaLayoutModeFor(840.dp, 480.dp))
     }
+
+    @Test
+    fun compactTopBarKeepsOnlyPrimaryBrandText() {
+        assertEquals(false, shouldShowTopBarSubtitle(KanaLayoutMode.Compact))
+        assertEquals(true, shouldShowTopBarSubtitle(KanaLayoutMode.Medium))
+        assertEquals(true, shouldShowTopBarSubtitle(KanaLayoutMode.Expanded))
+    }
 }

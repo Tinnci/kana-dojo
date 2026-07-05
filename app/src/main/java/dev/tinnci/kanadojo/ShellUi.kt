@@ -35,11 +35,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun KanaTopBar(
+    layoutMode: KanaLayoutMode,
     selectedScript: Script,
     reduceMotion: Boolean,
     soundEnabled: Boolean,
@@ -56,8 +58,20 @@ fun KanaTopBar(
         colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background),
         title = {
             Column {
-                Text(stringResource(R.string.app_name), fontWeight = FontWeight.Black)
-                Text(stringResource(R.string.app_subtitle), style = MaterialTheme.typography.labelMedium)
+                Text(
+                    stringResource(R.string.app_name),
+                    fontWeight = FontWeight.Black,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+                if (shouldShowTopBarSubtitle(layoutMode)) {
+                    Text(
+                        stringResource(R.string.app_subtitle),
+                        style = MaterialTheme.typography.labelMedium,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
             }
         },
         actions = {
@@ -124,6 +138,9 @@ fun KanaBottomBar(currentTab: ScreenTab, onTabChange: (ScreenTab) -> Unit) {
         }
     }
 }
+
+internal fun shouldShowTopBarSubtitle(layoutMode: KanaLayoutMode): Boolean =
+    layoutMode != KanaLayoutMode.Compact
 
 @Composable
 fun KanaNavigationRail(currentTab: ScreenTab, onTabChange: (ScreenTab) -> Unit) {
