@@ -240,7 +240,7 @@
     <string name="practice_queue_writing_title">书写优先</string>
     <string name="practice_queue_writing_message">描写练习会先安排最不稳定的假名。</string>
     <string name="practice_queue_speed_title">快速回想</string>
-    <string name="practice_queue_speed_message">速度练习优先使用已能回想的假名，也会用早期假名作为备用。</string>
+    <string name="practice_queue_speed_message">速度练习优先使用更熟练的假名，也会用早期假名作为备用。</string>
     <string name="practice_queue_cross_title">平片混合</string>
     <string name="practice_queue_cross_message">跨假名表练习会混合已能回想的平假名和片假名。</string>
     <string name="practice_queue_mixed_title">混合回想</string>

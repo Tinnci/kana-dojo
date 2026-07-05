@@ -1078,6 +1078,71 @@ class KanaCurriculumTest {
     }
 
     @Test
+    fun speedPracticePrefersFluentKanaOnly() {
+        val scriptItems = itemsFor(Script.Hiragana)
+        val recallOnly = scriptItems[0]
+        val fluent = scriptItems[1]
+        val mastered = scriptItems[2]
+
+        val speedItems = practiceItemsFor(
+            mode = PracticeMode.Speed,
+            scriptItems = scriptItems,
+            mistakeIds = emptyList(),
+            allItems = hiraganaItems + katakanaItems,
+            mastery = mapOf(
+                recallOnly.id to 2,
+                fluent.id to 3,
+                mastered.id to 5
+            )
+        )
+
+        assertEquals(setOf(fluent.id, mastered.id), speedItems.map { it.id }.toSet())
+    }
+
+    @Test
+    fun speedPracticeFallsBackWhenNoFluentKanaExist() {
+        val scriptItems = itemsFor(Script.Katakana)
+
+        val speedItems = practiceItemsFor(
+            mode = PracticeMode.Speed,
+            scriptItems = scriptItems,
+            mistakeIds = emptyList(),
+            allItems = hiraganaItems + katakanaItems,
+            mastery = mapOf(scriptItems.first().id to 2)
+        )
+
+        assertEquals(scriptItems.take(8).map { it.id }.toSet(), speedItems.map { it.id }.toSet())
+    }
+
+    @Test
+    fun speedPracticePreviewMarksOnlyFluentKanaAsFastReady() {
+        val item = hiraganaItems.first()
+
+        assertEquals(
+            "early",
+            practicePreviewReasonFor(
+                item = item,
+                mode = PracticeMode.Speed,
+                mastery = mapOf(item.id to 2),
+                mistakeIds = emptyList(),
+                reviewDueEpochDays = emptyMap(),
+                currentEpochDay = 0L
+            )
+        )
+        assertEquals(
+            "fluent",
+            practicePreviewReasonFor(
+                item = item,
+                mode = PracticeMode.Speed,
+                mastery = mapOf(item.id to 3),
+                mistakeIds = emptyList(),
+                reviewDueEpochDays = emptyMap(),
+                currentEpochDay = 0L
+            )
+        )
+    }
+
+    @Test
     fun crossPracticeMixesBothScripts() {
         val allItems = hiraganaItems + katakanaItems
         val mastery = mapOf(

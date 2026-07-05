@@ -1000,7 +1000,7 @@ private fun localizedPracticeQueueExplanationMessage(explanation: PracticeQueueE
         "This queue targets kana with known visual confusions." -> stringResource(R.string.practice_queue_lookalike_message)
         "No lookalikes are available here, so this queue uses low-mastery kana." -> stringResource(R.string.practice_queue_contrast_fallback_message)
         "Trace practice starts with the least stable kana first." -> stringResource(R.string.practice_queue_writing_message)
-        "Speed rounds prefer recall-ready kana, with early kana as fallback." -> stringResource(R.string.practice_queue_speed_message)
+        "Speed rounds prefer fluent kana, with early kana as fallback." -> stringResource(R.string.practice_queue_speed_message)
         "Cross-script practice mixes recall-ready hiragana and katakana." -> stringResource(R.string.practice_queue_cross_message)
         "Mixed practice rotates reading, sound, and writing prompts." -> stringResource(R.string.practice_queue_mixed_message)
         else -> explanation.message

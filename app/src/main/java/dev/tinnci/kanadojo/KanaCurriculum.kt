@@ -173,7 +173,7 @@ fun practiceItemsFor(
             .take(8)
 
         PracticeMode.Speed -> scriptItems
-            .filter { (mastery[it.id] ?: 0) >= 2 }
+            .filter { (mastery[it.id] ?: 0) >= 3 }
             .ifEmpty { scriptItems.take(8) }
             .shuffled(Random(scriptItems.firstOrNull()?.script?.name.hashCode() + 17))
 

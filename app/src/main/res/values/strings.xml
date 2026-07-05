@@ -240,7 +240,7 @@
     <string name="practice_queue_writing_title">Writing priority</string>
     <string name="practice_queue_writing_message">Trace practice starts with the least stable kana first.</string>
     <string name="practice_queue_speed_title">Fast recall</string>
-    <string name="practice_queue_speed_message">Speed rounds prefer recall-ready kana, with early kana as fallback.</string>
+    <string name="practice_queue_speed_message">Speed rounds prefer fluent kana, with early kana as fallback.</string>
     <string name="practice_queue_cross_title">Both scripts</string>
     <string name="practice_queue_cross_message">Cross-script practice mixes recall-ready hiragana and katakana.</string>
     <string name="practice_queue_mixed_title">Mixed recall</string>

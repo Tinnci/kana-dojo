@@ -389,7 +389,7 @@ fun practiceQueueExplanationFor(
 
         mode == PracticeMode.Speed -> PracticeQueueExplanation(
             title = "Fast recall",
-            message = "Speed rounds prefer recall-ready kana, with early kana as fallback."
+            message = "Speed rounds prefer fluent kana, with early kana as fallback."
         )
 
         mode == PracticeMode.Cross -> PracticeQueueExplanation(
@@ -487,7 +487,7 @@ fun practicePreviewReasonFor(
         PracticeMode.Sound -> if (level >= 1) "seen" else "audio"
         PracticeMode.Contrast -> if (item.confusable.isNotEmpty()) "look" else "m$level"
         PracticeMode.Writing -> "m$level"
-        PracticeMode.Speed -> if (level >= 2) "recall" else "early"
+        PracticeMode.Speed -> if (level >= 3) "fluent" else "early"
         PracticeMode.Cross -> if (level >= 2) item.script.englishLabel.take(4) else "early"
         PracticeMode.Mixed -> if (level >= 2) "recall" else "m$level"
     }
