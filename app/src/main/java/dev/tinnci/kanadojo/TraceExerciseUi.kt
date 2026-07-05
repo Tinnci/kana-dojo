@@ -83,7 +83,6 @@ fun TraceKanaExercise(
     var traceBounds by remember(item.id) { mutableStateOf(TraceBounds(1f, 1f)) }
     val replayProgress = remember(item.id) { Animatable(1f) }
     val tracePoints = remember(pointTokens) { tracePointsFromSnapshotTokens(pointTokens) }
-    val points = remember(tracePoints) { tracePoints.map { Offset(it.x, it.y) } }
     val traceScore = remember(tracePoints, traceBounds, item) { traceScoreFor(tracePoints, item, traceBounds) }
     val traceCues = remember(tracePoints, traceScore) { traceFeedbackCuesFor(tracePoints, traceScore) }
     val remediation = remember(traceScore) { traceRemediationFor(traceScore) }
@@ -131,7 +130,7 @@ fun TraceKanaExercise(
         label = "traceBorderWidth"
     )
 
-    LaunchedEffect(points.size) {
+    LaunchedEffect(tracePoints.size) {
         replayProgress.snapTo(1f)
     }
 
@@ -142,7 +141,7 @@ fun TraceKanaExercise(
     }
 
     LaunchedEffect(replayNonce, reduceMotion) {
-        if (replayNonce > 0 && points.size > 1) {
+        if (replayNonce > 0 && tracePoints.size > 1) {
             replayProgress.snapTo(0f)
             if (reduceMotion) {
                 replayProgress.snapTo(1f)
@@ -182,7 +181,7 @@ fun TraceKanaExercise(
                 .pointerInput(item.id) {
                     detectDragGestures(
                         onDragStart = {
-                            pointTokens = pointTokens + tracePointSnapshotToken(TracePoint(it.x, it.y))
+                            pointTokens = pointTokens + tracePointSnapshotToken(TracePoint(it.x, it.y, startsStroke = true))
                         },
                         onDrag = { change, _ ->
                             pointTokens = pointTokens + tracePointSnapshotToken(TracePoint(change.position.x, change.position.y))
@@ -206,22 +205,29 @@ fun TraceKanaExercise(
                     strokeWidth = 2.dp.toPx()
                 )
                 drawPath(
-                    path = replayedTracePath(points, replayProgress.value),
+                    path = replayedTracePath(tracePoints, replayProgress.value),
                     color = strokeColor,
                     style = Stroke(width = 12.dp.toPx(), cap = StrokeCap.Round)
                 )
-                points.firstOrNull()?.let { start ->
+                tracePoints.firstOrNull()?.let { start ->
                     drawCircle(
                         color = Color(0xFF2F5D50),
                         radius = 8.dp.toPx(),
-                        center = start
+                        center = start.toOffset()
                     )
                 }
-                if (points.size > 1) {
+                tracePoints.filter { it.startsStroke }.drop(1).forEach { start ->
+                    drawCircle(
+                        color = Color(0xFF2F5D50).copy(alpha = 0.72f),
+                        radius = 6.dp.toPx(),
+                        center = start.toOffset()
+                    )
+                }
+                if (tracePoints.size > 1) {
                     drawCircle(
                         color = Color(0xFFFFB84D),
                         radius = 7.dp.toPx(),
-                        center = points.last()
+                        center = tracePoints.last().toOffset()
                     )
                 }
             }
@@ -264,9 +270,9 @@ fun TraceKanaExercise(
                     onTaptic(KanaTaptic.Select)
                     val next = !showComparison
                     showComparison = next
-                    if (next && points.size > 1) replayNonce += 1
+                    if (next && tracePoints.size > 1) replayNonce += 1
                 },
-                enabled = points.isNotEmpty(),
+                enabled = tracePoints.isNotEmpty(),
                 modifier = Modifier.weight(1f)
             ) {
                 Text(
@@ -286,10 +292,10 @@ fun TraceKanaExercise(
                         onTaptic(KanaTaptic.Incorrect)
                         showRemediation = true
                         showComparison = true
-                        if (points.size > 1) replayNonce += 1
+                        if (tracePoints.size > 1) replayNonce += 1
                     }
                 },
-                enabled = !answered && points.isNotEmpty(),
+                enabled = !answered && tracePoints.isNotEmpty(),
                 modifier = Modifier.weight(1f)
             ) {
                 Text(stringResource(R.string.trace_action_check))
@@ -297,24 +303,29 @@ fun TraceKanaExercise(
         }
         TraceCuePanel(cues = traceCues)
         AnimatedVisibility(
-            visible = showComparison && points.isNotEmpty(),
+            visible = showComparison && tracePoints.isNotEmpty(),
             enter = if (reduceMotion) EnterTransition.None else fadeIn() + expandVertically(expandFrom = Alignment.Top),
             exit = if (reduceMotion) ExitTransition.None else fadeOut() + shrinkVertically(shrinkTowards = Alignment.Top)
         ) {
             TraceComparisonPanel(
                 item = item,
-                points = points,
+                points = tracePoints,
                 replayProgress = if (reduceMotion) 1f else replayProgress.value
             )
         }
     }
 }
 
-private fun replayedTracePath(points: List<Offset>, progress: Float): Path {
+private fun replayedTracePath(points: List<TracePoint>, progress: Float): Path {
     val path = Path()
     val visibleCount = (points.size * progress).toInt().coerceIn(0, points.size)
-    points.take(visibleCount).firstOrNull()?.let { path.moveTo(it.x, it.y) }
-    points.take(visibleCount).drop(1).forEach { path.lineTo(it.x, it.y) }
+    points.take(visibleCount).forEachIndexed { index, point ->
+        if (index == 0 || point.startsStroke) {
+            path.moveTo(point.x, point.y)
+        } else {
+            path.lineTo(point.x, point.y)
+        }
+    }
     return path
 }
 
@@ -364,7 +375,7 @@ private fun TraceRemediationPanel(remediation: TraceRemediationCopy, onRetry: ()
 }
 
 @Composable
-private fun TraceComparisonPanel(item: KanaItem, points: List<Offset>, replayProgress: Float) {
+private fun TraceComparisonPanel(item: KanaItem, points: List<TracePoint>, replayProgress: Float) {
     val guidance = traceGuidanceFor(item)
     Column(verticalArrangement = Arrangement.spacedBy(10.dp), modifier = Modifier.fillMaxWidth()) {
         Row(horizontalArrangement = Arrangement.spacedBy(10.dp), modifier = Modifier.fillMaxWidth()) {
@@ -384,14 +395,14 @@ private fun TraceComparisonPanel(item: KanaItem, points: List<Offset>, replayPro
                         drawCircle(
                             color = Color(0xFF2F5D50),
                             radius = 4.dp.toPx(),
-                            center = start
+                            center = start.toOffset()
                         )
                     }
                     if (normalizedPoints.size > 1) {
                         drawCircle(
                             color = Color(0xFFFFB84D),
                             radius = 4.dp.toPx(),
-                            center = normalizedPoints.last()
+                            center = normalizedPoints.last().toOffset()
                         )
                     }
                 }
@@ -425,7 +436,7 @@ private fun TraceModelGlyph(item: KanaItem, guidance: TraceGuidance?) {
     }
 }
 
-private fun normalizedTracePoints(points: List<Offset>, width: Float, height: Float): List<Offset> {
+private fun normalizedTracePoints(points: List<TracePoint>, width: Float, height: Float): List<TracePoint> {
     if (points.isEmpty()) return emptyList()
     val minX = points.minOf { it.x }
     val maxX = points.maxOf { it.x }
@@ -437,12 +448,15 @@ private fun normalizedTracePoints(points: List<Offset>, width: Float, height: Fl
     val offsetX = (width - sourceWidth * scale) / 2f
     val offsetY = (height - sourceHeight * scale) / 2f
     return points.map { point ->
-        Offset(
+        TracePoint(
             x = offsetX + (point.x - minX) * scale,
-            y = offsetY + (point.y - minY) * scale
+            y = offsetY + (point.y - minY) * scale,
+            startsStroke = point.startsStroke
         )
     }
 }
+
+private fun TracePoint.toOffset(): Offset = Offset(x, y)
 
 @Composable
 private fun TraceGuidancePanel(guidance: TraceGuidance) {

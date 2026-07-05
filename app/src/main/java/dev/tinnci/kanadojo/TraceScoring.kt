@@ -5,7 +5,8 @@ import kotlin.math.sqrt
 
 data class TracePoint(
     val x: Float,
-    val y: Float
+    val y: Float,
+    val startsStroke: Boolean = false
 )
 
 data class TraceBounds(
@@ -51,7 +52,7 @@ private fun calculateTraceScore(points: List<TracePoint>, item: KanaItem?, bound
     if (points.isEmpty()) {
         return TraceScore(0f, ready = false, message = "Trace over the ghost kana.")
     }
-    val pathLength = points.zipWithNext().sumOf { (a, b) -> hypot((a.x - b.x).toDouble(), (a.y - b.y).toDouble()) }.toFloat()
+    val pathLength = tracePathLength(points)
     val minX = points.minOf { it.x }
     val maxX = points.maxOf { it.x }
     val minY = points.minOf { it.y }
@@ -107,6 +108,7 @@ private fun occupiedCellScore(points: List<TracePoint>, bounds: TraceBounds?): F
 private fun significantTurnScore(points: List<TracePoint>): Float {
     if (points.size < 4) return 0f
     val turns = points.windowed(3).count { (a, b, c) ->
+        if (b.startsStroke || c.startsStroke) return@count false
         val abx = b.x - a.x
         val aby = b.y - a.y
         val bcx = c.x - b.x
@@ -122,6 +124,12 @@ private fun significantTurnScore(points: List<TracePoint>): Float {
     }
     return (turns / 3f).coerceIn(0f, 1f)
 }
+
+private fun tracePathLength(points: List<TracePoint>): Float =
+    points.zipWithNext()
+        .filterNot { (_, b) -> b.startsStroke }
+        .sumOf { (a, b) -> hypot((a.x - b.x).toDouble(), (a.y - b.y).toDouble()) }
+        .toFloat()
 
 private fun traceProfileScore(points: List<TracePoint>, bounds: TraceBounds?, profile: TraceShapeProfile): Float {
     val normalized = normalizedTracePoints(points, bounds)
@@ -141,7 +149,13 @@ private fun normalizedTracePoints(points: List<TracePoint>, bounds: TraceBounds?
     val width = bounds?.width?.takeIf { it > 1f }
     val height = bounds?.height?.takeIf { it > 1f }
     return if (width != null && height != null) {
-        points.map { TracePoint((it.x / width).coerceIn(0f, 1f), (it.y / height).coerceIn(0f, 1f)) }
+        points.map {
+            TracePoint(
+                x = (it.x / width).coerceIn(0f, 1f),
+                y = (it.y / height).coerceIn(0f, 1f),
+                startsStroke = it.startsStroke
+            )
+        }
     } else {
         val minX = points.minOf { it.x }
         val maxX = points.maxOf { it.x }
@@ -149,7 +163,13 @@ private fun normalizedTracePoints(points: List<TracePoint>, bounds: TraceBounds?
         val maxY = points.maxOf { it.y }
         val sourceWidth = (maxX - minX).coerceAtLeast(1f)
         val sourceHeight = (maxY - minY).coerceAtLeast(1f)
-        points.map { TracePoint((it.x - minX) / sourceWidth, (it.y - minY) / sourceHeight) }
+        points.map {
+            TracePoint(
+                x = (it.x - minX) / sourceWidth,
+                y = (it.y - minY) / sourceHeight,
+                startsStroke = it.startsStroke
+            )
+        }
     }
 }
 

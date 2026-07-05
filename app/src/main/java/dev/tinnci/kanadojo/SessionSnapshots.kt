@@ -51,13 +51,22 @@ fun incrementCountSnapshotToken(tokens: List<String>, id: String): List<String> 
 }
 
 fun tracePointSnapshotToken(point: TracePoint): String =
-    "${point.x.roundToInt()}$POINT_SEPARATOR${point.y.roundToInt()}"
+    buildString {
+        append(point.x.roundToInt())
+        append(POINT_SEPARATOR)
+        append(point.y.roundToInt())
+        if (point.startsStroke) {
+            append(POINT_SEPARATOR)
+            append("1")
+        }
+    }
 
 fun tracePointFromSnapshotToken(token: String): TracePoint? {
-    val parts = token.split(POINT_SEPARATOR, limit = 2)
+    val parts = token.split(POINT_SEPARATOR)
     val x = parts.getOrNull(0)?.toFloatOrNull() ?: return null
     val y = parts.getOrNull(1)?.toFloatOrNull() ?: return null
-    return TracePoint(x, y)
+    val startsStroke = parts.getOrNull(2) == "1"
+    return TracePoint(x, y, startsStroke)
 }
 
 fun tracePointSnapshotTokens(points: List<TracePoint>): List<String> =

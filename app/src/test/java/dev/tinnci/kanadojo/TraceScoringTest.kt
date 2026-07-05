@@ -21,6 +21,21 @@ class TraceScoringTest {
     }
 
     @Test
+    fun tracePointSnapshotTokensRoundTripStrokeStarts() {
+        val points = listOf(
+            TracePoint(12.2f, 18.7f, startsStroke = true),
+            TracePoint(40.5f, 72.4f),
+            TracePoint(88.9f, 101.1f, startsStroke = true)
+        )
+
+        val tokens = tracePointSnapshotTokens(points)
+        val restored = tracePointsFromSnapshotTokens(tokens)
+
+        assertEquals(listOf("12:19:1", "41:72", "89:101:1"), tokens)
+        assertEquals(listOf(true, false, true), restored.map { it.startsStroke })
+    }
+
+    @Test
     fun tracePointSnapshotTokensIgnoreInvalidEntries() {
         val restored = tracePointsFromSnapshotTokens(listOf("10:20", "bad", "30:", "42:51"))
 
@@ -89,6 +104,25 @@ class TraceScoringTest {
 
         assertFalse(score.ready)
         assertTrue(score.progress < 0.72f)
+    }
+
+    @Test
+    fun strokeStartsDoNotCountTheGapAsDrawnPath() {
+        val disconnectedTrace = listOf(
+            TracePoint(20f, 20f, startsStroke = true),
+            TracePoint(40f, 20f),
+            TracePoint(60f, 20f),
+            TracePoint(300f, 300f, startsStroke = true),
+            TracePoint(320f, 300f),
+            TracePoint(340f, 300f)
+        )
+        val connectedTrace = disconnectedTrace.map { it.copy(startsStroke = false) }
+
+        val disconnected = traceScoreFor(disconnectedTrace)
+        val connected = traceScoreFor(connectedTrace)
+
+        assertTrue(disconnected.progress < connected.progress)
+        assertEquals("Add a little more stroke length.", disconnected.message)
     }
 
     @Test
