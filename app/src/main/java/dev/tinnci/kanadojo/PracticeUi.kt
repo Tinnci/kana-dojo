@@ -50,6 +50,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
@@ -1052,8 +1053,8 @@ private fun PracticeIntroPanel(
             verticalArrangement = Arrangement.spacedBy(14.dp)
         ) {
             Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                Text(intro.badge, style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Bold)
-                Text(intro.bilingualTitle, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Black)
+                Text(stringResource(R.string.practice_intro_label), style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Bold)
+                Text(stringResource(R.string.practice_intro_title), style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Black)
                 Text(intro.title, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Black)
                 Text(intro.subtitle, style = MaterialTheme.typography.bodyMedium)
             }
@@ -1082,11 +1083,19 @@ private fun PracticeIntroPanel(
                     .fillMaxWidth()
                     .heightIn(min = 54.dp)
             ) {
-                Text(intro.actionLabel, fontWeight = FontWeight.Black)
+                Text(stringResource(intro.action.labelResId), fontWeight = FontWeight.Black)
             }
         }
     }
 }
+
+private val PracticeIntroAction.labelResId: Int
+    get() = when (this) {
+        PracticeIntroAction.ReviewDue -> R.string.action_review_due
+        PracticeIntroAction.RepairMistakes -> R.string.action_repair_mistakes
+        PracticeIntroAction.StartRepair -> R.string.action_start_repair
+        PracticeIntroAction.StartPractice -> R.string.action_start_practice
+    }
 
 @Composable
 private fun PracticeGoalLine(goal: PracticeSessionGoal, modifier: Modifier = Modifier) {

@@ -409,16 +409,12 @@ class KanaCurriculumTest {
     }
 
     @Test
-    fun pathPrimaryFocusCopyMakesStartingPointBilingualAndConcrete() {
+    fun nextPathLessonKeepsStartingPointConcrete() {
         val lesson = lessonsFor(Script.Hiragana).first()
-        val copy = pathPrimaryFocusCopyFor(lesson)
+        val nextLesson = nextPathLesson(lessonsFor(Script.Hiragana), emptyMap())
 
-        assertEquals("Focus / 重点", copy.badge)
-        assertEquals("Start here / 从这里开始", copy.title)
-        assertEquals("Start lesson / 开始课程", copy.primaryActionLabel)
-        assertEquals("Optional practice / 可选练习", copy.secondaryActionPrefix)
-        assertTrue(copy.message.contains("Kana first"))
-        assertTrue(copy.message.contains(lesson.items.first().kana))
+        assertEquals(lesson, nextLesson)
+        assertTrue(lesson.items.isNotEmpty())
     }
 
     @Test
@@ -783,9 +779,7 @@ class KanaCurriculumTest {
         val intro = reviewIntroCopyFor(PracticeMode.Weak, dueCount = 3, weakCount = 2)
 
         assertEquals("Due recall", intro.title)
-        assertEquals("Review due / 复习到期", intro.actionLabel)
-        assertEquals("Practice focus / 练习重点", intro.badge)
-        assertEquals("Start practice / 开始练习", intro.bilingualTitle)
+        assertEquals(PracticeIntroAction.ReviewDue, intro.action)
     }
 
     @Test
@@ -794,9 +788,9 @@ class KanaCurriculumTest {
         val lowMasteryIntro = reviewIntroCopyFor(PracticeMode.Weak, dueCount = 0, weakCount = 0)
 
         assertEquals("Mistake repair", mistakeIntro.title)
-        assertEquals("Repair mistakes / 修复错误", mistakeIntro.actionLabel)
+        assertEquals(PracticeIntroAction.RepairMistakes, mistakeIntro.action)
         assertEquals("Low-mastery repair", lowMasteryIntro.title)
-        assertEquals("Start repair / 开始巩固", lowMasteryIntro.actionLabel)
+        assertEquals(PracticeIntroAction.StartRepair, lowMasteryIntro.action)
     }
 
     @Test
@@ -804,7 +798,7 @@ class KanaCurriculumTest {
         val intro = reviewIntroCopyFor(PracticeMode.Contrast, dueCount = 4, weakCount = 3)
 
         assertEquals(PracticeMode.Contrast.title, intro.title)
-        assertEquals("Start practice / 开始练习", intro.actionLabel)
+        assertEquals(PracticeIntroAction.StartPractice, intro.action)
     }
 
     @Test

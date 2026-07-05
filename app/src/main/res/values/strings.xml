@@ -1,3 +1,17 @@
 <resources>
     <string name="app_name">Kana Dojo</string>
+    <string name="path_next_lesson_label">Next lesson</string>
+    <string name="path_next_lesson_message">Kana first: %1$s. Short lesson, immediate feedback, then review only what needs repair.</string>
+    <string name="action_start_lesson">Start lesson</string>
+    <string name="action_optional_practice">Optional practice</string>
+    <string name="action_optional_practice_format">%1$s: %2$s</string>
+    <string name="practice_intro_label">Recommended practice</string>
+    <string name="practice_intro_title">Start practice</string>
+    <string name="action_review_due">Review due</string>
+    <string name="action_repair_mistakes">Repair mistakes</string>
+    <string name="action_start_repair">Start repair</string>
+    <string name="action_start_practice">Start practice</string>
+    <string name="chart_header_label">Reference</string>
+    <string name="chart_header_title">%1$s chart</string>
+    <string name="chart_header_message">Tap a kana to hear it, then return to lessons when you want recall to count.</string>
 </resources>

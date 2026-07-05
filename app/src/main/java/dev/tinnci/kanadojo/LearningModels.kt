@@ -32,10 +32,15 @@ enum class PracticeMode(val label: String, val title: String, val subtitle: Stri
 data class PracticeIntroCopy(
     val title: String,
     val subtitle: String,
-    val actionLabel: String,
-    val badge: String = "Practice focus / 练习重点",
-    val bilingualTitle: String = "Start practice / 开始练习"
+    val action: PracticeIntroAction
 )
+
+enum class PracticeIntroAction {
+    ReviewDue,
+    RepairMistakes,
+    StartRepair,
+    StartPractice
+}
 
 data class PracticeRecommendation(
     val mode: PracticeMode,
@@ -60,14 +65,6 @@ data class DailyRhythm(
 data class PathStartGuidance(
     val title: String,
     val message: String
-)
-
-data class PathPrimaryFocusCopy(
-    val badge: String,
-    val title: String,
-    val message: String,
-    val primaryActionLabel: String,
-    val secondaryActionPrefix: String
 )
 
 data class LessonStartPreview(
@@ -281,15 +278,6 @@ fun pathPracticeRecommendationFor(
             actionLabel = "Listen"
         )
     }
-
-fun pathPrimaryFocusCopyFor(lesson: KanaLesson): PathPrimaryFocusCopy =
-    PathPrimaryFocusCopy(
-        badge = "Focus / 重点",
-        title = "Start here / 从这里开始",
-        message = "Kana first: ${lesson.items.joinToString(" ") { it.kana }}. Short lesson, immediate feedback, then review only what needs repair.",
-        primaryActionLabel = "Start lesson / 开始课程",
-        secondaryActionPrefix = "Optional practice / 可选练习"
-    )
 
 fun dailyRhythmFor(practiceEpochDays: Set<Long>, currentEpochDay: Long): DailyRhythm {
     val days = (6 downTo 0).map { offset ->
@@ -543,26 +531,26 @@ fun reviewIntroCopyFor(mode: PracticeMode, dueCount: Int, weakCount: Int): Pract
             dueCount > 0 -> PracticeIntroCopy(
                 title = "Due recall",
                 subtitle = "Start with kana whose spacing has matured today.",
-                actionLabel = "Review due / 复习到期"
+                action = PracticeIntroAction.ReviewDue
             )
 
             weakCount > 0 -> PracticeIntroCopy(
                 title = "Mistake repair",
                 subtitle = "Replay missed kana before they settle into the wrong shape.",
-                actionLabel = "Repair mistakes / 修复错误"
+                action = PracticeIntroAction.RepairMistakes
             )
 
             else -> PracticeIntroCopy(
                 title = "Low-mastery repair",
                 subtitle = "Build shaky kana toward stable recall.",
-                actionLabel = "Start repair / 开始巩固"
+                action = PracticeIntroAction.StartRepair
             )
         }
 
         else -> PracticeIntroCopy(
             title = mode.title,
             subtitle = mode.subtitle,
-            actionLabel = "Start practice / 开始练习"
+            action = PracticeIntroAction.StartPractice
         )
     }
 

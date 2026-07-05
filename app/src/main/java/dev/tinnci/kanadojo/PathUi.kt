@@ -48,6 +48,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -360,7 +361,7 @@ private fun DailyFocusPanel(
 ) {
     val phaseSummary = remember(lesson) { lessonPhaseSummaryFor(lesson) }
     val startPreview = remember(lesson) { lessonStartPreviewFor(lesson) }
-    val primaryFocus = remember(lesson) { pathPrimaryFocusCopyFor(lesson) }
+    val lessonKana = remember(lesson) { lesson.items.joinToString(" ") { it.kana } }
     Surface(
         shape = RoundedCornerShape(22.dp),
         color = MaterialTheme.colorScheme.primaryContainer,
@@ -384,10 +385,10 @@ private fun DailyFocusPanel(
                 }
                 Spacer(Modifier.width(16.dp))
                 Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                    Text(primaryFocus.badge, style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Bold)
-                    Text(primaryFocus.title, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Black)
+                    Text(stringResource(R.string.path_next_lesson_label), style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Bold)
+                    Text(lesson.title, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Black)
                     Text(
-                        primaryFocus.message,
+                        stringResource(R.string.path_next_lesson_message, lessonKana),
                         style = MaterialTheme.typography.bodyMedium
                     )
                 }
@@ -420,7 +421,7 @@ private fun DailyFocusPanel(
                 ) {
                     Icon(Icons.Outlined.PlayArrow, contentDescription = null)
                     Spacer(Modifier.width(8.dp))
-                    Text(primaryFocus.primaryActionLabel, fontWeight = FontWeight.Black)
+                    Text(stringResource(R.string.action_start_lesson), fontWeight = FontWeight.Black)
                 }
                 FilledTonalButton(
                     onClick = { onReview(practiceRecommendation.mode) },
@@ -431,7 +432,7 @@ private fun DailyFocusPanel(
                 ) {
                     Icon(Icons.Outlined.Replay, contentDescription = null)
                     Spacer(Modifier.width(8.dp))
-                    Text("${primaryFocus.secondaryActionPrefix}: ${practiceRecommendation.actionLabel}")
+                    Text(stringResource(R.string.action_optional_practice_format, stringResource(R.string.action_optional_practice), practiceRecommendation.actionLabel))
                 }
             }
         }
