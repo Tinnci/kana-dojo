@@ -1340,6 +1340,47 @@ class KanaCurriculumTest {
     }
 
     @Test
+    fun practiceCompletionActionStateDescriptionsPreserveMetadataDisabledCopy() {
+        val cleanActionButtons = practiceCompletionActionButtonMetadataInDisplayOrder(
+            completionAction = ReviewCompletionAction.ReturnToPath,
+            mode = PracticeMode.Mixed
+        )
+        val repeatActionButton = practiceCompletionActionButtonMetadataInDisplayOrder(
+            completionAction = ReviewCompletionAction.RepeatQueue,
+            mode = PracticeMode.Mixed
+        ).single()
+        val pathUnavailableCopy = PracticeCompletionDisabledActionCopy(
+            title = "Path unavailable",
+            message = "Finish a clean pass before returning to the path."
+        )
+        val noRepeatQueueCopy = PracticeCompletionDisabledActionCopy(
+            title = "No repeat queue",
+            message = "There are no kana in this queue yet, so repeat is disabled."
+        )
+
+        assertEquals(
+            "Unavailable: Path unavailable. Finish a clean pass before returning to the path.",
+            practiceCompletionActionStateDescriptionFor(
+                actionButton = cleanActionButtons.first(),
+                enabled = false,
+                disabledCopy = pathUnavailableCopy
+            )
+        )
+        assertEquals(
+            "Unavailable: No repeat queue. There are no kana in this queue yet, so repeat is disabled.",
+            practiceCompletionActionStateDescriptionFor(
+                actionButton = repeatActionButton,
+                enabled = false,
+                disabledCopy = noRepeatQueueCopy
+            )
+        )
+        assertEquals(
+            "Unavailable",
+            practiceCompletionActionStateDescriptionFor(repeatActionButton, enabled = false)
+        )
+    }
+
+    @Test
     fun practiceCompletionMetricsAddCompactOutcomeToneLabels() {
         val metrics = practiceCompletionMetricsFor(
             outcomes = ReviewSessionOutcomes(
