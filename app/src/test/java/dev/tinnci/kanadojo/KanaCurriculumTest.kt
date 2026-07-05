@@ -1463,11 +1463,11 @@ class KanaCurriculumTest {
     fun practiceCompletionActionTraversalIndicesFollowDisplayOrder() {
         assertEquals(
             listOf(0f, 1f),
-            practiceCompletionActionTraversalIndicesInDisplayOrder(ReviewCompletionAction.ReturnToPath)
+            practiceCompletionActionTraversalIndicesInDisplayOrder(completionAction = ReviewCompletionAction.ReturnToPath)
         )
         assertEquals(
             listOf(0f),
-            practiceCompletionActionTraversalIndicesInDisplayOrder(ReviewCompletionAction.RepeatQueue)
+            practiceCompletionActionTraversalIndicesInDisplayOrder(completionAction = ReviewCompletionAction.RepeatQueue)
         )
     }
 
@@ -1475,7 +1475,7 @@ class KanaCurriculumTest {
     fun practiceCompletionActionTraversalIndicesCoverEveryActionRole() {
         ReviewCompletionAction.entries.forEach { action ->
             val roleLabels = practiceActionRoleLabelsInDisplayOrder(action)
-            val traversalIndices = practiceCompletionActionTraversalIndicesInDisplayOrder(action)
+            val traversalIndices = practiceCompletionActionTraversalIndicesInDisplayOrder(completionAction = action)
 
             assertEquals(roleLabels.size, traversalIndices.size)
             assertEquals(roleLabels.indices.map { it.toFloat() }, traversalIndices)

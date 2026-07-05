@@ -417,7 +417,9 @@ private fun PracticeCompletionActionGroup(
         reduceMotion = reduceMotion
     )
     val roleLabels = practiceActionRoleLabelsInDisplayOrder(ReviewCompletionAction.ReturnToPath)
-    val traversalIndices = practiceCompletionActionTraversalIndicesInDisplayOrder(ReviewCompletionAction.ReturnToPath)
+    val traversalIndices = practiceCompletionActionTraversalIndicesInDisplayOrder(
+        completionAction = ReviewCompletionAction.ReturnToPath
+    )
     Surface(
         shape = RoundedCornerShape(20.dp),
         color = MaterialTheme.colorScheme.secondaryContainer,
@@ -499,7 +501,9 @@ private fun PracticeRepeatRequiredActionGroup(
         reduceMotion = reduceMotion
     )
     val roleLabels = practiceActionRoleLabelsInDisplayOrder(ReviewCompletionAction.RepeatQueue)
-    val traversalIndices = practiceCompletionActionTraversalIndicesInDisplayOrder(ReviewCompletionAction.RepeatQueue)
+    val traversalIndices = practiceCompletionActionTraversalIndicesInDisplayOrder(
+        completionAction = ReviewCompletionAction.RepeatQueue
+    )
     Surface(
         shape = RoundedCornerShape(20.dp),
         color = MaterialTheme.colorScheme.errorContainer,
