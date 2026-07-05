@@ -34,7 +34,7 @@ The project is set up for CLI use only. It does not require Android Studio or an
 
 ## Repositories
 
-Gradle is configured with Huawei and Aliyun Maven mirrors before official Google/Maven Central fallback repositories. This keeps dependency resolution usable on networks where the official repositories are slow or unreliable.
+Gradle uses Huawei and Aliyun Maven mirrors before official Google/Maven Central fallback repositories for local builds. On GitHub Actions, mirrors are skipped so CI uses official repositories and avoids mirror-specific outages.
 
 ## Build And Test
 
