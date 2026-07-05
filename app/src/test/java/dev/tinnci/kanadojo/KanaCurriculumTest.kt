@@ -1235,6 +1235,35 @@ class KanaCurriculumTest {
     }
 
     @Test
+    fun practiceCompletionActionHintsUseMetadataSemanticLabels() {
+        val disabledCopy = PracticeCompletionDisabledActionCopy(
+            title = "No repeat queue",
+            message = "There are no kana in this queue yet, so repeat is disabled."
+        )
+        val cleanActionButtons = practiceCompletionActionButtonMetadataInDisplayOrder(
+            completionAction = ReviewCompletionAction.ReturnToPath,
+            mode = PracticeMode.Mixed
+        )
+        val repeatActionButton = practiceCompletionActionButtonMetadataInDisplayOrder(
+            completionAction = ReviewCompletionAction.RepeatQueue,
+            mode = PracticeMode.Sound
+        ).single()
+
+        assertEquals(
+            "Activate Return to lesson path",
+            practiceCompletionActionHintFor(cleanActionButtons.first(), enabled = true)
+        )
+        assertEquals(
+            "Activate Repeat mixed recall queue",
+            practiceCompletionActionHintFor(cleanActionButtons.last(), enabled = true)
+        )
+        assertEquals(
+            "Action unavailable: No repeat queue",
+            practiceCompletionActionHintFor(repeatActionButton, enabled = false, disabledCopy = disabledCopy)
+        )
+    }
+
+    @Test
     fun practiceCompletionActionStateDescriptionsExplainAvailability() {
         val disabledCopy = PracticeCompletionDisabledActionCopy(
             title = "No repeat queue",

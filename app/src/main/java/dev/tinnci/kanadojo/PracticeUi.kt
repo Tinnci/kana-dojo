@@ -445,7 +445,7 @@ private fun PracticeCompletionActionGroup(
                         disabledCopy = disabledActionCopy
                     ),
                     actionHint = practiceCompletionActionHintFor(
-                        actionSemanticLabel = returnActionButton.actionSemanticLabel,
+                        actionButton = returnActionButton,
                         enabled = actionAvailability.returnToPathEnabled,
                         disabledCopy = disabledActionCopy
                     ),
@@ -468,7 +468,7 @@ private fun PracticeCompletionActionGroup(
                         disabledCopy = disabledActionCopy
                     ),
                     actionHint = practiceCompletionActionHintFor(
-                        actionSemanticLabel = repeatActionButton.actionSemanticLabel,
+                        actionButton = repeatActionButton,
                         enabled = actionAvailability.repeatEnabled,
                         disabledCopy = disabledActionCopy
                     ),
@@ -533,7 +533,7 @@ private fun PracticeRepeatRequiredActionGroup(
                         disabledCopy = disabledActionCopy
                     ),
                     actionHint = practiceCompletionActionHintFor(
-                        actionSemanticLabel = repeatActionButton.actionSemanticLabel,
+                        actionButton = repeatActionButton,
                         enabled = actionAvailability.repeatEnabled,
                         disabledCopy = disabledActionCopy
                     ),

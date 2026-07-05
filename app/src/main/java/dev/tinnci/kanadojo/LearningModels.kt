@@ -684,6 +684,17 @@ fun practiceCompletionActionHintFor(
         disabledCopy?.let { "Action unavailable: ${it.title}" } ?: "Action unavailable"
     }
 
+fun practiceCompletionActionHintFor(
+    actionButton: PracticeCompletionActionButtonMetadata,
+    enabled: Boolean,
+    disabledCopy: PracticeCompletionDisabledActionCopy? = null
+): String =
+    practiceCompletionActionHintFor(
+        actionSemanticLabel = actionButton.actionSemanticLabel,
+        enabled = enabled,
+        disabledCopy = disabledCopy
+    )
+
 fun practiceRepeatActionLabelFor(mode: PracticeMode, compact: Boolean = false): String =
     if (compact) {
         when (mode) {
