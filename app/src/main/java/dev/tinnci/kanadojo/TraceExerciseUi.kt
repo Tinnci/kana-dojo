@@ -55,6 +55,7 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -129,7 +130,7 @@ fun TraceKanaExercise(
             Text(item.romaji, style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Black)
             Spacer(Modifier.weight(1f))
             IconButton(onClick = { onSpeak(item.kana) }) {
-                Icon(Icons.Outlined.PlayArrow, contentDescription = "Hear")
+                Icon(Icons.Outlined.PlayArrow, contentDescription = stringResource(R.string.trace_hear_content_description))
             }
         }
         Box(
@@ -212,7 +213,7 @@ fun TraceKanaExercise(
                 },
                 modifier = Modifier.weight(1f)
             ) {
-                Text("Clear")
+                Text(stringResource(R.string.trace_action_clear))
             }
             OutlinedButton(
                 onClick = {
@@ -223,7 +224,13 @@ fun TraceKanaExercise(
                 enabled = points.isNotEmpty(),
                 modifier = Modifier.weight(1f)
             ) {
-                Text(if (showComparison) "Hide" else "Compare")
+                Text(
+                    if (showComparison) {
+                        stringResource(R.string.trace_action_hide_comparison)
+                    } else {
+                        stringResource(R.string.trace_action_compare)
+                    }
+                )
             }
             Button(
                 onClick = {
@@ -238,7 +245,7 @@ fun TraceKanaExercise(
                 enabled = !answered && points.isNotEmpty(),
                 modifier = Modifier.weight(1f)
             ) {
-                Text("Check")
+                Text(stringResource(R.string.trace_action_check))
             }
         }
         AnimatedVisibility(
@@ -313,10 +320,10 @@ private fun TraceComparisonPanel(item: KanaItem, points: List<Offset>, replayPro
     val guidance = traceGuidanceFor(item)
     Column(verticalArrangement = Arrangement.spacedBy(10.dp), modifier = Modifier.fillMaxWidth()) {
         Row(horizontalArrangement = Arrangement.spacedBy(10.dp), modifier = Modifier.fillMaxWidth()) {
-            TraceComparisonTile(label = "Model", modifier = Modifier.weight(1f)) {
+            TraceComparisonTile(label = stringResource(R.string.trace_comparison_model), modifier = Modifier.weight(1f)) {
                 TraceModelGlyph(item = item, guidance = guidance)
             }
-            TraceComparisonTile(label = "Yours", modifier = Modifier.weight(1f)) {
+            TraceComparisonTile(label = stringResource(R.string.trace_comparison_yours), modifier = Modifier.weight(1f)) {
                 Canvas(modifier = Modifier.fillMaxSize()) {
                     val normalizedPoints = normalizedTracePoints(points, size.width, size.height)
                     val path = replayedTracePath(normalizedPoints, replayProgress)
@@ -454,7 +461,7 @@ private fun TraceScorePanel(score: Float, ready: Boolean, message: String) {
                     tint = if (ready) Color(0xFF2F5D50) else MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 Spacer(Modifier.width(8.dp))
-                Text("Trace score", style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Bold)
+                Text(stringResource(R.string.trace_score_title), style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Bold)
                 Spacer(Modifier.weight(1f))
                 Text("${(score * 100).toInt()}%", style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Black)
             }

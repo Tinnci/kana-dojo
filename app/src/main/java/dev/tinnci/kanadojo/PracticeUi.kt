@@ -332,7 +332,7 @@ private fun PracticeCompletionPanel(
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         Text(
-                            "Review complete",
+                            stringResource(R.string.practice_completion_title),
                             style = MaterialTheme.typography.titleLarge,
                             fontWeight = FontWeight.Black,
                             maxLines = 1,
@@ -350,16 +350,31 @@ private fun PracticeCompletionPanel(
                     PracticeCompletionMetricTile(metric, Modifier.weight(1f))
                 }
             }
-            PracticeCompletionSectionDivider("Outcome")
+            PracticeCompletionSectionDivider(
+                label = stringResource(R.string.practice_completion_section_outcome),
+                toneColor = Color(0xFFE2EEF8)
+            )
             PracticeOutcomeGuidancePanel(copy = outcomeGuidance, reduceMotion = reduceMotion)
             if (cleanItems.isNotEmpty()) {
-                CompletionKanaGroup("Clean", cleanItems)
+                CompletionKanaGroup(
+                    label = stringResource(R.string.practice_group_clean),
+                    toneLabel = "Stable",
+                    items = cleanItems
+                )
             }
             if (repairedItems.isNotEmpty()) {
-                CompletionKanaGroup("Repaired", repairedItems)
+                CompletionKanaGroup(
+                    label = stringResource(R.string.practice_group_repaired),
+                    toneLabel = "Fixed",
+                    items = repairedItems
+                )
             }
             if (shakyItems.isNotEmpty()) {
-                CompletionKanaGroup("Still shaky", shakyItems)
+                CompletionKanaGroup(
+                    label = stringResource(R.string.practice_group_shaky),
+                    toneLabel = "Repeat",
+                    items = shakyItems
+                )
             }
             PracticeCompletionNextStepPanel(
                 mode = mode,
@@ -367,7 +382,10 @@ private fun PracticeCompletionPanel(
                 repeatRequired = !stable,
                 reduceMotion = reduceMotion
             )
-            PracticeCompletionSectionDivider("Action")
+            PracticeCompletionSectionDivider(
+                label = stringResource(R.string.practice_completion_section_action),
+                toneColor = Color(0xFFDCEBDD)
+            )
             if (showActionRationale) {
                 PracticeActionRationalePanel(copy = actionRationale, action = action, reduceMotion = reduceMotion)
             }
@@ -657,8 +675,7 @@ private fun practiceCompletionActionGroupEntranceModifier(key: String, reduceMot
 }
 
 @Composable
-private fun PracticeCompletionSectionDivider(label: String) {
-    val toneColor = practiceCompletionSectionToneColor(label)
+private fun PracticeCompletionSectionDivider(label: String, toneColor: Color) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
@@ -683,14 +700,6 @@ private fun PracticeCompletionSectionDivider(label: String) {
         )
     }
 }
-
-@Composable
-private fun practiceCompletionSectionToneColor(label: String): Color =
-    when (label) {
-        "Outcome" -> Color(0xFFE2EEF8)
-        "Action" -> Color(0xFFDCEBDD)
-        else -> MaterialTheme.colorScheme.surface.copy(alpha = 0.66f)
-    }
 
 @Composable
 private fun PracticeActionRationalePanel(
@@ -808,7 +817,7 @@ private fun PracticeAccuracyToneChip(copy: PracticeAccuracyToneCopy) {
         color = practiceAccuracyToneColor(copy.label)
     ) {
         Text(
-            copy.label,
+            localizedPracticeAccuracyLabel(copy.label),
             style = MaterialTheme.typography.labelSmall,
             fontWeight = FontWeight.Black,
             modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp),
@@ -827,6 +836,37 @@ private fun practiceAccuracyToneColor(label: String): Color =
     }
 
 @Composable
+private fun localizedPracticeAccuracyLabel(label: String): String =
+    when (label) {
+        "No reps" -> stringResource(R.string.practice_tone_no_reps)
+        "Clean" -> stringResource(R.string.practice_group_clean)
+        "Repair" -> stringResource(R.string.practice_tone_repair)
+        "Repeat" -> stringResource(R.string.practice_tone_repeat)
+        else -> label
+    }
+
+@Composable
+private fun localizedPracticeCompletionMetricLabel(label: String): String =
+    when (label) {
+        "Clean" -> stringResource(R.string.practice_group_clean)
+        "Repaired" -> stringResource(R.string.practice_group_repaired)
+        "Shaky" -> stringResource(R.string.practice_group_shaky_short)
+        "Queue" -> stringResource(R.string.metric_queue)
+        else -> label
+    }
+
+@Composable
+private fun localizedPracticeCompletionToneLabel(toneLabel: String): String =
+    when (toneLabel) {
+        "Stable" -> stringResource(R.string.practice_tone_stable)
+        "Fixed" -> stringResource(R.string.practice_tone_fixed)
+        "Repeat" -> stringResource(R.string.practice_tone_repeat)
+        "Total" -> stringResource(R.string.practice_tone_total)
+        "Review" -> stringResource(R.string.practice_tone_review)
+        else -> toneLabel
+    }
+
+@Composable
 private fun PracticeCompletionMetricTile(metric: PracticeCompletionMetric, modifier: Modifier = Modifier) {
     Surface(
         shape = RoundedCornerShape(14.dp),
@@ -842,14 +882,14 @@ private fun PracticeCompletionMetricTile(metric: PracticeCompletionMetric, modif
         ) {
             Row(horizontalArrangement = Arrangement.spacedBy(4.dp), verticalAlignment = Alignment.CenterVertically) {
                 Text(metric.value.toString(), style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Black)
-                Text(metric.label, style = MaterialTheme.typography.labelSmall, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                Text(localizedPracticeCompletionMetricLabel(metric.label), style = MaterialTheme.typography.labelSmall, maxLines = 1, overflow = TextOverflow.Ellipsis)
             }
             Surface(
                 shape = RoundedCornerShape(999.dp),
                 color = practiceCompletionMetricToneColor(metric.toneLabel)
             ) {
                 Text(
-                    metric.toneLabel,
+                    localizedPracticeCompletionToneLabel(metric.toneLabel),
                     style = MaterialTheme.typography.labelSmall,
                     fontWeight = FontWeight.Black,
                     modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
@@ -962,10 +1002,9 @@ private fun PracticeCompletionModeChip(mode: PracticeMode) {
 }
 
 @Composable
-private fun CompletionKanaGroup(label: String, items: List<KanaItem>) {
+private fun CompletionKanaGroup(label: String, toneLabel: String, items: List<KanaItem>) {
     val previewLimit = 8
     val hiddenCount = (items.size - previewLimit).coerceAtLeast(0)
-    val toneLabel = practiceCompletionGroupToneLabelFor(label)
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -983,7 +1022,7 @@ private fun CompletionKanaGroup(label: String, items: List<KanaItem>) {
                 color = practiceCompletionMetricToneColor(toneLabel)
             ) {
                 Text(
-                    toneLabel,
+                    localizedPracticeCompletionToneLabel(toneLabel),
                     style = MaterialTheme.typography.labelSmall,
                     fontWeight = FontWeight.Black,
                     modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp)
@@ -995,7 +1034,7 @@ private fun CompletionKanaGroup(label: String, items: List<KanaItem>) {
                     color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.78f)
                 ) {
                     Text(
-                        "+$hiddenCount more",
+                        stringResource(R.string.practice_hidden_more, hiddenCount),
                         style = MaterialTheme.typography.labelSmall,
                         fontWeight = FontWeight.Black,
                         modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp)
@@ -1231,10 +1270,10 @@ private fun PracticeQueuePanel(
                     Text(queueSize.toString(), style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Black)
                 }
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
-                    PracticeQueueMetric("Queue", queueSize, Modifier.weight(1f))
-                    PracticeQueueMetric("Weak", weakCount, Modifier.weight(1f))
-                    PracticeQueueMetric("Due", dueCount, Modifier.weight(1f))
-                    PracticeQueueMetric("Contrast", contrastCount, Modifier.weight(1f))
+                    PracticeQueueMetric(stringResource(R.string.metric_queue), queueSize, Modifier.weight(1f))
+                    PracticeQueueMetric(stringResource(R.string.metric_weak), weakCount, Modifier.weight(1f))
+                    PracticeQueueMetric(stringResource(R.string.metric_due), dueCount, Modifier.weight(1f))
+                    PracticeQueueMetric(stringResource(R.string.metric_contrast), contrastCount, Modifier.weight(1f))
                 }
                 PracticeQueueSourcePanel(sourceCue)
                 PracticeQueueExplanationPanel(explanation)
@@ -1348,7 +1387,7 @@ private fun PracticeSessionPanel(
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Text("Session", style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Bold)
+                Text(stringResource(R.string.practice_session_title), style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Bold)
                 Spacer(Modifier.weight(1f))
                 Text(
                     "${completed % queueSize + 1}/$queueSize",
@@ -1359,9 +1398,9 @@ private fun PracticeSessionPanel(
             PracticeGoalLine(goal)
             LinearProgressIndicator(progress = { accuracy }, modifier = Modifier.fillMaxWidth())
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
-                FocusMetric("Correct", stats.correct, Modifier.weight(1f))
-                FocusMetric("Missed", stats.missed, Modifier.weight(1f))
-                FocusMetric("Acc%", (accuracy * 100).toInt(), Modifier.weight(1f))
+                FocusMetric(stringResource(R.string.metric_correct), stats.correct, Modifier.weight(1f))
+                FocusMetric(stringResource(R.string.metric_missed), stats.missed, Modifier.weight(1f))
+                FocusMetric(stringResource(R.string.metric_accuracy_short), (accuracy * 100).toInt(), Modifier.weight(1f))
             }
         }
     }

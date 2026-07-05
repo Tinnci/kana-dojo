@@ -39,6 +39,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -199,7 +200,7 @@ private fun LessonComplete(
             scale = badgeScale
         )
         Spacer(Modifier.height(20.dp))
-        Text("Lesson complete", style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Black)
+        Text(stringResource(R.string.lesson_completion_title), style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Black)
         Text(message, style = MaterialTheme.typography.bodyLarge, textAlign = TextAlign.Center)
         CompletionSparkRow(visible = entered && !reduceMotion, cleanRun = stats.missed == 0)
         Spacer(Modifier.height(8.dp))
@@ -219,13 +220,13 @@ private fun LessonComplete(
                 verticalArrangement = Arrangement.spacedBy(10.dp)
             ) {
                 Row(horizontalArrangement = Arrangement.spacedBy(10.dp), modifier = Modifier.fillMaxWidth()) {
-                    ProgressStat("Correct", stats.correct, Color(0xFFDCEBDD), Modifier.weight(1f))
-                    ProgressStat("Missed", stats.missed, Color(0xFFFFDFD6), Modifier.weight(1f))
+                    ProgressStat(stringResource(R.string.metric_correct), stats.correct, Color(0xFFDCEBDD), Modifier.weight(1f))
+                    ProgressStat(stringResource(R.string.metric_missed), stats.missed, Color(0xFFFFDFD6), Modifier.weight(1f))
                 }
                 LinearProgressIndicator(progress = { accuracy }, modifier = Modifier.fillMaxWidth())
                 Text(lesson.items.joinToString(" ") { it.kana }, fontSize = 34.sp, fontWeight = FontWeight.Black)
                 Text(lesson.items.joinToString("  ") { it.romaji }, style = MaterialTheme.typography.titleMedium)
-                Text("These will stay in review until they feel automatic.", style = MaterialTheme.typography.bodyMedium, textAlign = TextAlign.Center)
+                Text(stringResource(R.string.lesson_completion_review_hint), style = MaterialTheme.typography.bodyMedium, textAlign = TextAlign.Center)
             }
         }
         Spacer(Modifier.height(24.dp))
