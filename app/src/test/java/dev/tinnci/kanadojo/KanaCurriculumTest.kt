@@ -1566,6 +1566,33 @@ class KanaCurriculumTest {
     }
 
     @Test
+    fun practiceCompletionActionButtonMetadataUsesCurrentModeForRepeatSemanticLabels() {
+        PracticeMode.entries.forEach { mode ->
+            val repeatSemanticLabel = practiceRepeatActionSemanticLabelFor(mode)
+            val cleanActionButtons = practiceCompletionActionButtonMetadataInDisplayOrder(
+                completionAction = ReviewCompletionAction.ReturnToPath,
+                mode = mode
+            )
+            val repeatActionButton = practiceCompletionActionButtonMetadataInDisplayOrder(
+                completionAction = ReviewCompletionAction.RepeatQueue,
+                mode = mode
+            ).single()
+
+            assertEquals("Return to lesson path", cleanActionButtons.first().actionSemanticLabel)
+            assertEquals(repeatSemanticLabel, cleanActionButtons.last().actionSemanticLabel)
+            assertEquals(repeatSemanticLabel, repeatActionButton.actionSemanticLabel)
+            assertEquals(
+                "Optional repeat action: $repeatSemanticLabel",
+                cleanActionButtons.last().accessibilitySemanticLabel
+            )
+            assertEquals(
+                "Repeat first action: $repeatSemanticLabel",
+                repeatActionButton.accessibilitySemanticLabel
+            )
+        }
+    }
+
+    @Test
     fun practiceCompletionActionButtonMetadataTraversalStaysWithinUiActionBounds() {
         ReviewCompletionAction.entries.forEach { action ->
             val actionButtons = practiceCompletionActionButtonMetadataInDisplayOrder(

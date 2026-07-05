@@ -266,9 +266,10 @@ Implemented:
 - Added tested compact completion action-button accessibility traversal UI metadata bounds audit.
 - Added tested compact completion action-button accessibility traversal UI metadata ordering audit.
 - Added tested compact completion action-button accessibility semantic-label metadata audit.
+- Added tested compact completion action-button accessibility semantic-label metadata mode audit.
 
 ## Next Polish Pass
 
 Implement next:
 
-- Add compact completion action-button accessibility semantic-label metadata mode audit.
+- Add compact completion action-button accessibility semantic-label hint metadata audit.
