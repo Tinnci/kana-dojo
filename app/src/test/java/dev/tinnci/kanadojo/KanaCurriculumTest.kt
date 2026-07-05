@@ -1751,6 +1751,29 @@ class KanaCurriculumTest {
     }
 
     @Test
+    fun practiceCompletionActionButtonMetadataRoleChipColorTonesStayModeIndependent() {
+        PracticeMode.entries.forEach { mode ->
+            val cleanActionButtons = practiceCompletionActionButtonMetadataInDisplayOrder(
+                completionAction = ReviewCompletionAction.ReturnToPath,
+                mode = mode
+            )
+            val repeatActionButtons = practiceCompletionActionButtonMetadataInDisplayOrder(
+                completionAction = ReviewCompletionAction.RepeatQueue,
+                mode = mode
+            )
+
+            assertEquals(
+                listOf(PracticeActionRoleTone.Primary, PracticeActionRoleTone.Optional),
+                cleanActionButtons.map { practiceActionRoleToneFor(it) }
+            )
+            assertEquals(
+                listOf(PracticeActionRoleTone.RepeatRequired),
+                repeatActionButtons.map { practiceActionRoleToneFor(it) }
+            )
+        }
+    }
+
+    @Test
     fun practiceCompletionActionButtonMetadataRoleChipLabelsStayModeIndependent() {
         PracticeMode.entries.forEach { mode ->
             val cleanActionButtons = practiceCompletionActionButtonMetadataInDisplayOrder(
