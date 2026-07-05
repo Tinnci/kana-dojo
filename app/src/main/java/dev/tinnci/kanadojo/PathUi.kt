@@ -384,7 +384,7 @@ private fun DailyFocusPanel(
                 }
                 Spacer(Modifier.width(16.dp))
                 Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                    Text(lesson.title, style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Black)
+                    Text(localizedLessonTitle(lesson.title), style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Black)
                     Text(
                         lesson.items.joinToString(" ") { it.kana },
                         style = MaterialTheme.typography.titleMedium,
@@ -396,7 +396,7 @@ private fun DailyFocusPanel(
             Text(
                 stringResource(
                     R.string.path_focus_meta,
-                    lesson.title,
+                    localizedLessonTitle(lesson.title),
                     localizedLearningStageLabel(lesson.stage),
                     localizedMasteryLabel(averageMastery)
                 ),
@@ -713,7 +713,7 @@ private fun PathHeroPanel(
                         style = MaterialTheme.typography.labelLarge,
                         fontWeight = FontWeight.Bold
                     )
-                    Text(nextLesson.title, style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Black)
+                    Text(localizedLessonTitle(nextLesson.title), style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Black)
                     Text(
                         "$priorityLabel - ${nextLesson.items.joinToString(" ") { it.kana }}",
                         style = MaterialTheme.typography.bodyMedium
@@ -771,11 +771,11 @@ private fun PathCompletionFeedbackPanel(feedback: PathCompletionFeedback, onActi
                 )
             }
             Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
-                Text(feedback.title, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Black)
-                Text(feedback.message, style = MaterialTheme.typography.bodySmall)
+                Text(localizedPathCompletionTitle(feedback), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Black)
+                Text(localizedPathCompletionMessage(feedback), style = MaterialTheme.typography.bodySmall)
             }
             Button(onClick = onAction, shape = RoundedCornerShape(16.dp)) {
-                Text(feedback.actionLabel, fontWeight = FontWeight.Bold)
+                Text(localizedPathCompletionAction(feedback), fontWeight = FontWeight.Bold)
             }
         }
     }
@@ -811,11 +811,11 @@ private fun PathResumeCuePanel(cue: LessonResumeCue, onResume: () -> Unit) {
                     )
                 }
                 Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
-                    Text(cue.title, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Black)
-                    Text(cue.message, style = MaterialTheme.typography.bodySmall)
+                    Text(localizedPathResumeTitle(cue), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Black)
+                    Text(localizedPathResumeMessage(cue), style = MaterialTheme.typography.bodySmall)
                 }
                 Button(onClick = onResume, shape = RoundedCornerShape(16.dp)) {
-                    Text(cue.actionLabel, fontWeight = FontWeight.Bold)
+                    Text(localizedPathResumeAction(cue.actionLabel), fontWeight = FontWeight.Bold)
                 }
             }
             LinearProgressIndicator(progress = { cue.progress }, modifier = Modifier.fillMaxWidth())
@@ -906,7 +906,7 @@ private fun LessonNode(
             Spacer(Modifier.width(16.dp))
             Column(modifier = Modifier.weight(1f)) {
                 Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Text(lesson.title, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleMedium, modifier = Modifier.weight(1f))
+                    Text(localizedLessonTitle(lesson.title), fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleMedium, modifier = Modifier.weight(1f))
                     if (active) {
                         Surface(
                             shape = RoundedCornerShape(12.dp),
@@ -932,12 +932,12 @@ private fun LessonNode(
                     Text(stringResource(R.string.path_drill_count, phaseTotal), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
                 LessonNodePhaseSummary(phaseSummary)
-                Text(lesson.subtitle, style = MaterialTheme.typography.bodyMedium)
+                Text(localizedLessonSubtitle(lesson.subtitle), style = MaterialTheme.typography.bodyMedium)
                 Text(
                     if (unlocked) {
                         stringResource(R.string.path_seen_mastery_status, learned, total, localizedMasteryLabel(averageMastery))
                     } else {
-                        lockCopy?.message.orEmpty()
+                        lockCopy?.let { localizedLessonLockMessage(it.message) }.orEmpty()
                     },
                     style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -1218,3 +1218,154 @@ private fun localizedLessonPhaseShortLabel(label: String): String =
         "Contrast" -> stringResource(R.string.path_phase_contrast_short)
         else -> label.take(1)
     }
+
+@Composable
+private fun localizedLessonTitle(title: String): String =
+    when {
+        title == "Vowels" -> stringResource(R.string.path_lesson_title_vowels)
+        title == "Special marks" -> stringResource(R.string.path_lesson_title_special_marks)
+        title.startsWith("Marks: ") && title.endsWith(" row") -> {
+            val row = title.removePrefix("Marks: ").removeSuffix(" row")
+            stringResource(R.string.path_lesson_title_marks, localizedLessonRowLabel(row))
+        }
+
+        title.startsWith("Blends: ") -> {
+            val label = title.removePrefix("Blends: ")
+            stringResource(R.string.path_lesson_title_blends, label)
+        }
+
+        title.endsWith(" row") -> {
+            val row = title.removeSuffix(" row")
+            stringResource(R.string.path_lesson_title_row, localizedLessonRowLabel(row))
+        }
+
+        else -> title
+    }
+
+@Composable
+private fun localizedLessonRowLabel(label: String): String =
+    when (label) {
+        "Vowel" -> stringResource(R.string.path_lesson_row_vowel)
+        "Special" -> stringResource(R.string.path_lesson_row_special)
+        else -> label
+    }
+
+@Composable
+private fun localizedLessonSubtitle(subtitle: String): String {
+    val delimiter = ": "
+    if (delimiter !in subtitle) return subtitle
+    val description = subtitle.substringBefore(delimiter)
+    val kanaSounds = subtitle.substringAfter(delimiter)
+    return stringResource(R.string.path_lesson_subtitle, localizedStageDescription(description), kanaSounds)
+}
+
+@Composable
+private fun localizedStageDescription(description: String): String =
+    when (description) {
+        "sound anchors" -> stringResource(R.string.path_stage_desc_anchor)
+        "regular row rhythm" -> stringResource(R.string.path_stage_desc_rows)
+        "stroke-heavy symbols" -> stringResource(R.string.path_stage_desc_shapes)
+        "remaining base kana" -> stringResource(R.string.path_stage_desc_tail)
+        "dakuten and handakuten" -> stringResource(R.string.path_stage_desc_marks)
+        "small ya yu yo combinations" -> stringResource(R.string.path_stage_desc_blend)
+        "small kana and length marks" -> stringResource(R.string.path_stage_desc_special)
+        "lookalike separation" -> stringResource(R.string.path_stage_desc_contrast)
+        else -> description
+    }
+
+@Composable
+private fun localizedPathCompletionTitle(feedback: PathCompletionFeedback): String =
+    when (feedback.title) {
+        "Misses queued" -> stringResource(R.string.path_completion_misses_title)
+        "Next lesson ready" -> stringResource(R.string.path_completion_next_title)
+        else -> localizedPathRecommendationTitleText(feedback.title)
+    }
+
+@Composable
+private fun localizedPathCompletionMessage(feedback: PathCompletionFeedback): String =
+    when {
+        feedback.message.contains(" misses changed the next action to ") -> {
+            val count = feedback.message.substringBefore(" misses").toIntOrNull() ?: return feedback.message
+            val actionTitle = feedback.message
+                .substringAfter(" misses changed the next action to ")
+                .removeSuffix(".")
+            stringResource(
+                R.string.path_completion_misses_message,
+                count,
+                localizedPathRecommendationTitleText(actionTitle)
+            )
+        }
+
+        feedback.message == "Review moved ahead of the path so recall stays stable." -> stringResource(R.string.path_completion_review_message)
+        feedback.message.contains(" is warm. The path now points to ") -> {
+            val completedTitle = feedback.message.substringBefore(" is warm. The path now points to ")
+            val nextTitle = feedback.message.substringAfter(" is warm. The path now points to ").removeSuffix(".")
+            stringResource(
+                R.string.path_completion_next_message,
+                localizedLessonTitle(completedTitle),
+                localizedLessonTitle(nextTitle)
+            )
+        }
+
+        else -> feedback.message
+    }
+
+@Composable
+private fun localizedPathCompletionAction(feedback: PathCompletionFeedback): String =
+    when (feedback.actionLabel) {
+        "Start next" -> stringResource(R.string.path_completion_start_next)
+        "Review due" -> stringResource(R.string.path_recommendation_due_action)
+        "Repair" -> stringResource(R.string.path_recommendation_repair_action)
+        "Contrast" -> stringResource(R.string.path_recommendation_contrast_action)
+        "Write" -> stringResource(R.string.path_recommendation_writing_action)
+        "Listen" -> stringResource(R.string.path_recommendation_sound_action)
+        else -> feedback.actionLabel
+    }
+
+@Composable
+private fun localizedPathRecommendationTitleText(title: String): String =
+    when (title) {
+        "Due review", "due review" -> stringResource(R.string.path_recommendation_due_title)
+        "Repair weak kana", "repair weak kana" -> stringResource(R.string.path_recommendation_repair_title)
+        "Contrast drill", "contrast drill" -> stringResource(R.string.path_recommendation_contrast_title)
+        "Writing reps", "writing reps" -> stringResource(R.string.path_recommendation_writing_title)
+        "Sound recall", "sound recall" -> stringResource(R.string.path_recommendation_sound_title)
+        else -> title
+    }
+
+@Composable
+private fun localizedPathResumeTitle(cue: LessonResumeCue): String {
+    val title = cue.title.removePrefix("Return to ")
+    if (title == cue.title) return cue.title
+    return stringResource(R.string.path_resume_title, localizedLessonTitle(title))
+}
+
+@Composable
+private fun localizedPathResumeMessage(cue: LessonResumeCue): String {
+    val prefix = "You left after "
+    val delimiter = " of "
+    val suffix = " drills. Return while the kana are still warm."
+    if (!cue.message.startsWith(prefix) || !cue.message.endsWith(suffix) || delimiter !in cue.message) {
+        return cue.message
+    }
+    val counts = cue.message.removePrefix(prefix).removeSuffix(suffix)
+    val completed = counts.substringBefore(delimiter).toIntOrNull() ?: return cue.message
+    val total = counts.substringAfter(delimiter).toIntOrNull() ?: return cue.message
+    return stringResource(R.string.path_resume_message, completed, total)
+}
+
+@Composable
+private fun localizedPathResumeAction(actionLabel: String): String =
+    when (actionLabel) {
+        "Return" -> stringResource(R.string.path_resume_action)
+        else -> actionLabel
+    }
+
+@Composable
+private fun localizedLessonLockMessage(message: String): String {
+    val prefix = "Need "
+    val suffix = " recall 2"
+    if (!message.startsWith(prefix) || !message.endsWith(suffix)) return message
+    val lessonTitle = message.removePrefix(prefix).removeSuffix(suffix)
+    return stringResource(R.string.path_lock_message, localizedLessonTitle(lessonTitle))
+}
