@@ -284,14 +284,14 @@ private fun StageFilterRow(
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                Text("Journey", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Black)
+                Text(stringResource(R.string.path_journey_title), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Black)
                 Spacer(Modifier.weight(1f))
                 Text(progressCopy.message, style = MaterialTheme.typography.labelLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
             LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
                 item {
                     StageFilterChip(
-                        label = "All",
+                        label = stringResource(R.string.filter_all),
                         selected = selectedStage == null,
                         onClick = { onStageChange(null) }
                     )
@@ -400,9 +400,9 @@ private fun DailyFocusPanel(
             )
             startGuidance?.let { PathStartGuidancePanel(it) }
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
-                FocusMetric("Due", dueReviewCount, Modifier.weight(1f))
-                FocusMetric("Repair", reviewCount, Modifier.weight(1f))
-                FocusMetric("Fluent", snapshot.fluent, Modifier.weight(1f))
+                FocusMetric(stringResource(R.string.metric_due), dueReviewCount, Modifier.weight(1f))
+                FocusMetric(stringResource(R.string.metric_repair), reviewCount, Modifier.weight(1f))
+                FocusMetric(stringResource(R.string.metric_fluent), snapshot.fluent, Modifier.weight(1f))
             }
             DailyRhythmPanel(dailyRhythm)
             LessonPhasePreviewRow(phaseSummary)
@@ -579,7 +579,7 @@ private fun practiceRecommendationColor(mode: PracticeMode): Color =
 @Composable
 private fun LessonPhasePreviewRow(phases: List<LessonPhaseCount>) {
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        Text("Lesson mix", style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Bold)
+        Text(stringResource(R.string.path_lesson_mix_title), style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Bold)
         LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
             items(phases) { phase ->
                 Surface(
@@ -603,7 +603,7 @@ private fun LessonPhasePreviewRow(phases: List<LessonPhaseCount>) {
 @Composable
 private fun DueKanaPreviewRow(items: List<KanaItem>) {
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-        Text("Due today", style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Bold)
+        Text(stringResource(R.string.path_due_today_title), style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Bold)
         LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
             items(items, key = { it.id }) { item ->
                 Surface(
@@ -640,16 +640,16 @@ private fun ProgressSummaryPanel(snapshot: ProgressSnapshot) {
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Column(modifier = Modifier.weight(1f)) {
-                    Text("Today status", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Black)
-                    Text("Fluency grows when recall survives review.", style = MaterialTheme.typography.bodyMedium)
+                    Text(stringResource(R.string.path_today_status_title), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Black)
+                    Text(stringResource(R.string.path_today_status_message), style = MaterialTheme.typography.bodyMedium)
                 }
                 Text("${snapshot.fluent}/${snapshot.total}", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Black)
             }
             LinearProgressIndicator(progress = { overall }, modifier = Modifier.fillMaxWidth())
             Row(horizontalArrangement = Arrangement.spacedBy(10.dp), modifier = Modifier.fillMaxWidth()) {
-                ProgressStat("Seen", snapshot.seen, Color(0xFFE2EEF8), Modifier.weight(1f))
-                ProgressStat("Recall", snapshot.recall, Color(0xFFFFF1BC), Modifier.weight(1f))
-                ProgressStat("Fluent", snapshot.fluent, Color(0xFFDCEBDD), Modifier.weight(1f))
+                ProgressStat(stringResource(R.string.metric_seen), snapshot.seen, Color(0xFFE2EEF8), Modifier.weight(1f))
+                ProgressStat(stringResource(R.string.metric_recall), snapshot.recall, Color(0xFFFFF1BC), Modifier.weight(1f))
+                ProgressStat(stringResource(R.string.metric_fluent), snapshot.fluent, Color(0xFFDCEBDD), Modifier.weight(1f))
             }
         }
     }
@@ -677,9 +677,9 @@ private fun PathHeroPanel(
         label = "pathHeroColor"
     )
     val priorityLabel = when {
-        hasDueReview -> "$dueReviewCount due today"
-        hasRepairReview -> "$reviewCount to repair"
-        else -> "Next lesson ready"
+        hasDueReview -> stringResource(R.string.path_priority_due, dueReviewCount)
+        hasRepairReview -> stringResource(R.string.path_priority_repair, reviewCount)
+        else -> stringResource(R.string.path_priority_next_ready)
     }
     Surface(
         shape = RoundedCornerShape(24.dp),
@@ -717,9 +717,9 @@ private fun PathHeroPanel(
             }
             LinearProgressIndicator(progress = { overall }, modifier = Modifier.fillMaxWidth())
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
-                HeroMetric("Due", dueReviewCount.toString(), Modifier.weight(1f))
-                HeroMetric("Lesson", "${(lessonProgress * 100).toInt()}%", Modifier.weight(1f))
-                HeroMetric("Fluent", "${snapshot.fluent}/${snapshot.total}", Modifier.weight(1f))
+                HeroMetric(stringResource(R.string.metric_due), dueReviewCount.toString(), Modifier.weight(1f))
+                HeroMetric(stringResource(R.string.metric_lesson), "${(lessonProgress * 100).toInt()}%", Modifier.weight(1f))
+                HeroMetric(stringResource(R.string.metric_fluent), "${snapshot.fluent}/${snapshot.total}", Modifier.weight(1f))
             }
         }
     }
@@ -908,7 +908,7 @@ private fun LessonNode(
                             color = MaterialTheme.colorScheme.primary
                         ) {
                             Text(
-                                "Next",
+                                stringResource(R.string.path_next_badge),
                                 modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
                                 style = MaterialTheme.typography.labelSmall,
                                 color = MaterialTheme.colorScheme.onPrimary,
@@ -924,12 +924,16 @@ private fun LessonNode(
                 ) {
                     StageChip(lesson.stage)
                     DifficultyDots(lesson.difficulty)
-                    Text("$phaseTotal drills", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    Text(stringResource(R.string.path_drill_count, phaseTotal), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 }
                 LessonNodePhaseSummary(phaseSummary)
                 Text(lesson.subtitle, style = MaterialTheme.typography.bodyMedium)
                 Text(
-                    if (unlocked) "$learned/$total seen - ${masteryLabel(averageMastery)}" else lockCopy?.message.orEmpty(),
+                    if (unlocked) {
+                        stringResource(R.string.path_seen_mastery_status, learned, total, masteryLabel(averageMastery))
+                    } else {
+                        lockCopy?.message.orEmpty()
+                    },
                     style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )

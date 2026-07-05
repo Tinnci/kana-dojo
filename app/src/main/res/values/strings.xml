@@ -18,5 +18,23 @@
     <string name="action_start_repair">Start repair</string>
     <string name="action_start_practice">Start practice</string>
     <string name="path_header_title">%1$s path</string>
+    <string name="path_journey_title">Journey</string>
+    <string name="path_lesson_mix_title">Lesson mix</string>
+    <string name="path_due_today_title">Due today</string>
+    <string name="path_today_status_title">Today status</string>
+    <string name="path_today_status_message">Fluency grows when recall survives review.</string>
+    <string name="path_priority_due">%1$d due today</string>
+    <string name="path_priority_repair">%1$d to repair</string>
+    <string name="path_priority_next_ready">Next lesson ready</string>
+    <string name="path_next_badge">Next</string>
+    <string name="path_drill_count">%1$d drills</string>
+    <string name="path_seen_mastery_status">%1$d/%2$d seen - %3$s</string>
+    <string name="filter_all">All</string>
+    <string name="metric_due">Due</string>
+    <string name="metric_repair">Repair</string>
+    <string name="metric_seen">Seen</string>
+    <string name="metric_recall">Recall</string>
+    <string name="metric_fluent">Fluent</string>
+    <string name="metric_lesson">Lesson</string>
     <string name="chart_header_title">%1$s chart</string>
 </resources>

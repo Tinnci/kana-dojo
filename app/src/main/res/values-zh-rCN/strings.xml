@@ -18,5 +18,23 @@
     <string name="action_start_repair">开始巩固</string>
     <string name="action_start_practice">开始练习</string>
     <string name="path_header_title">%1$s路径</string>
+    <string name="path_journey_title">学习路径</string>
+    <string name="path_lesson_mix_title">课程结构</string>
+    <string name="path_due_today_title">今日复习</string>
+    <string name="path_today_status_title">今日状态</string>
+    <string name="path_today_status_message">能经得起复习的记忆，才会逐渐流畅。</string>
+    <string name="path_priority_due">今日到期 %1$d 个</string>
+    <string name="path_priority_repair">待巩固 %1$d 个</string>
+    <string name="path_priority_next_ready">下一课已准备好</string>
+    <string name="path_next_badge">下一课</string>
+    <string name="path_drill_count">%1$d 个练习</string>
+    <string name="path_seen_mastery_status">已见过 %1$d/%2$d - %3$s</string>
+    <string name="filter_all">全部</string>
+    <string name="metric_due">到期</string>
+    <string name="metric_repair">巩固</string>
+    <string name="metric_seen">见过</string>
+    <string name="metric_recall">记忆</string>
+    <string name="metric_fluent">熟练</string>
+    <string name="metric_lesson">课程</string>
     <string name="chart_header_title">%1$s 假名表</string>
 </resources>

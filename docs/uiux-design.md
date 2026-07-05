@@ -174,6 +174,7 @@ Implemented:
 - Resource-backed English and Simplified Chinese strings for essential actions on the top path, practice, and chart entry points.
 - Android locale configuration advertises English and Simplified Chinese for system per-app language settings.
 - Script names in the shell, path hero, and chart header are resource-backed instead of stored as English enum labels.
+- First-screen path headings, metrics, priority badges, and lesson-card status labels are resource-backed in English and Simplified Chinese.
 - Starting priority is communicated through layout hierarchy: raised primary panels, large kana anchors, prominent titles, and full-width primary actions.
 - Reduced-motion top-bar toggle that disables trace replay animation while keeping comparison available.
 - Persisted reduced-motion preference.
