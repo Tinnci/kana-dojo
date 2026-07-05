@@ -23,7 +23,7 @@ Use five mastery levels per kana. The existing app already stores mastery as `0.
 | 4 | Fluent | Low-friction recall | mixed review, no hints | 5 correct over spaced reviews |
 | 5 | Mastered | Maintenance | rare spaced review | demote on repeated miss |
 
-Mistakes should be heavier than new content. A missed kana should reappear once immediately, once near the end of the lesson, and once in the next review session.
+Mistakes should be heavier than new content. A missed kana should reappear once immediately in an easier repair direction, once near the end of the lesson in the missed direction, and once in the next review session.
 
 Implementation note: mastered kana are kept at level `5` after the first miss and demoted only after a repeated miss streak. Other non-mastered kana demote immediately on a miss. Any miss enters the mistake queue; correct answers clear the miss streak and leave the mistake queue once the kana reaches recall level `2`. Review due dates are stored as epoch days using a simple delay ladder: immediate for new/familiar or missed kana, then 1, 3, 7, and 14 days as recall reaches levels `2..5`.
 
@@ -176,6 +176,8 @@ Separate lesson generation into two responsibilities:
 This keeps the path predictable while avoiding a test-like block of all reading prompts followed by all listening prompts. A new kana should be introduced with visual recognition, linked to sound quickly when audio is available, checked in the reverse direction, then placed into pair matching after every symbol in that pair has appeared. Writing should wait until the kana has already been seen or heard, because tracing before recognition turns the exercise into copying instead of recall.
 
 Dense lessons still use capped exercise counts, but the sequencer should expose enough of the group before pair matching, then sprinkle short writing bursts after matched chunks. Confusable contrast remains at the end so it acts as deliberate reinforcement after the core lesson, not as the learner's first exposure.
+
+When a learner misses inside a lesson, the queue should not only append a random mistake drill at the end. It should insert one immediate repair prompt next, then keep the remaining planned lesson intact, then add a delayed retry at the end. The immediate prompt should usually flip the direction, for example a missed romaji-to-kana prompt becomes kana-to-romaji, while a missed listening or tracing prompt first returns to visual recognition. The delayed retry should use the missed skill again when available so the learner proves the repair held.
 
 ## Session Structure
 

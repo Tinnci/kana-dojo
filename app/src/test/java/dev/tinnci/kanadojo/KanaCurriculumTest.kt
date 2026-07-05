@@ -45,6 +45,57 @@ class KanaCurriculumTest {
     }
 
     @Test
+    fun missedLessonAnswersInsertImmediateRepairAndDelayedRetry() {
+        val lesson = lessonsFor(Script.Hiragana).first()
+        val item = lesson.items.first()
+        val current = Exercise(ExerciseKind.RomajiToKana, listOf(item))
+        val remaining = buildLessonExercises(lesson).drop(1).take(3)
+
+        val nextQueue = lessonQueueAfterAnswer(current, remaining, correct = false)
+
+        assertEquals(ExerciseKind.KanaToRomaji, nextQueue.first().kind)
+        assertEquals(item.id, nextQueue.first().items.single().id)
+        assertEquals(remaining, nextQueue.drop(1).dropLast(1))
+        assertEquals(ExerciseKind.RomajiToKana, nextQueue.last().kind)
+        assertEquals(item.id, nextQueue.last().items.single().id)
+    }
+
+    @Test
+    fun correctLessonAnswersDoNotAddRepairDrills() {
+        val lesson = lessonsFor(Script.Hiragana).first()
+        val queue = buildLessonExercises(lesson)
+
+        val nextQueue = lessonQueueAfterAnswer(queue.first(), queue.drop(1), correct = true)
+
+        assertEquals(queue.drop(1), nextQueue)
+    }
+
+    @Test
+    fun soundMistakesRetryWithSoundWhenAudioIsAvailable() {
+        val item = itemsFor(Script.Hiragana).first()
+
+        val repairs = mistakeRepairExercisesFor(item, ExerciseKind.SoundToKana)
+
+        assertEquals(ExerciseKind.RomajiToKana, repairs.first().kind)
+        assertEquals(ExerciseKind.SoundToKana, repairs.last().kind)
+    }
+
+    @Test
+    fun repairQueueUsesExistingExerciseSnapshotFormat() {
+        val lesson = lessonsFor(Script.Hiragana).first()
+        val item = lesson.items.first()
+        val queue = lessonQueueAfterAnswer(
+            current = Exercise(ExerciseKind.TraceKana, listOf(item)),
+            remaining = emptyList(),
+            correct = false
+        )
+
+        val tokens = exerciseSnapshotTokens(queue)
+
+        assertEquals(listOf("RomajiToKana|${item.id}", "TraceKana|${item.id}"), tokens)
+    }
+
+    @Test
     fun countSnapshotTokensRoundTripAndIncrementStableCounts() {
         val tokens = countSnapshotTokens(mapOf("h-a" to 2, "h-i" to 1))
         val incremented = incrementCountSnapshotToken(tokens, "h-a")

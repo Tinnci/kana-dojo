@@ -308,6 +308,34 @@ fun buildMistakeExercise(item: KanaItem): Exercise {
     )
 }
 
+fun mistakeRepairExercisesFor(item: KanaItem, missedKind: ExerciseKind): List<Exercise> {
+    val immediateKind = when (missedKind) {
+        ExerciseKind.KanaToRomaji -> ExerciseKind.RomajiToKana
+        ExerciseKind.RomajiToKana -> ExerciseKind.KanaToRomaji
+        ExerciseKind.SoundToKana -> ExerciseKind.RomajiToKana
+        ExerciseKind.PairMatch -> ExerciseKind.RomajiToKana
+        ExerciseKind.TraceKana -> ExerciseKind.RomajiToKana
+    }
+    val delayedKind = when (missedKind) {
+        ExerciseKind.SoundToKana -> if (supportsAudioPrompt(item)) ExerciseKind.SoundToKana else ExerciseKind.RomajiToKana
+        ExerciseKind.PairMatch -> ExerciseKind.KanaToRomaji
+        else -> missedKind
+    }
+    return listOf(
+        Exercise(kind = immediateKind, items = listOf(item)),
+        Exercise(kind = delayedKind, items = listOf(item))
+    )
+}
+
+fun lessonQueueAfterAnswer(current: Exercise, remaining: List<Exercise>, correct: Boolean): List<Exercise> {
+    if (correct) return remaining
+    val repairExercises = mistakeRepairExercisesFor(
+        item = current.items.first(),
+        missedKind = current.kind
+    )
+    return listOf(repairExercises.first()) + remaining + repairExercises.last()
+}
+
 fun practiceItemsFor(
     mode: PracticeMode,
     scriptItems: List<KanaItem>,

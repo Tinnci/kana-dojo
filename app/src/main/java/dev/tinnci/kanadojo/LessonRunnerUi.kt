@@ -155,11 +155,14 @@ fun LessonRunner(
                     onEarcon(KanaEarcon.Continue)
                     onTaptic(KanaTaptic.Continue)
                     feedback?.let { result ->
-                        queueTokens = queueTokens.drop(1)
+                        queueTokens = exerciseSnapshotTokens(
+                            lessonQueueAfterAnswer(
+                                current = current,
+                                remaining = queue.drop(1),
+                                correct = result.correct
+                            )
+                        )
                         completed += 1
-                        if (!result.correct) {
-                            queueTokens = queueTokens + exerciseSnapshotToken(buildMistakeExercise(current.items.first()))
-                        }
                         feedbackCorrect = null
                         feedbackAnswer = null
                     }
