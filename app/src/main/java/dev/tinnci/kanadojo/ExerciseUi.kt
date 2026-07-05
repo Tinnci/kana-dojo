@@ -72,12 +72,13 @@ fun ExerciseCard(
     reduceMotion: Boolean,
     feedback: AnswerFeedback?,
     onAnswer: (Boolean) -> Unit,
-    onContinue: () -> Unit
+    onContinue: () -> Unit,
+    modifier: Modifier = Modifier.fillMaxSize()
 ) {
     Card(
         shape = RoundedCornerShape(28.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        modifier = Modifier.fillMaxSize()
+        modifier = modifier
     ) {
         Column(
             modifier = Modifier

@@ -159,8 +159,9 @@ fun TraceKanaExercise(
         }
         Box(
             modifier = Modifier
+                .weight(1f, fill = true)
                 .fillMaxWidth()
-                .aspectRatio(1f)
+                .aspectRatio(1f, matchHeightConstraintsFirst = true)
                 .background(padBackgroundColor, RoundedCornerShape(26.dp))
                 .border(
                     width = borderWidth,
@@ -215,7 +216,6 @@ fun TraceKanaExercise(
             }
         }
         TraceScorePanel(score = animatedScore, ready = traceScore.ready, message = traceScore.message, reduceMotion = reduceMotion)
-        TraceCuePanel(cues = traceCues)
         AnimatedVisibility(
             visible = showRemediation && remediation != null,
             enter = if (reduceMotion) EnterTransition.None else fadeIn() + expandVertically(expandFrom = Alignment.Top),
@@ -284,6 +284,7 @@ fun TraceKanaExercise(
                 Text(stringResource(R.string.trace_action_check))
             }
         }
+        TraceCuePanel(cues = traceCues)
         AnimatedVisibility(
             visible = showComparison && points.isNotEmpty(),
             enter = if (reduceMotion) EnterTransition.None else fadeIn() + expandVertically(expandFrom = Alignment.Top),

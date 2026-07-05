@@ -206,32 +206,36 @@ fun MistakePracticeScreen(
             .padding(outerPadding),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        PracticeHeroPanel(
-            title = localizedPracticeModeTitle(selectedMode),
-            subtitle = localizedPracticeModeSubtitle(selectedMode)
-        )
-        PracticeModeTabs(
-            selectedMode = selectedMode,
-            recommendedMode = initialMode,
-            fallbackMode = fallbackMode,
-            onModeChange = {
-                onEarcon(KanaEarcon.Select)
-                onTaptic(KanaTaptic.Select)
-                selectedMode = it
+        if (!sessionInProgress) {
+            PracticeHeroPanel(
+                title = localizedPracticeModeTitle(selectedMode),
+                subtitle = localizedPracticeModeSubtitle(selectedMode)
+            )
+            PracticeModeTabs(
+                selectedMode = selectedMode,
+                recommendedMode = initialMode,
+                fallbackMode = fallbackMode,
+                onModeChange = {
+                    onEarcon(KanaEarcon.Select)
+                    onTaptic(KanaTaptic.Select)
+                    selectedMode = it
+                }
+            )
+            if (!showIntro) {
+                PracticeQueueIntent(
+                    state = PracticeQueueIntentState(
+                        mode = selectedMode,
+                        sourceCue = sourceCue,
+                        queueSize = practiceItems.size,
+                        weakCount = weakCount,
+                        dueCount = dueCount,
+                        contrastCount = contrastCount,
+                        explanation = queueExplanation
+                    ),
+                    reduceMotion = reduceMotion
+                )
             }
-        )
-        PracticeQueueIntent(
-            state = PracticeQueueIntentState(
-                mode = selectedMode,
-                sourceCue = sourceCue,
-                queueSize = practiceItems.size,
-                weakCount = weakCount,
-                dueCount = dueCount,
-                contrastCount = contrastCount,
-                explanation = queueExplanation
-            ),
-            reduceMotion = reduceMotion
-        )
+        }
         if (showIntro) {
             PracticeIntroPanel(
                 intro = intro,
@@ -289,6 +293,7 @@ fun MistakePracticeScreen(
             mode = selectedMode,
             reduceMotion = reduceMotion
         )
+        val exerciseCardHeight = if (exercise.kind == ExerciseKind.TraceKana) 640.dp else 560.dp
         ExerciseCard(
             exercise = exercise,
             allItems = optionItems,
@@ -328,7 +333,10 @@ fun MistakePracticeScreen(
                 feedbackAnswer = null
                 feedbackSlow = false
                 exerciseStartedAtMillis = SystemClock.elapsedRealtime()
-            }
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(exerciseCardHeight)
         )
     }
 }
@@ -1355,6 +1363,15 @@ private fun PracticeIntroPanel(
                 Text(localizedPracticeIntroTitle(intro), style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Black)
                 Text(localizedPracticeIntroSubtitle(intro), style = MaterialTheme.typography.bodyMedium)
             }
+            Button(
+                onClick = onStart,
+                shape = RoundedCornerShape(18.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .heightIn(min = 54.dp)
+            ) {
+                Text(stringResource(intro.action.labelResId), fontWeight = FontWeight.Black)
+            }
             PracticeGoalLine(goal)
             LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
                 items(previewItems, key = { it.id }) { item ->
@@ -1372,15 +1389,6 @@ private fun PracticeIntroPanel(
                         }
                     }
                 }
-            }
-            Button(
-                onClick = onStart,
-                shape = RoundedCornerShape(18.dp),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .heightIn(min = 54.dp)
-            ) {
-                Text(stringResource(intro.action.labelResId), fontWeight = FontWeight.Black)
             }
         }
     }
