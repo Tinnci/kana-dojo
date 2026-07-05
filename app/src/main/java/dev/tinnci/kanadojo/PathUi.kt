@@ -282,6 +282,7 @@ fun LessonPathScreen(
                 unlocked = unlocked,
                 lockCopy = lockCopy,
                 focus = focusedLesson,
+                layoutMode = layoutMode,
                 reduceMotion = reduceMotion,
                 onStart = {
                     if (unlocked) {
@@ -312,7 +313,7 @@ private fun StageFilterRow(
     Surface(
         shape = RoundedCornerShape(22.dp),
         color = MaterialTheme.colorScheme.surface,
-        tonalElevation = 1.dp,
+        tonalElevation = KanaElevation.Flat,
         modifier = Modifier.fillMaxWidth()
     ) {
         Column(
@@ -402,7 +403,7 @@ private fun DailyFocusPanel(
     Surface(
         shape = RoundedCornerShape(22.dp),
         color = MaterialTheme.colorScheme.primaryContainer,
-        tonalElevation = 3.dp,
+        tonalElevation = KanaElevation.Resting,
         modifier = Modifier.fillMaxWidth()
     ) {
         Column(
@@ -676,7 +677,7 @@ private fun ProgressSummaryPanel(snapshot: ProgressSnapshot, reduceMotion: Boole
     Surface(
         shape = RoundedCornerShape(22.dp),
         color = MaterialTheme.colorScheme.surface,
-        tonalElevation = 2.dp,
+        tonalElevation = KanaElevation.Flat,
         modifier = Modifier.fillMaxWidth()
     ) {
         Column(
@@ -740,7 +741,7 @@ private fun PathHeroPanel(
     }
     Surface(
         shape = RoundedCornerShape(24.dp),
-        tonalElevation = 2.dp,
+        tonalElevation = KanaElevation.Resting,
         color = heroColor,
         modifier = Modifier.fillMaxWidth()
     ) {
@@ -806,7 +807,7 @@ private fun PathCompletionFeedbackPanel(feedback: PathCompletionFeedback, onActi
     Surface(
         shape = RoundedCornerShape(20.dp),
         color = pathActionToneColor(feedback.tone),
-        tonalElevation = 2.dp,
+        tonalElevation = KanaElevation.Resting,
         modifier = Modifier.fillMaxWidth()
     ) {
         Row(
@@ -846,7 +847,7 @@ private fun PathResumeCuePanel(cue: LessonResumeCue, onResume: () -> Unit) {
     Surface(
         shape = RoundedCornerShape(20.dp),
         color = MaterialTheme.colorScheme.secondaryContainer,
-        tonalElevation = 2.dp,
+        tonalElevation = KanaElevation.Resting,
         modifier = Modifier.fillMaxWidth()
     ) {
         Column(
@@ -884,6 +885,7 @@ private fun LessonNode(
     unlocked: Boolean,
     lockCopy: LessonLockCopy?,
     focus: Boolean,
+    layoutMode: KanaLayoutMode,
     reduceMotion: Boolean,
     onStart: () -> Unit
 ) {
@@ -917,7 +919,7 @@ private fun LessonNode(
         label = "lessonCardColor"
     )
     val cardElevation by animateDpAsState(
-        targetValue = if (active) 4.dp else 0.dp,
+        targetValue = if (active) KanaElevation.Focused else KanaElevation.Flat,
         animationSpec = kanaMotionSpec(reduceMotion),
         label = "lessonCardElevation"
     )
@@ -941,55 +943,36 @@ private fun LessonNode(
         elevation = CardDefaults.cardElevation(defaultElevation = cardElevation),
         border = if (active) BorderStroke(2.dp, MaterialTheme.colorScheme.primary) else null
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .then(if (reduceMotion) Modifier else Modifier.animateContentSize())
-                .padding(18.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Box(
+        if (layoutMode == KanaLayoutMode.Compact) {
+            Column(
                 modifier = Modifier
-                    .size(58.dp)
-                    .graphicsLayer(scaleX = nodeScale, scaleY = nodeScale)
-                    .background(nodeColor, CircleShape),
-                contentAlignment = Alignment.Center
+                    .fillMaxWidth()
+                    .then(if (reduceMotion) Modifier else Modifier.animateContentSize())
+                    .padding(18.dp),
+                verticalArrangement = Arrangement.spacedBy(10.dp)
             ) {
-                when {
-                    complete -> Icon(Icons.Outlined.CheckCircle, contentDescription = null, tint = nodeContentColor)
-                    !unlocked -> Icon(Icons.Outlined.Lock, contentDescription = null, tint = nodeContentColor)
-                    else -> Text(lesson.index.toString(), color = nodeContentColor, fontWeight = FontWeight.Black, fontSize = 22.sp)
-                }
-            }
-            Spacer(Modifier.width(16.dp))
-            Column(modifier = Modifier.weight(1f)) {
-                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Text(localizedLessonTitle(lesson.title), fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleMedium, modifier = Modifier.weight(1f))
-                    if (active) {
-                        Surface(
-                            shape = RoundedCornerShape(12.dp),
-                            color = MaterialTheme.colorScheme.primary
-                        ) {
-                            Text(
-                                stringResource(R.string.path_next_badge),
-                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
-                                style = MaterialTheme.typography.labelSmall,
-                                color = MaterialTheme.colorScheme.onPrimary,
-                                fontWeight = FontWeight.Black
-                            )
-                        }
+                Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(14.dp)) {
+                    LessonNodeBadge(
+                        lesson = lesson,
+                        complete = complete,
+                        unlocked = unlocked,
+                        nodeScale = nodeScale,
+                        nodeColor = nodeColor,
+                        nodeContentColor = nodeContentColor
+                    )
+                    Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                        LessonNodeTitleRow(lesson = lesson, active = active)
+                        LessonNodeMetaRow(lesson = lesson, phaseTotal = phaseTotal)
                     }
                 }
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    modifier = Modifier.padding(top = 4.dp, bottom = 4.dp)
-                ) {
-                    StageChip(lesson.stage)
-                    DifficultyDots(lesson.difficulty)
-                    Text(stringResource(R.string.path_drill_count, phaseTotal), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                }
                 LessonNodePhaseSummary(phaseSummary)
+                Text(
+                    lesson.items.joinToString(" ") { it.kana },
+                    modifier = Modifier.fillMaxWidth(),
+                    fontSize = 30.sp,
+                    fontWeight = FontWeight.Black,
+                    color = if (unlocked) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant
+                )
                 Text(localizedLessonSubtitle(lesson.subtitle), style = MaterialTheme.typography.bodyMedium)
                 Text(
                     if (unlocked) {
@@ -1000,17 +983,114 @@ private fun LessonNode(
                     style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
-                Spacer(Modifier.height(10.dp))
                 LinearProgressIndicator(progress = { progress }, modifier = Modifier.fillMaxWidth())
             }
-            Spacer(Modifier.width(16.dp))
-            Text(
-                lesson.items.joinToString(" ") { it.kana },
-                fontSize = 26.sp,
-                fontWeight = FontWeight.Black,
-                color = if (unlocked) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant
-            )
+        } else {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .then(if (reduceMotion) Modifier else Modifier.animateContentSize())
+                    .padding(18.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                LessonNodeBadge(
+                    lesson = lesson,
+                    complete = complete,
+                    unlocked = unlocked,
+                    nodeScale = nodeScale,
+                    nodeColor = nodeColor,
+                    nodeContentColor = nodeContentColor
+                )
+                Spacer(Modifier.width(16.dp))
+                Column(modifier = Modifier.weight(1f)) {
+                    LessonNodeTitleRow(lesson = lesson, active = active)
+                    LessonNodeMetaRow(lesson = lesson, phaseTotal = phaseTotal)
+                    LessonNodePhaseSummary(phaseSummary)
+                    Text(localizedLessonSubtitle(lesson.subtitle), style = MaterialTheme.typography.bodyMedium)
+                    Text(
+                        if (unlocked) {
+                            stringResource(R.string.path_seen_mastery_status, learned, total, localizedMasteryLabel(averageMastery))
+                        } else {
+                            lockCopy?.let { localizedLessonLockMessage(it.message) }.orEmpty()
+                        },
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Spacer(Modifier.height(10.dp))
+                    LinearProgressIndicator(progress = { progress }, modifier = Modifier.fillMaxWidth())
+                }
+                Spacer(Modifier.width(16.dp))
+                Text(
+                    lesson.items.joinToString(" ") { it.kana },
+                    fontSize = 26.sp,
+                    fontWeight = FontWeight.Black,
+                    color = if (unlocked) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
         }
+    }
+}
+
+@Composable
+private fun LessonNodeBadge(
+    lesson: KanaLesson,
+    complete: Boolean,
+    unlocked: Boolean,
+    nodeScale: Float,
+    nodeColor: Color,
+    nodeContentColor: Color
+) {
+    Box(
+        modifier = Modifier
+            .size(58.dp)
+            .graphicsLayer(scaleX = nodeScale, scaleY = nodeScale)
+            .background(nodeColor, CircleShape),
+        contentAlignment = Alignment.Center
+    ) {
+        when {
+            complete -> Icon(Icons.Outlined.CheckCircle, contentDescription = null, tint = nodeContentColor)
+            !unlocked -> Icon(Icons.Outlined.Lock, contentDescription = null, tint = nodeContentColor)
+            else -> Text(lesson.index.toString(), color = nodeContentColor, fontWeight = FontWeight.Black, fontSize = 22.sp)
+        }
+    }
+}
+
+@Composable
+private fun LessonNodeTitleRow(lesson: KanaLesson, active: Boolean) {
+    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        Text(
+            localizedLessonTitle(lesson.title),
+            fontWeight = FontWeight.Bold,
+            style = MaterialTheme.typography.titleMedium,
+            modifier = Modifier.weight(1f)
+        )
+        if (active) {
+            Surface(
+                shape = RoundedCornerShape(12.dp),
+                color = MaterialTheme.colorScheme.primary
+            ) {
+                Text(
+                    stringResource(R.string.path_next_badge),
+                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onPrimary,
+                    fontWeight = FontWeight.Black
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun LessonNodeMetaRow(lesson: KanaLesson, phaseTotal: Int) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        modifier = Modifier.padding(top = 4.dp, bottom = 4.dp)
+    ) {
+        StageChip(lesson.stage)
+        DifficultyDots(lesson.difficulty)
+        Text(stringResource(R.string.path_drill_count, phaseTotal), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
     }
 }
 

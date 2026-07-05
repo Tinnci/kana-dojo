@@ -49,12 +49,16 @@ Source check:
 - Material 3 buttons: https://m3.material.io/components/buttons/overview
 - Android Compose Material 3: https://developer.android.com/develop/ui/compose/designsystems/material3
 - Android adaptive layouts: https://developer.android.com/develop/ui/compose/layouts/adaptive/support-different-display-sizes
+- Android window size classes: https://developer.android.com/develop/ui/compose/layouts/adaptive/use-window-size-classes
+- Android adaptive navigation: https://developer.android.com/develop/ui/compose/layouts/adaptive/build-adaptive-navigation
+- Android supporting pane layouts: https://developer.android.com/develop/ui/compose/layouts/adaptive/build-a-supporting-pane-layout
 - Android Compose buttons: https://developer.android.com/develop/ui/compose/components/button
 - Android Compose cards: https://developer.android.com/develop/ui/compose/components/card
 
 Layout rules for Kana Dojo:
 
-- Design from available window space, not physical device names. Compact width uses a single vertical learning lane; medium and expanded widths may split reference or review context into a supporting pane.
+- Design from available window space, not physical device names. Width classes follow the Material/Android breakpoints: compact below 600 dp, medium from 600 dp, and expanded from 840 dp. If height is compact, keep the app in compact behavior instead of forcing rail or pane layouts.
+- Compact width uses bottom navigation and a single vertical learning lane. Medium width can graduate to a navigation rail while keeping one primary pane. Expanded width can show supporting panes beside the main task when the extra context helps scanning.
 - Keep app-level layout switches explicit. The path, chart, and practice screens should receive the chosen layout mode instead of each nested card independently guessing the whole app structure.
 - Use local measurement only for local reflow: answer grids, kana preview rows, and metric tiles can adapt inside their own bounds, but they must not change the screen's primary action.
 - Preserve state across layout changes. Resizing, rotation, and future foldable support must not reset lesson progress, trace strokes, selected practice mode, or review queues.
@@ -71,7 +75,7 @@ Button rules for Kana Dojo:
 
 Elevation rules for Kana Dojo:
 
-- Elevation must explain hierarchy: base screen at the lowest surface, cards and lesson nodes slightly raised only when interactive, and temporary overlays or menus above both.
+- Elevation must explain hierarchy: base screen and permanent content panels at 0 dp, major active panels around 1 dp, the current actionable lesson around 2 dp, and temporary overlays or menus above both.
 - Prefer color and outline for semantic state before adding shadow. Mastery, weak items, selected modes, and incorrect answers should not rely on elevation alone.
 - Keep repeated lists mostly flat. Do not make every lesson, kana tile, metric, and chip float at once; one active item can rise while siblings stay calmer.
 - Use higher elevation only for transient or focused surfaces: active next lesson, pressed/dragged trace surface, menus, dialogs, and completion action groups.

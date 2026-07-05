@@ -420,7 +420,7 @@ private fun ChartHeader(script: Script, progressCopy: ChartProgressCopy) {
     Surface(
         shape = RoundedCornerShape(22.dp),
         color = MaterialTheme.colorScheme.primaryContainer,
-        tonalElevation = 2.dp,
+        tonalElevation = KanaElevation.Resting,
         modifier = Modifier.fillMaxWidth()
     ) {
         Row(

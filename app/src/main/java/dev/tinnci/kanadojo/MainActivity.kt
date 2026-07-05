@@ -28,7 +28,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
-import androidx.compose.ui.unit.dp
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -94,7 +93,7 @@ private fun KanaDojoApp() {
     }
     KanaTheme {
         BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
-            val layoutMode = if (maxWidth >= 840.dp) KanaLayoutMode.Expanded else KanaLayoutMode.Compact
+            val layoutMode = kanaLayoutModeFor(maxWidth, maxHeight)
             val onTabChange: (ScreenTab) -> Unit = { tab ->
                 if (currentTab != tab) {
                     playEarcon(KanaEarcon.Navigate)
@@ -158,7 +157,7 @@ private fun KanaDojoApp() {
                         .padding(padding)
                         .background(MaterialTheme.colorScheme.background)
                 ) {
-                    if (layoutMode == KanaLayoutMode.Expanded) {
+                    if (layoutMode != KanaLayoutMode.Compact) {
                         KanaNavigationRail(currentTab = currentTab, onTabChange = onTabChange)
                     }
                     AnimatedContent(

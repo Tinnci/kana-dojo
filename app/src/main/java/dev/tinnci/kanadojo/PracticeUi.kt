@@ -366,7 +366,7 @@ private fun PracticeCompletionPanel(
     Surface(
         shape = RoundedCornerShape(22.dp),
         color = MaterialTheme.colorScheme.primaryContainer,
-        tonalElevation = 3.dp,
+        tonalElevation = KanaElevation.Resting,
         modifier = Modifier.fillMaxWidth()
     ) {
         Column(
@@ -1332,7 +1332,7 @@ private fun PracticeIntroPanel(
     Surface(
         shape = RoundedCornerShape(22.dp),
         color = MaterialTheme.colorScheme.primaryContainer,
-        tonalElevation = 3.dp,
+        tonalElevation = KanaElevation.Resting,
         modifier = Modifier.fillMaxWidth()
     ) {
         Column(
@@ -1409,7 +1409,7 @@ private fun PracticeGoalLine(goal: PracticeSessionGoal, modifier: Modifier = Mod
 private fun PracticeHeroPanel(title: String, subtitle: String) {
     Surface(
         shape = RoundedCornerShape(24.dp),
-        tonalElevation = 2.dp,
+        tonalElevation = KanaElevation.Resting,
         color = MaterialTheme.colorScheme.primaryContainer,
         modifier = Modifier.fillMaxWidth()
     ) {

@@ -248,7 +248,7 @@ private fun LessonComplete(
         Surface(
             shape = RoundedCornerShape(22.dp),
             color = MaterialTheme.colorScheme.surface,
-            tonalElevation = 2.dp,
+            tonalElevation = KanaElevation.Focused,
             modifier = Modifier
                 .fillMaxWidth()
                 .graphicsLayer(alpha = summaryAlpha, scaleX = summaryScale, scaleY = summaryScale)

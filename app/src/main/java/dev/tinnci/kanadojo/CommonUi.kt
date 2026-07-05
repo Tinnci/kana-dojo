@@ -18,12 +18,35 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 enum class KanaLayoutMode {
     Compact,
+    Medium,
     Expanded
 }
+
+object KanaElevation {
+    val Flat = 0.dp
+    val Resting = 1.dp
+    val Focused = 2.dp
+    val Overlay = 6.dp
+}
+
+fun kanaLayoutModeFor(width: Dp): KanaLayoutMode =
+    kanaLayoutModeFor(width = width, compactHeight = false)
+
+fun kanaLayoutModeFor(width: Dp, height: Dp): KanaLayoutMode =
+    kanaLayoutModeFor(width = width, compactHeight = height < 480.dp)
+
+private fun kanaLayoutModeFor(width: Dp, compactHeight: Boolean): KanaLayoutMode =
+    when {
+        compactHeight -> KanaLayoutMode.Compact
+        width < 600.dp -> KanaLayoutMode.Compact
+        width < 840.dp -> KanaLayoutMode.Medium
+        else -> KanaLayoutMode.Expanded
+    }
 
 internal fun <T> kanaMotionSpec(reduceMotion: Boolean, durationMillis: Int = 200): AnimationSpec<T> =
     if (reduceMotion) snap() else tween(durationMillis = durationMillis)

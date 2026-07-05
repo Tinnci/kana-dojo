@@ -39,7 +39,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -386,11 +385,11 @@ private fun AnswerOptionButton(
         label = "answerOptionScale"
     )
 
-    ElevatedButton(
+    FilledTonalButton(
         onClick = onClick,
         enabled = !answered,
         shape = RoundedCornerShape(20.dp),
-        colors = ButtonDefaults.elevatedButtonColors(
+        colors = ButtonDefaults.filledTonalButtonColors(
             containerColor = containerColor,
             disabledContainerColor = containerColor,
             disabledContentColor = MaterialTheme.colorScheme.onSurface
