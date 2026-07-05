@@ -1483,6 +1483,17 @@ class KanaCurriculumTest {
     }
 
     @Test
+    fun practiceCompletionActionTraversalIndicesReturnStableOrderedValues() {
+        ReviewCompletionAction.entries.forEach { action ->
+            val traversalIndices = practiceCompletionActionTraversalIndicesInDisplayOrder(completionAction = action)
+
+            assertTrue(traversalIndices.all { it >= 0f })
+            assertEquals(traversalIndices.distinct(), traversalIndices)
+            assertEquals(traversalIndices.sorted(), traversalIndices)
+        }
+    }
+
+    @Test
     fun practiceCompletionNextStepExplainsCleanWritingQueues() {
         val nextStep = practiceCompletionNextStepFor(
             mode = PracticeMode.Writing,
