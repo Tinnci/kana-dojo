@@ -417,6 +417,7 @@ private fun PracticeCompletionActionGroup(
         reduceMotion = reduceMotion
     )
     val roleLabels = practiceActionRoleLabelsInDisplayOrder(ReviewCompletionAction.ReturnToPath)
+    val traversalIndices = practiceActionTraversalIndicesInDisplayOrder(ReviewCompletionAction.ReturnToPath)
     Surface(
         shape = RoundedCornerShape(20.dp),
         color = MaterialTheme.colorScheme.secondaryContainer,
@@ -448,7 +449,7 @@ private fun PracticeCompletionActionGroup(
                         enabled = actionAvailability.returnToPathEnabled,
                         disabledCopy = disabledActionCopy
                     ),
-                    actionTraversalIndex = 0f
+                    actionTraversalIndex = traversalIndices[0]
                 )
             ) {
                 Icon(Icons.Outlined.School, contentDescription = null, modifier = Modifier.size(20.dp))
@@ -471,7 +472,7 @@ private fun PracticeCompletionActionGroup(
                         enabled = actionAvailability.repeatEnabled,
                         disabledCopy = disabledActionCopy
                     ),
-                    actionTraversalIndex = 1f
+                    actionTraversalIndex = traversalIndices[1]
                 )
             ) {
                 Icon(Icons.Outlined.Replay, contentDescription = null, modifier = Modifier.size(20.dp))
@@ -498,6 +499,7 @@ private fun PracticeRepeatRequiredActionGroup(
         reduceMotion = reduceMotion
     )
     val roleLabels = practiceActionRoleLabelsInDisplayOrder(ReviewCompletionAction.RepeatQueue)
+    val traversalIndices = practiceActionTraversalIndicesInDisplayOrder(ReviewCompletionAction.RepeatQueue)
     Surface(
         shape = RoundedCornerShape(20.dp),
         color = MaterialTheme.colorScheme.errorContainer,
@@ -533,7 +535,7 @@ private fun PracticeRepeatRequiredActionGroup(
                         enabled = actionAvailability.repeatEnabled,
                         disabledCopy = disabledActionCopy
                     ),
-                    actionTraversalIndex = 0f
+                    actionTraversalIndex = traversalIndices.single()
                 )
             ) {
                 Icon(Icons.Outlined.Replay, contentDescription = null, modifier = Modifier.size(20.dp))

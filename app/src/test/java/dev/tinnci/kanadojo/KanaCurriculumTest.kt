@@ -1460,6 +1460,18 @@ class KanaCurriculumTest {
     }
 
     @Test
+    fun practiceActionTraversalIndicesFollowDisplayOrder() {
+        assertEquals(
+            listOf(0f, 1f),
+            practiceActionTraversalIndicesInDisplayOrder(ReviewCompletionAction.ReturnToPath)
+        )
+        assertEquals(
+            listOf(0f),
+            practiceActionTraversalIndicesInDisplayOrder(ReviewCompletionAction.RepeatQueue)
+        )
+    }
+
+    @Test
     fun practiceCompletionNextStepExplainsCleanWritingQueues() {
         val nextStep = practiceCompletionNextStepFor(
             mode = PracticeMode.Writing,
