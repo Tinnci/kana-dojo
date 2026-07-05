@@ -43,6 +43,12 @@
     <string name="metric_missed">错过</string>
     <string name="metric_accuracy_short">准率</string>
     <string name="chart_header_title">%1$s 假名表</string>
+    <string name="chart_filter_all">全部</string>
+    <string name="chart_tag_contrast">易混</string>
+    <string name="chart_legend_new">新</string>
+    <string name="chart_legend_learning">学习中</string>
+    <string name="chart_legend_fluent">熟练</string>
+    <string name="chart_legend_contrast">易混</string>
     <string name="practice_completion_title">复习完成</string>
     <string name="practice_completion_section_outcome">结果</string>
     <string name="practice_completion_section_action">行动</string>

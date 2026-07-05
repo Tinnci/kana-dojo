@@ -135,7 +135,7 @@ fun KanaChartScreen(script: Script, mastery: Map<String, Int>, onSpeak: (String)
                         Text(tag.label, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Black)
                     }
                     if (item.confusable.isNotEmpty()) {
-                        Text("contrast", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.tertiary)
+                        Text(stringResource(R.string.chart_tag_contrast), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.tertiary)
                     }
                     Spacer(Modifier.height(8.dp))
                     MasteryPips(level = level)
@@ -245,7 +245,7 @@ private fun ChartRowFilters(rows: List<String>, selectedRow: String?, onRowChang
         item {
             AssistChip(
                 onClick = { onRowChange(null) },
-                label = { Text("All") },
+                label = { Text(stringResource(R.string.chart_filter_all)) },
                 leadingIcon = {
                     if (selectedRow == null) Icon(Icons.Outlined.CheckCircle, contentDescription = null, modifier = Modifier.size(18.dp))
                 }
@@ -276,10 +276,10 @@ private fun MasteryLegend() {
                 horizontalArrangement = Arrangement.spacedBy(12.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                item { LegendSwatch("new", MaterialTheme.colorScheme.surface) }
-                item { LegendSwatch("learning", Color(0xFFFFF1BC)) }
-                item { LegendSwatch("fluent", Color(0xFFDCEBDD)) }
-                item { LegendSwatch("contrast", Color(0xFFE7DEFF)) }
+                item { LegendSwatch(stringResource(R.string.chart_legend_new), MaterialTheme.colorScheme.surface) }
+                item { LegendSwatch(stringResource(R.string.chart_legend_learning), Color(0xFFFFF1BC)) }
+                item { LegendSwatch(stringResource(R.string.chart_legend_fluent), Color(0xFFDCEBDD)) }
+                item { LegendSwatch(stringResource(R.string.chart_legend_contrast), Color(0xFFE7DEFF)) }
             }
             Text(chartLegendCopyFor().message, style = MaterialTheme.typography.bodySmall)
         }
