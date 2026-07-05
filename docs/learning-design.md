@@ -164,6 +164,8 @@ Use these exercise types in increasing difficulty:
 - Mixed review: only uses kana at mastery `2+`.
 - Speed round: only uses kana at mastery `3+`.
 
+Writing implementation note: trace practice is guided shape scoring, not full handwriting recognition. It should check meaningful coverage, direction changes, and kana-specific checkpoints where available. If the app later adds ML Kit Digital Ink or another handwriting recognizer, the UI should present that as recognition with model download, language support, confidence, and fallback states instead of silently replacing the guided-trace score.
+
 ## Session Structure
 
 A good short session is 3 to 5 minutes:

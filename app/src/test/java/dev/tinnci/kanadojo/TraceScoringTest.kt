@@ -79,6 +79,72 @@ class TraceScoringTest {
     }
 
     @Test
+    fun straightLineAcrossPadDoesNotBecomeReady() {
+        val points = List(18) { index ->
+            val step = index / 17f
+            TracePoint(40f + step * 300f, 40f + step * 300f)
+        }
+
+        val score = traceScoreFor(points)
+
+        assertFalse(score.ready)
+        assertTrue(score.progress < 0.72f)
+    }
+
+    @Test
+    fun kaTraceRequiresRightSideMarkCoverage() {
+        val ka = hiraganaItems.first { it.kana == "か" }
+        val missingRightMark = listOf(
+            TracePoint(145f, 150f),
+            TracePoint(240f, 150f),
+            TracePoint(230f, 230f),
+            TracePoint(190f, 330f),
+            TracePoint(150f, 430f),
+            TracePoint(260f, 420f),
+            TracePoint(315f, 330f),
+            TracePoint(300f, 230f),
+            TracePoint(250f, 180f),
+            TracePoint(180f, 160f),
+            TracePoint(150f, 150f),
+            TracePoint(220f, 220f),
+            TracePoint(300f, 320f)
+        )
+
+        val score = traceScoreFor(missingRightMark, ka, TraceBounds(600f, 600f))
+
+        assertFalse(score.ready)
+        assertEquals("Use more of the ghost shape.", score.message)
+    }
+
+    @Test
+    fun kaTraceWithMainShapeAndRightMarkCanBecomeReady() {
+        val ka = hiraganaItems.first { it.kana == "か" }
+        val points = listOf(
+            TracePoint(150f, 220f),
+            TracePoint(240f, 220f),
+            TracePoint(310f, 220f),
+            TracePoint(290f, 290f),
+            TracePoint(250f, 360f),
+            TracePoint(205f, 445f),
+            TracePoint(300f, 440f),
+            TracePoint(375f, 395f),
+            TracePoint(382f, 305f),
+            TracePoint(340f, 240f),
+            TracePoint(275f, 220f),
+            TracePoint(430f, 210f),
+            TracePoint(480f, 270f),
+            TracePoint(500f, 330f),
+            TracePoint(470f, 275f),
+            TracePoint(445f, 230f)
+        )
+
+        val score = traceScoreFor(points, ka, TraceBounds(600f, 600f))
+
+        assertTrue(score.ready)
+        assertEquals("Looks ready to check.", score.message)
+    }
+
+    @Test
     fun traceFeedbackStartsWithStartAndDirectionCues() {
         val cues = traceFeedbackCuesFor(emptyList())
 

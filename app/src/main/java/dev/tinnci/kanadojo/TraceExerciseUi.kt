@@ -58,6 +58,7 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -77,10 +78,11 @@ fun TraceKanaExercise(
     var showComparison by rememberSaveable(item.id) { mutableStateOf(false) }
     var showRemediation by rememberSaveable(item.id) { mutableStateOf(false) }
     var replayNonce by rememberSaveable(item.id) { mutableIntStateOf(0) }
+    var traceBounds by remember(item.id) { mutableStateOf(TraceBounds(1f, 1f)) }
     val replayProgress = remember(item.id) { Animatable(1f) }
     val tracePoints = remember(pointTokens) { tracePointsFromSnapshotTokens(pointTokens) }
     val points = remember(tracePoints) { tracePoints.map { Offset(it.x, it.y) } }
-    val traceScore = remember(tracePoints) { traceScoreFor(tracePoints) }
+    val traceScore = remember(tracePoints, traceBounds, item) { traceScoreFor(tracePoints, item, traceBounds) }
     val traceCues = remember(tracePoints, traceScore) { traceFeedbackCuesFor(tracePoints, traceScore) }
     val remediation = remember(traceScore) { traceRemediationFor(traceScore) }
     val animatedScore by animateFloatAsState(
@@ -162,6 +164,9 @@ fun TraceKanaExercise(
                 .weight(1f, fill = true)
                 .fillMaxWidth()
                 .aspectRatio(1f, matchHeightConstraintsFirst = true)
+                .onSizeChanged { size ->
+                    traceBounds = TraceBounds(size.width.toFloat(), size.height.toFloat())
+                }
                 .background(padBackgroundColor, RoundedCornerShape(26.dp))
                 .border(
                     width = borderWidth,
