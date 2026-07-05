@@ -1539,6 +1539,17 @@ class KanaCurriculumTest {
     }
 
     @Test
+    fun practiceCompletionActionButtonMetadataStaysInTraversalOrder() {
+        ReviewCompletionAction.entries.forEach { action ->
+            val actionButtons = practiceCompletionActionButtonMetadataInDisplayOrder(completionAction = action)
+            val traversalIndices = actionButtons.map { it.accessibilityTraversalIndex }
+
+            assertEquals(traversalIndices.sorted(), traversalIndices)
+            assertEquals(traversalIndices.distinct(), traversalIndices)
+        }
+    }
+
+    @Test
     fun practiceCompletionActionTraversalIndicesReturnStableOrderedValues() {
         ReviewCompletionAction.entries.forEach { action ->
             val traversalIndices = practiceCompletionActionTraversalIndicesInDisplayOrder(completionAction = action)
