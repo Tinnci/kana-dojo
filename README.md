@@ -5,7 +5,7 @@
 
 Kana Dojo is a CLI-built Android Compose app for learning hiragana and katakana through short, Duolingo-style drills. It focuses on direct kana-to-sound recall, listening, writing, mistake repair, and staged progression.
 
-The curriculum plan lives in [docs/learning-design.md](docs/learning-design.md). The UI/UX direction lives in [docs/uiux-design.md](docs/uiux-design.md).
+The curriculum plan lives in [docs/learning-design.md](docs/learning-design.md). The UI/UX direction lives in [docs/uiux-design.md](docs/uiux-design.md). Writing technology decisions live in [docs/writing-tech.md](docs/writing-tech.md).
 
 ## Current Scope
 

@@ -148,6 +148,7 @@ Mistakes should feel like a short repair session:
 - Prefer the weakest six kana.
 - Mix recognition and trace prompts.
 - Add confusable drills when available.
+- Writing screens should describe guided trace or shape feedback unless a true recognizer is active; see [writing-tech.md](writing-tech.md).
 
 ### Chart
 
