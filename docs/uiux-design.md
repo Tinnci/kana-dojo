@@ -279,9 +279,10 @@ Implemented:
 - Added tested compact completion action-button accessibility role-chip tone fallback audit.
 - Added tested compact completion action-button accessibility role-chip semantic exclusion audit.
 - Added tested compact completion action-button accessibility role-chip semantic exclusion mode audit.
+- Added tested compact completion action-button accessibility role-chip semantic exclusion fallback audit.
 
 ## Next Polish Pass
 
 Implement next:
 
-- Add compact completion action-button accessibility role-chip semantic exclusion fallback audit.
+- Add compact completion action-button accessibility action-button semantic merge audit.

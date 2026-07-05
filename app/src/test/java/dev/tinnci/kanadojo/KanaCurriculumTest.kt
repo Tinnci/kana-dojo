@@ -1836,14 +1836,28 @@ class KanaCurriculumTest {
 
     @Test
     fun practiceCompletionActionButtonMetadataKeepsRoleChipAccessibleWhenButtonDoesNotNameRole() {
-        val actionButton = PracticeCompletionActionButtonMetadata(
-            actionRoleLabel = "Optional repeat",
-            actionSemanticLabel = "Repeat mixed recall queue",
-            accessibilitySemanticLabel = "Repeat mixed recall queue",
-            accessibilityTraversalIndex = 0f
+        val fallbackActionButtons = listOf(
+            PracticeCompletionActionButtonMetadata(
+                actionRoleLabel = "Optional repeat",
+                actionSemanticLabel = "Repeat mixed recall queue",
+                accessibilitySemanticLabel = "Repeat mixed recall queue",
+                accessibilityTraversalIndex = 0f
+            ),
+            PracticeCompletionActionButtonMetadata(
+                actionRoleLabel = "Optional repeat",
+                actionSemanticLabel = "Repeat mixed recall queue",
+                accessibilitySemanticLabel = "Primary action: Repeat mixed recall queue",
+                accessibilityTraversalIndex = 0f
+            ),
+            PracticeCompletionActionButtonMetadata(
+                actionRoleLabel = "Optional repeat",
+                actionSemanticLabel = "Repeat mixed recall queue",
+                accessibilitySemanticLabel = "Optional repeat: Repeat mixed recall queue",
+                accessibilityTraversalIndex = 0f
+            )
         )
 
-        assertFalse(shouldExcludePracticeActionRoleChipFromAccessibility(actionButton))
+        assertTrue(fallbackActionButtons.none { shouldExcludePracticeActionRoleChipFromAccessibility(it) })
     }
 
     @Test
