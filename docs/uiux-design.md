@@ -203,7 +203,7 @@ Implemented:
 - Script names in the shell, path hero, and chart header are resource-backed instead of stored as English enum labels.
 - First-screen path headings, metrics, priority badges, and lesson-card status labels are resource-backed in English and Simplified Chinese.
 - Starting priority is communicated through layout hierarchy: raised primary panels, large kana anchors, prominent titles, and full-width primary actions.
-- App-level script, tab, requested practice mode, sensory settings, path filter, active lesson entry, practice intro state, chart selection, lesson queues, review counters, and trace strokes are saveable across configuration changes.
+- App-level script, tab, requested practice mode, sensory settings, path filter, active lesson entry, practice intro state, chart selection, lesson queues, review counters, answer selections, pair-match progress, and trace strokes are saveable across configuration changes.
 - Reduced-motion top-bar toggle that disables trace replay animation while keeping comparison available.
 - Persisted reduced-motion preference.
 - Persisted sound toggle that quiets speech playback without changing lessons.

@@ -46,9 +46,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -233,7 +233,7 @@ private fun ChoiceExercise(
     onSpeak: () -> Unit,
     onAnswer: (Boolean) -> Unit
 ) {
-    var selectedOption by remember(prompt, correct) { mutableStateOf<String?>(null) }
+    var selectedOption by rememberSaveable(prompt, correct) { mutableStateOf<String?>(null) }
     Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.SpaceBetween) {
         Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxWidth()) {
             Text(
@@ -283,7 +283,7 @@ private fun SoundChoiceExercise(
     onTaptic: (KanaTaptic) -> Unit,
     onAnswer: (Boolean) -> Unit
 ) {
-    var selectedOption by remember(item.id) { mutableStateOf<String?>(null) }
+    var selectedOption by rememberSaveable(item.id) { mutableStateOf<String?>(null) }
 
     LaunchedEffect(item.id) {
         onSpeak(item.kana)
@@ -381,9 +381,13 @@ private fun PairMatchExercise(
     onTaptic: (KanaTaptic) -> Unit,
     onAnswer: (Boolean) -> Unit
 ) {
-    var selectedKana by remember { mutableStateOf<KanaItem?>(null) }
-    var selectedRomaji by remember { mutableStateOf<KanaItem?>(null) }
-    val matched = remember { mutableStateListOf<String>() }
+    val matchKey = remember(items) { items.joinToString("|") { it.id } }
+    var selectedKanaId by rememberSaveable(matchKey) { mutableStateOf<String?>(null) }
+    var selectedRomajiId by rememberSaveable(matchKey) { mutableStateOf<String?>(null) }
+    var matched by rememberSaveable(matchKey) { mutableStateOf(emptyList<String>()) }
+    val itemsById = remember(items) { items.associateBy { it.id } }
+    val selectedKana = selectedKanaId?.let { itemsById[it] }
+    val selectedRomaji = selectedRomajiId?.let { itemsById[it] }
     val kanaColumn = remember(items) { items.shuffled(Random(lessonSeed(items))) }
     val romajiColumn = remember(items) { items.shuffled(Random(lessonSeed(items) + 9)) }
 
@@ -392,17 +396,18 @@ private fun PairMatchExercise(
         val romaji = selectedRomaji
         if (kana != null && romaji != null) {
             if (kana.id == romaji.id) {
-                val completesExercise = matched.size + 1 == items.size
-                matched.add(kana.id)
+                val nextMatched = matched + kana.id
+                val completesExercise = nextMatched.size == items.size
+                matched = nextMatched
                 if (!completesExercise) {
                     onTaptic(KanaTaptic.Correct)
                 }
             } else {
                 onTaptic(KanaTaptic.Incorrect)
             }
-            selectedKana = null
-            selectedRomaji = null
-            if (matched.size == items.size && !answered) onAnswer(true)
+            selectedKanaId = null
+            selectedRomajiId = null
+            if (kana.id == romaji.id && matched.size + 1 == items.size && !answered) onAnswer(true)
         }
     }
 
@@ -412,7 +417,7 @@ private fun PairMatchExercise(
             matched = matched,
             selected = selectedKana,
             label = { it.kana },
-            onSelect = { if (!answered) selectedKana = it },
+            onSelect = { if (!answered) selectedKanaId = it.id },
             modifier = Modifier.weight(1f)
         )
         MatchColumn(
@@ -420,7 +425,7 @@ private fun PairMatchExercise(
             matched = matched,
             selected = selectedRomaji,
             label = { it.romaji },
-            onSelect = { if (!answered) selectedRomaji = it },
+            onSelect = { if (!answered) selectedRomajiId = it.id },
             modifier = Modifier.weight(1f)
         )
     }
