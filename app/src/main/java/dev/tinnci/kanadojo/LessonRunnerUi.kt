@@ -80,7 +80,7 @@ fun LessonRunner(
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             IconButton(onClick = { onExit(lessonResumeCueFor(lesson, completed, total)) }) {
-                Icon(Icons.Outlined.Close, contentDescription = "Close")
+                Icon(Icons.Outlined.Close, contentDescription = stringResource(R.string.lesson_close_content_description))
             }
             LinearProgressIndicator(
                 progress = { completed / total.toFloat() },
@@ -183,9 +183,9 @@ private fun LessonComplete(
         label = "completionActionAlpha"
     )
     val message = when {
-        stats.missed == 0 -> "Clean run. Keep the recall warm."
-        stats.accuracy >= 0.75f -> "Good pass. Misses are queued for review."
-        else -> "This row needs another repair pass."
+        stats.missed == 0 -> stringResource(R.string.lesson_completion_clean_message)
+        stats.accuracy >= 0.75f -> stringResource(R.string.lesson_completion_good_message)
+        else -> stringResource(R.string.lesson_completion_retry_message)
     }
     Column(
         modifier = Modifier
@@ -256,7 +256,7 @@ private fun CompletionActions(
 
     Column(verticalArrangement = Arrangement.spacedBy(10.dp), modifier = Modifier.fillMaxWidth()) {
         Text(
-            recommendation.message,
+            localizedCompletionRecommendation(recommendation),
             style = MaterialTheme.typography.labelLarge,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center,
@@ -271,7 +271,7 @@ private fun CompletionActions(
                         .fillMaxWidth()
                         .height(56.dp)
                 ) {
-                    Text("Repeat row", fontWeight = FontWeight.Bold)
+                    Text(stringResource(R.string.lesson_action_repeat_row), fontWeight = FontWeight.Bold)
                 }
                 if (hasMisses) {
                     Row(horizontalArrangement = Arrangement.spacedBy(10.dp), modifier = Modifier.fillMaxWidth()) {
@@ -282,7 +282,7 @@ private fun CompletionActions(
                                 .weight(1f)
                                 .height(52.dp)
                         ) {
-                            Text("Review")
+                            Text(stringResource(R.string.lesson_action_review))
                         }
                         OutlinedButton(
                             onClick = onContinue,
@@ -291,7 +291,7 @@ private fun CompletionActions(
                                 .weight(1f)
                                 .height(52.dp)
                         ) {
-                            Text("Path")
+                            Text(stringResource(R.string.lesson_action_path_short))
                         }
                     }
                 } else {
@@ -302,7 +302,7 @@ private fun CompletionActions(
                             .fillMaxWidth()
                             .height(52.dp)
                     ) {
-                        Text("Back to path")
+                        Text(stringResource(R.string.lesson_action_back_to_path))
                     }
                 }
             }
@@ -315,7 +315,7 @@ private fun CompletionActions(
                         .fillMaxWidth()
                         .height(56.dp)
                 ) {
-                    Text("Review misses", fontWeight = FontWeight.Bold)
+                    Text(stringResource(R.string.lesson_action_review_misses), fontWeight = FontWeight.Bold)
                 }
                 OutlinedButton(
                     onClick = onContinue,
@@ -324,7 +324,7 @@ private fun CompletionActions(
                         .fillMaxWidth()
                         .height(52.dp)
                 ) {
-                    Text("Back to path")
+                    Text(stringResource(R.string.lesson_action_back_to_path))
                 }
             }
 
@@ -339,12 +339,20 @@ private fun CompletionActions(
                         .fillMaxWidth()
                         .height(56.dp)
                 ) {
-                    Text("Back to path", fontWeight = FontWeight.Bold)
+                    Text(stringResource(R.string.lesson_action_back_to_path), fontWeight = FontWeight.Bold)
                 }
             }
         }
     }
 }
+
+@Composable
+private fun localizedCompletionRecommendation(recommendation: CompletionRecommendation): String =
+    when (recommendation) {
+        CompletionRecommendation.RepeatRow -> stringResource(R.string.lesson_recommendation_repeat)
+        CompletionRecommendation.ReviewMisses -> stringResource(R.string.lesson_recommendation_review)
+        CompletionRecommendation.BackToPath -> stringResource(R.string.lesson_recommendation_path)
+    }
 
 @Composable
 private fun NextLessonPreview(lesson: KanaLesson) {
@@ -369,7 +377,7 @@ private fun NextLessonPreview(lesson: KanaLesson) {
                 Text(lesson.items.firstOrNull()?.kana.orEmpty(), fontSize = 24.sp, fontWeight = FontWeight.Black)
             }
             Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
-                Text("Up next", style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.Bold)
+                Text(stringResource(R.string.lesson_up_next), style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.Bold)
                 Text(lesson.title, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Black)
                 Text(lesson.items.joinToString(" ") { it.kana }, style = MaterialTheme.typography.bodyMedium)
             }
