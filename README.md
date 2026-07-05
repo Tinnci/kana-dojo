@@ -1,5 +1,8 @@
 # Kana Dojo
 
+[![Android](https://github.com/Tinnci/kana-dojo/actions/workflows/android.yml/badge.svg)](https://github.com/Tinnci/kana-dojo/actions/workflows/android.yml)
+[![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](LICENSE)
+
 Kana Dojo is a CLI-built Android Compose app for learning hiragana and katakana through short, Duolingo-style drills. It focuses on direct kana-to-sound recall, listening, writing, mistake repair, and staged progression.
 
 The curriculum plan lives in [docs/learning-design.md](docs/learning-design.md). The UI/UX direction lives in [docs/uiux-design.md](docs/uiux-design.md).
@@ -13,6 +16,7 @@ The curriculum plan lives in [docs/learning-design.md](docs/learning-design.md).
 - Exercise types: kana to romaji, romaji to kana, sound to kana, pair matching, and trace writing.
 - Kana chart with row filters, mastery markers, contrast labels, and tap-to-hear speech.
 - Local progress and mistake persistence through SharedPreferences.
+- English and Simplified Chinese Android resources with system per-app language support.
 
 ## Toolchain
 
@@ -69,11 +73,12 @@ You can also let Gradle install the debug build:
 ./gradlew clean
 ```
 
+## License
+
+Kana Dojo is free software released under the GNU General Public License version 3.0. See [LICENSE](LICENSE).
+
 ## Source Control
 
-This repository is initialized locally with incremental commits. No Git remote is configured yet; add one before trying to push:
+Canonical repository:
 
-```sh
-git remote add origin <github-repo-url>
-git push -u origin main
-```
+<https://github.com/Tinnci/kana-dojo>
