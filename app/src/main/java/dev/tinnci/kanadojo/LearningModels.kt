@@ -812,7 +812,7 @@ fun practiceActionRoleLabelsInDisplayOrder(action: ReviewCompletionAction): List
         ReviewCompletionAction.RepeatQueue -> listOf(practiceActionRoleLabelFor(action))
     }
 
-fun practiceActionTraversalIndicesInDisplayOrder(action: ReviewCompletionAction): List<Float> =
+fun practiceCompletionActionTraversalIndicesInDisplayOrder(action: ReviewCompletionAction): List<Float> =
     practiceActionRoleLabelsInDisplayOrder(action).indices.map { it.toFloat() }
 
 fun practiceCompletionNextStepFor(mode: PracticeMode, stats: LessonSessionStats): PracticeCompletionNextStep =
