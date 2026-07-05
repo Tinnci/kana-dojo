@@ -436,14 +436,14 @@ private fun PracticeCompletionActionGroup(
                 .fillMaxWidth()
                 .padding(8.dp)
         ) {
-            PracticeActionRoleChip(returnActionButton.roleLabel)
+            PracticeActionRoleChip(returnActionButton.actionRoleLabel)
             Button(
                 onClick = onReturnToPath,
                 enabled = actionAvailability.returnToPathEnabled,
                 shape = RoundedCornerShape(18.dp),
                 modifier = Modifier.practiceCompletionActionButtonTouchTarget(
                     actionSemanticLabel = practiceActionSemanticLabelWithRoleFor(
-                        returnActionButton.roleLabel,
+                        returnActionButton.actionRoleLabel,
                         returnActionSemanticLabel
                     ),
                     stateDescription = practiceCompletionActionStateDescriptionFor(
@@ -455,21 +455,21 @@ private fun PracticeCompletionActionGroup(
                         enabled = actionAvailability.returnToPathEnabled,
                         disabledCopy = disabledActionCopy
                     ),
-                    actionTraversalIndex = returnActionButton.traversalIndex
+                    actionTraversalIndex = returnActionButton.accessibilityTraversalIndex
                 )
             ) {
                 Icon(Icons.Outlined.School, contentDescription = null, modifier = Modifier.size(20.dp))
                 Spacer(Modifier.width(6.dp))
                 PracticeActionButtonLabel(practiceReturnActionLabelFor(compact = true))
             }
-            PracticeActionRoleChip(repeatActionButton.roleLabel)
+            PracticeActionRoleChip(repeatActionButton.actionRoleLabel)
             FilledTonalButton(
                 onClick = onRepeat,
                 enabled = actionAvailability.repeatEnabled,
                 shape = RoundedCornerShape(18.dp),
                 modifier = Modifier.practiceCompletionActionButtonTouchTarget(
                     actionSemanticLabel = practiceActionSemanticLabelWithRoleFor(
-                        repeatActionButton.roleLabel,
+                        repeatActionButton.actionRoleLabel,
                         repeatActionSemanticLabel
                     ),
                     stateDescription = practiceCompletionActionStateDescriptionFor(
@@ -481,7 +481,7 @@ private fun PracticeCompletionActionGroup(
                         enabled = actionAvailability.repeatEnabled,
                         disabledCopy = disabledActionCopy
                     ),
-                    actionTraversalIndex = repeatActionButton.traversalIndex
+                    actionTraversalIndex = repeatActionButton.accessibilityTraversalIndex
                 )
             ) {
                 Icon(Icons.Outlined.Replay, contentDescription = null, modifier = Modifier.size(20.dp))
@@ -525,7 +525,7 @@ private fun PracticeRepeatRequiredActionGroup(
                 .fillMaxWidth()
                 .padding(8.dp)
         ) {
-            PracticeActionRoleChip(repeatActionButton.roleLabel)
+            PracticeActionRoleChip(repeatActionButton.actionRoleLabel)
             Button(
                 onClick = onRepeat,
                 enabled = actionAvailability.repeatEnabled,
@@ -536,7 +536,7 @@ private fun PracticeRepeatRequiredActionGroup(
                 ),
                 modifier = Modifier.practiceCompletionActionButtonTouchTarget(
                     actionSemanticLabel = practiceActionSemanticLabelWithRoleFor(
-                        repeatActionButton.roleLabel,
+                        repeatActionButton.actionRoleLabel,
                         repeatActionSemanticLabel
                     ),
                     stateDescription = practiceCompletionActionStateDescriptionFor(
@@ -548,7 +548,7 @@ private fun PracticeRepeatRequiredActionGroup(
                         enabled = actionAvailability.repeatEnabled,
                         disabledCopy = disabledActionCopy
                     ),
-                    actionTraversalIndex = repeatActionButton.traversalIndex
+                    actionTraversalIndex = repeatActionButton.accessibilityTraversalIndex
                 )
             ) {
                 Icon(Icons.Outlined.Replay, contentDescription = null, modifier = Modifier.size(20.dp))

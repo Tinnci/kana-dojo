@@ -199,8 +199,8 @@ data class PracticeCompletionDisabledActionCopy(
 )
 
 data class PracticeCompletionActionButtonMetadata(
-    val roleLabel: String,
-    val traversalIndex: Float
+    val actionRoleLabel: String,
+    val accessibilityTraversalIndex: Float
 )
 
 data class PracticeCompletionNextStep(
@@ -826,8 +826,8 @@ fun practiceCompletionActionButtonMetadataInDisplayOrder(
     practiceActionRoleLabelsInDisplayOrder(completionAction)
         .zip(practiceCompletionActionTraversalIndicesInDisplayOrder(completionAction)) { roleLabel, traversalIndex ->
             PracticeCompletionActionButtonMetadata(
-                roleLabel = roleLabel,
-                traversalIndex = traversalIndex
+                actionRoleLabel = roleLabel,
+                accessibilityTraversalIndex = traversalIndex
             )
         }
 

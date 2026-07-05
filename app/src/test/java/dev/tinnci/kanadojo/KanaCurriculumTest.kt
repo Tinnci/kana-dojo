@@ -1522,8 +1522,8 @@ class KanaCurriculumTest {
             val traversalIndices = practiceCompletionActionTraversalIndicesInDisplayOrder(completionAction = action)
             val actionButtons = practiceCompletionActionButtonMetadataInDisplayOrder(completionAction = action)
 
-            assertEquals(roleLabels, actionButtons.map { it.roleLabel })
-            assertEquals(traversalIndices, actionButtons.map { it.traversalIndex })
+            assertEquals(roleLabels, actionButtons.map { it.actionRoleLabel })
+            assertEquals(traversalIndices, actionButtons.map { it.accessibilityTraversalIndex })
         }
     }
 
