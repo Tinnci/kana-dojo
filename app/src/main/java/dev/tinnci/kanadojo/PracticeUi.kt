@@ -611,19 +611,21 @@ private fun PracticeActionButtonLabel(label: String) {
 private fun PracticeActionRoleChip(actionButton: PracticeCompletionActionButtonMetadata) {
     PracticeActionRoleChip(
         label = actionButton.actionRoleLabel,
-        tone = practiceActionRoleToneFor(actionButton)
+        tone = practiceActionRoleToneFor(actionButton),
+        excludeFromAccessibility = shouldExcludePracticeActionRoleChipFromAccessibility(actionButton)
     )
 }
 
 @Composable
 private fun PracticeActionRoleChip(
     label: String,
-    tone: PracticeActionRoleTone = practiceActionRoleToneFor(label)
+    tone: PracticeActionRoleTone = practiceActionRoleToneFor(label),
+    excludeFromAccessibility: Boolean = false
 ) {
     Surface(
         shape = RoundedCornerShape(999.dp),
         color = practiceActionRoleColor(tone),
-        modifier = Modifier.clearAndSetSemantics {}
+        modifier = Modifier.practiceActionRoleChipSemantics(excludeFromAccessibility)
     ) {
         Text(
             label,
@@ -637,6 +639,13 @@ private fun PracticeActionRoleChip(
         )
     }
 }
+
+private fun Modifier.practiceActionRoleChipSemantics(excludeFromAccessibility: Boolean): Modifier =
+    if (excludeFromAccessibility) {
+        clearAndSetSemantics {}
+    } else {
+        this
+    }
 
 @Composable
 private fun practiceActionRoleColor(tone: PracticeActionRoleTone): Color =

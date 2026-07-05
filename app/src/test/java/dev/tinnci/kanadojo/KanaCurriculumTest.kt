@@ -1809,6 +1809,30 @@ class KanaCurriculumTest {
     }
 
     @Test
+    fun practiceCompletionActionButtonMetadataExcludesRoleChipsFromAccessibilityWhenButtonNamesRole() {
+        ReviewCompletionAction.entries.forEach { action ->
+            val actionButtons = practiceCompletionActionButtonMetadataInDisplayOrder(
+                completionAction = action,
+                mode = PracticeMode.Mixed
+            )
+
+            assertTrue(actionButtons.all { shouldExcludePracticeActionRoleChipFromAccessibility(it) })
+        }
+    }
+
+    @Test
+    fun practiceCompletionActionButtonMetadataKeepsRoleChipAccessibleWhenButtonDoesNotNameRole() {
+        val actionButton = PracticeCompletionActionButtonMetadata(
+            actionRoleLabel = "Optional repeat",
+            actionSemanticLabel = "Repeat mixed recall queue",
+            accessibilitySemanticLabel = "Repeat mixed recall queue",
+            accessibilityTraversalIndex = 0f
+        )
+
+        assertFalse(shouldExcludePracticeActionRoleChipFromAccessibility(actionButton))
+    }
+
+    @Test
     fun practiceCompletionActionButtonMetadataKeepsSemanticLabelsWithRoles() {
         val cleanActionButtons = practiceCompletionActionButtonMetadataInDisplayOrder(
             completionAction = ReviewCompletionAction.ReturnToPath,

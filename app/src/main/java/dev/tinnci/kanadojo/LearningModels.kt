@@ -859,6 +859,9 @@ fun practiceActionRoleToneFor(roleLabel: String): PracticeActionRoleTone =
 fun practiceActionRoleToneFor(actionButton: PracticeCompletionActionButtonMetadata): PracticeActionRoleTone =
     practiceActionRoleToneFor(actionButton.actionRoleLabel)
 
+fun shouldExcludePracticeActionRoleChipFromAccessibility(actionButton: PracticeCompletionActionButtonMetadata): Boolean =
+    actionButton.accessibilitySemanticLabel.startsWith("${actionButton.actionRoleLabel} action:")
+
 fun practiceCompletionActionTraversalIndicesInDisplayOrder(completionAction: ReviewCompletionAction): List<Float> =
     practiceActionRoleLabelsInDisplayOrder(completionAction).indices.map { it.toFloat() }
 
