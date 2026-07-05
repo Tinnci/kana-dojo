@@ -248,7 +248,10 @@ private fun FeedbackBanner(feedback: AnswerFeedback) {
                         style = MaterialTheme.typography.bodySmall
                     )
                 } else if (!feedback.correct) {
-                    Text(stringResource(R.string.exercise_feedback_retry), style = MaterialTheme.typography.bodySmall)
+                    Text(
+                        feedback.repairHint ?: stringResource(R.string.exercise_feedback_retry),
+                        style = MaterialTheme.typography.bodySmall
+                    )
                 }
             }
         }

@@ -603,7 +603,8 @@ data class Exercise(
 data class AnswerFeedback(
     val correct: Boolean,
     val answer: String,
-    val slow: Boolean = false
+    val slow: Boolean = false,
+    val repairHint: String? = null
 )
 
 data class SpeedAnswerOutcome(

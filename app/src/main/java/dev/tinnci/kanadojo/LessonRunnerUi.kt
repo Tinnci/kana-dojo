@@ -74,8 +74,13 @@ fun LessonRunner(
             .filterNot { it.kind == ExerciseKind.PairMatch && it.items.size < 2 }
     }
     val sessionStats = LessonSessionStats(correct = correctCount, missed = missedCount)
+    val lessonRepairHint = stringResource(R.string.exercise_feedback_lesson_repair)
     val feedback = feedbackCorrect?.let { correct ->
-        AnswerFeedback(correct = correct, answer = feedbackAnswer.orEmpty())
+        AnswerFeedback(
+            correct = correct,
+            answer = feedbackAnswer.orEmpty(),
+            repairHint = if (correct) null else lessonRepairHint
+        )
     }
     val current = queue.firstOrNull()
     val total = (completed + queue.size).coerceAtLeast(1)

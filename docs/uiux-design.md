@@ -143,6 +143,7 @@ Recommendation: no. Move forward, replay the mistake soon, and avoid turning a m
 
 Mistakes should feel like a short repair session:
 
+- In lessons, wrong-answer feedback should name the repair rhythm: repair next, retry later.
 - Show why the queue exists: weak kana, not punishment.
 - Prefer the weakest six kana.
 - Mix recognition and trace prompts.

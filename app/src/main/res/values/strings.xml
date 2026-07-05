@@ -367,6 +367,7 @@
     <string name="exercise_feedback_speed_target">Target: under %1$d seconds.</string>
     <string name="exercise_feedback_answer">Correct answer: %1$s</string>
     <string name="exercise_feedback_retry">This will come back soon.</string>
+    <string name="exercise_feedback_lesson_repair">Next: repair. Later: retry.</string>
     <string name="exercise_hear_action">Hear it</string>
     <string name="exercise_play_sound_content_description">Play sound</string>
 </resources>
