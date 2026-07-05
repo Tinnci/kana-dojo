@@ -142,6 +142,15 @@ fun KanaBottomBar(currentTab: ScreenTab, onTabChange: (ScreenTab) -> Unit) {
 internal fun shouldShowTopBarSubtitle(layoutMode: KanaLayoutMode): Boolean =
     layoutMode != KanaLayoutMode.Compact
 
+internal fun shouldShowShellTopBar(shellNavigationHidden: Boolean): Boolean =
+    !shellNavigationHidden
+
+internal fun shouldShowBottomNavigation(layoutMode: KanaLayoutMode, shellNavigationHidden: Boolean): Boolean =
+    layoutMode == KanaLayoutMode.Compact && !shellNavigationHidden
+
+internal fun shouldShowNavigationRail(layoutMode: KanaLayoutMode, shellNavigationHidden: Boolean): Boolean =
+    layoutMode != KanaLayoutMode.Compact && !shellNavigationHidden
+
 @Composable
 fun KanaNavigationRail(currentTab: ScreenTab, onTabChange: (ScreenTab) -> Unit) {
     NavigationRail(containerColor = MaterialTheme.colorScheme.surface) {

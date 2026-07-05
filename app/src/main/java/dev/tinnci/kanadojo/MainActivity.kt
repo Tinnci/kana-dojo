@@ -106,7 +106,7 @@ private fun KanaDojoApp() {
 
             Scaffold(
                 topBar = {
-                    if (!shellNavigationHidden) {
+                    if (shouldShowShellTopBar(shellNavigationHidden)) {
                         KanaTopBar(
                             layoutMode = layoutMode,
                             selectedScript = selectedScript,
@@ -151,7 +151,7 @@ private fun KanaDojoApp() {
                     }
                 },
                 bottomBar = {
-                    if (layoutMode == KanaLayoutMode.Compact && !shellNavigationHidden) {
+                    if (shouldShowBottomNavigation(layoutMode, shellNavigationHidden)) {
                         KanaBottomBar(currentTab = currentTab, onTabChange = onTabChange)
                     }
                 }
@@ -162,7 +162,7 @@ private fun KanaDojoApp() {
                         .padding(padding)
                         .background(MaterialTheme.colorScheme.background)
                 ) {
-                    if (layoutMode != KanaLayoutMode.Compact && !shellNavigationHidden) {
+                    if (shouldShowNavigationRail(layoutMode, shellNavigationHidden)) {
                         KanaNavigationRail(currentTab = currentTab, onTabChange = onTabChange)
                     }
                     AnimatedContent(

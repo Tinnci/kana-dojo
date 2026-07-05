@@ -183,7 +183,11 @@ fun MistakePracticeScreen(
         }
     }
     val outerPadding = if (layoutMode == KanaLayoutMode.Expanded) 24.dp else 20.dp
-    val sessionInProgress = !showIntro && !queueComplete && current != null && exercise != null
+    val sessionInProgress = shouldHideShellNavigationForPractice(
+        showIntro = showIntro,
+        queueComplete = queueComplete,
+        hasCurrentExercise = current != null && exercise != null
+    )
 
     LaunchedEffect(sessionInProgress) {
         onShellNavigationHiddenChange(sessionInProgress)
@@ -340,6 +344,13 @@ fun MistakePracticeScreen(
         )
     }
 }
+
+internal fun shouldHideShellNavigationForPractice(
+    showIntro: Boolean,
+    queueComplete: Boolean,
+    hasCurrentExercise: Boolean
+): Boolean =
+    !showIntro && !queueComplete && hasCurrentExercise
 
 private data class PracticeQueueIntentState(
     val mode: PracticeMode,
