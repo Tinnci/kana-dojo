@@ -1441,6 +1441,33 @@ class KanaCurriculumTest {
     }
 
     @Test
+    fun practiceCompletionActionButtonSemanticsUseGenericUnavailableFallbackAcrossModes() {
+        PracticeMode.entries.forEach { mode ->
+            ReviewCompletionAction.entries.forEach { action ->
+                val actionButtons = practiceCompletionActionButtonMetadataInDisplayOrder(
+                    completionAction = action,
+                    mode = mode
+                )
+                val semantics = actionButtons.map { actionButton ->
+                    actionButton to practiceCompletionActionButtonSemanticsFor(
+                        actionButton = actionButton,
+                        enabled = false
+                    )
+                }
+
+                semantics.forEach { (actionButton, actionSemantics) ->
+                    assertEquals(actionButton.accessibilitySemanticLabel, actionSemantics.contentDescription)
+                    assertEquals("Unavailable", actionSemantics.stateDescription)
+                    assertEquals("Action unavailable", actionSemantics.clickLabel)
+                    assertEquals(actionButton.accessibilityTraversalIndex, actionSemantics.traversalIndex)
+                    assertEquals(PracticeAccessibilityRole.Button, actionSemantics.role)
+                    assertTrue(actionSemantics.mergeDescendants)
+                }
+            }
+        }
+    }
+
+    @Test
     fun practiceCompletionActionStateDescriptionsExplainAvailability() {
         val disabledCopy = PracticeCompletionDisabledActionCopy(
             title = "No repeat queue",
