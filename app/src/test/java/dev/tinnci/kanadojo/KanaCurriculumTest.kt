@@ -1264,6 +1264,34 @@ class KanaCurriculumTest {
     }
 
     @Test
+    fun practiceCompletionActionHintsUseCurrentModeFromMetadata() {
+        PracticeMode.entries.forEach { mode ->
+            val repeatSemanticLabel = practiceRepeatActionSemanticLabelFor(mode)
+            val cleanActionButtons = practiceCompletionActionButtonMetadataInDisplayOrder(
+                completionAction = ReviewCompletionAction.ReturnToPath,
+                mode = mode
+            )
+            val repeatActionButton = practiceCompletionActionButtonMetadataInDisplayOrder(
+                completionAction = ReviewCompletionAction.RepeatQueue,
+                mode = mode
+            ).single()
+
+            assertEquals(
+                "Activate Return to lesson path",
+                practiceCompletionActionHintFor(cleanActionButtons.first(), enabled = true)
+            )
+            assertEquals(
+                "Activate $repeatSemanticLabel",
+                practiceCompletionActionHintFor(cleanActionButtons.last(), enabled = true)
+            )
+            assertEquals(
+                "Activate $repeatSemanticLabel",
+                practiceCompletionActionHintFor(repeatActionButton, enabled = true)
+            )
+        }
+    }
+
+    @Test
     fun practiceCompletionActionStateDescriptionsExplainAvailability() {
         val disabledCopy = PracticeCompletionDisabledActionCopy(
             title = "No repeat queue",
