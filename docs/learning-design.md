@@ -185,6 +185,8 @@ Audio should support memory without turning every task into the same listen-and-
 
 Special small kana and length marks should not auto-play as standalone audio. Their pronunciation depends on word context, so the lesson should treat them as visual and writing symbols until word-level practice exists.
 
+The chart follows the same rule: regular kana taps may speak the kana, while special-symbol taps show a symbol note instead of triggering standalone pronunciation.
+
 ## Session Structure
 
 A good short session is 3 to 5 minutes:

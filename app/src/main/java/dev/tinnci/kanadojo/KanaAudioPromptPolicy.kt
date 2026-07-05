@@ -25,3 +25,6 @@ fun shouldOfferManualSpeak(exercise: Exercise): Boolean {
 
 fun shouldSpeakForPairMatchSelection(item: KanaItem): Boolean =
     supportsAudioPrompt(item)
+
+fun shouldSpeakForChartTap(item: KanaItem): Boolean =
+    supportsAudioPrompt(item)

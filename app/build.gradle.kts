@@ -1,18 +1,18 @@
 plugins {
-    id("com.android.application")
-    id("org.jetbrains.kotlin.plugin.compose")
+    alias(libs.plugins.android.application)
+    alias(libs.plugins.kotlin.compose)
 }
 
 android {
     namespace = "dev.tinnci.kanadojo"
-    compileSdk = 37
-    compileSdkMinor = 1
-    buildToolsVersion = "37.0.0"
+    compileSdk = libs.versions.androidCompileSdk.get().toInt()
+    compileSdkMinor = libs.versions.androidCompileSdkMinor.get().toInt()
+    buildToolsVersion = libs.versions.androidBuildTools.get()
 
     defaultConfig {
         applicationId = "dev.tinnci.kanadojo"
-        minSdk = 26
-        targetSdk = 37
+        minSdk = libs.versions.androidMinSdk.get().toInt()
+        targetSdk = libs.versions.androidTargetSdk.get().toInt()
         versionCode = 1
         versionName = "0.1.0"
     }
@@ -23,16 +23,16 @@ android {
 }
 
 dependencies {
-    implementation(platform("androidx.compose:compose-bom:2026.06.01"))
-    implementation("androidx.activity:activity-compose:1.13.0")
-    implementation("androidx.compose.animation:animation")
-    implementation("androidx.compose.foundation:foundation")
-    implementation("androidx.compose.material3:material3:1.5.0-alpha23")
-    implementation("androidx.compose.material:material-icons-extended")
-    implementation("androidx.compose.runtime:runtime-saveable")
-    implementation("androidx.compose.ui:ui")
-    implementation("androidx.compose.ui:ui-tooling-preview")
-    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.11.0")
-    testImplementation("junit:junit:4.13.2")
-    debugImplementation("androidx.compose.ui:ui-tooling")
+    implementation(platform(libs.androidx.compose.bom))
+    implementation(libs.androidx.activity.compose)
+    implementation(libs.androidx.compose.animation)
+    implementation(libs.androidx.compose.foundation)
+    implementation(libs.androidx.compose.material3)
+    implementation(libs.androidx.compose.material.icons.extended)
+    implementation(libs.androidx.compose.runtime.saveable)
+    implementation(libs.androidx.compose.ui)
+    implementation(libs.androidx.compose.ui.tooling.preview)
+    implementation(libs.androidx.lifecycle.runtime.compose)
+    testImplementation(libs.junit)
+    debugImplementation(libs.androidx.compose.ui.tooling)
 }

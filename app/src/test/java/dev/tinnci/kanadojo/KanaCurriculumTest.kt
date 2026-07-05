@@ -125,6 +125,7 @@ class KanaCurriculumTest {
         assertFalse(shouldSpeakAfterCorrectChoice(Exercise(ExerciseKind.KanaToRomaji, listOf(special))))
         assertFalse(shouldOfferManualSpeak(Exercise(ExerciseKind.TraceKana, listOf(special))))
         assertFalse(shouldSpeakForPairMatchSelection(special))
+        assertFalse(shouldSpeakForChartTap(special))
     }
 
     @Test
@@ -413,6 +414,7 @@ class KanaCurriculumTest {
         val item = itemsFor(Script.Katakana).first { it.romaji == "long mark" }
         val feedback = chartTapFeedbackFor(item)
 
+        assertEquals("Symbol note: ー", feedback.title)
         assertEquals("long mark · Special marks", feedback.message)
     }
 

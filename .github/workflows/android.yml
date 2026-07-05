@@ -34,4 +34,4 @@ jobs:
         uses: gradle/actions/setup-gradle@v4
 
       - name: Run unit tests and assemble debug
-        run: ./gradlew :app:testDebugUnitTest :app:assembleDebug
+        run: ./gradlew checkCiSdkVersions :app:testDebugUnitTest :app:assembleDebug

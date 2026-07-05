@@ -4,7 +4,7 @@
 
 ## Validation
 
-- [ ] `./gradlew :app:testDebugUnitTest :app:assembleDebug`
+- [ ] `./gradlew checkCiSdkVersions :app:testDebugUnitTest :app:assembleDebug`
 
 ## Notes
 

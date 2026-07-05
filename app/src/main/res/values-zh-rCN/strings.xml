@@ -165,6 +165,7 @@
     <string name="chart_contrast_title">%1$d 个易混假名</string>
     <string name="chart_contrast_message">带边框的%1$s卡片有已知近形字，练习时对比形状和笔画方向。</string>
     <string name="chart_tap_title">发音提示：%1$s</string>
+    <string name="chart_tap_symbol_title">符号说明：%1$s</string>
     <string name="chart_tap_message">%1$s · %2$s</string>
     <string name="chart_tag_small">小写</string>
     <string name="chart_tag_long_mark">长音符</string>

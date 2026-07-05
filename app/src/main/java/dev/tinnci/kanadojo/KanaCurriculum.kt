@@ -661,7 +661,11 @@ fun chartCardTagFor(item: KanaItem): ChartCardTag? {
 
 fun chartTapFeedbackFor(item: KanaItem): ChartTapFeedback =
     ChartTapFeedback(
-        title = "Audio cue: ${item.kana}",
+        title = if (supportsAudioPrompt(item)) {
+            "Audio cue: ${item.kana}"
+        } else {
+            "Symbol note: ${item.kana}"
+        },
         message = "${item.romaji} · ${chartRowLabelFor(item.row)}"
     )
 

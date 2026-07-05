@@ -79,7 +79,9 @@ fun KanaChartScreen(
     }
     val onItemTap: (KanaItem) -> Unit = { item ->
         tappedItemId = item.id
-        onSpeak(item.kana)
+        if (shouldSpeakForChartTap(item)) {
+            onSpeak(item.kana)
+        }
     }
 
     if (layoutMode == KanaLayoutMode.Expanded) {
@@ -579,9 +581,11 @@ private fun localizedChartContrastMessage(message: String): String {
 
 @Composable
 private fun localizedChartTapTitle(title: String): String {
-    val kana = title.removePrefix("Audio cue: ")
-    if (kana == title) return title
-    return stringResource(R.string.chart_tap_title, kana)
+    val audioKana = title.removePrefix("Audio cue: ")
+    if (audioKana != title) return stringResource(R.string.chart_tap_title, audioKana)
+    val symbolKana = title.removePrefix("Symbol note: ")
+    if (symbolKana != title) return stringResource(R.string.chart_tap_symbol_title, symbolKana)
+    return title
 }
 
 @Composable

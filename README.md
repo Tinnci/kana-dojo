@@ -14,11 +14,13 @@ The curriculum plan lives in [docs/learning-design.md](docs/learning-design.md).
 - Lesson path with unlock gates, stage filters, daily focus, progress summary, and completion feedback.
 - Practice modes for weak kana, contrast drills, sound recall, writing reps, speed rounds, both-script review, and mixed review.
 - Exercise types: kana to romaji, romaji to kana, sound to kana, pair matching, and trace writing.
-- Kana chart with row filters, mastery markers, contrast labels, and tap-to-hear speech.
+- Kana chart with row filters, mastery markers, contrast labels, tap-to-hear speech where available, and symbol notes for special marks.
 - Local progress and mistake persistence through SharedPreferences.
 - English and Simplified Chinese Android resources with system per-app language support.
 
 ## Toolchain
+
+Toolchain and dependency versions are centralized in [gradle/libs.versions.toml](gradle/libs.versions.toml). Update that catalog first when bumping Android SDK, AGP, Kotlin, Compose, or Material versions.
 
 - JDK: 21
 - Gradle wrapper: 9.6.1
@@ -41,7 +43,7 @@ Gradle uses Huawei and Aliyun Maven mirrors before official Google/Maven Central
 Use the checked-in Gradle wrapper:
 
 ```sh
-./gradlew :app:testDebugUnitTest :app:assembleDebug
+./gradlew checkCiSdkVersions :app:testDebugUnitTest :app:assembleDebug
 ```
 
 The same command runs in GitHub Actions on pushes and pull requests to `main`.
