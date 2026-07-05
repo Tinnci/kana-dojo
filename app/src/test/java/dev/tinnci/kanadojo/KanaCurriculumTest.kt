@@ -1483,6 +1483,24 @@ class KanaCurriculumTest {
     }
 
     @Test
+    fun practiceCompletionActionTraversalIndicesMatchExpectedRoleCounts() {
+        val expectedRoleCounts = mapOf(
+            ReviewCompletionAction.ReturnToPath to 2,
+            ReviewCompletionAction.RepeatQueue to 1
+        )
+
+        ReviewCompletionAction.entries.forEach { action ->
+            val expectedRoleCount = expectedRoleCounts.getValue(action)
+
+            assertEquals(expectedRoleCount, practiceActionRoleLabelsInDisplayOrder(action).size)
+            assertEquals(
+                expectedRoleCount,
+                practiceCompletionActionTraversalIndicesInDisplayOrder(completionAction = action).size
+            )
+        }
+    }
+
+    @Test
     fun practiceCompletionActionTraversalIndicesReturnStableOrderedValues() {
         ReviewCompletionAction.entries.forEach { action ->
             val traversalIndices = practiceCompletionActionTraversalIndicesInDisplayOrder(completionAction = action)
