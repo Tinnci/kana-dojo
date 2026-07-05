@@ -177,6 +177,20 @@ Earcon style for Kana Dojo:
 - Flow transitions: start may use a short two-pulse rise; review and reset stay single-pulse so repair work feels focused.
 - Completion: the only celebratory multi-pulse cue, landing around 212 ms so it feels distinct while staying below a quarter second.
 
+Current timing characterization:
+
+| Earcon | Style | Timing |
+| --- | --- | --- |
+| Navigate | Dry tap marker for tab/script movement. | 1 pulse, 28 ms |
+| Select | Slightly brighter tap marker for settings, cards, and choices. | 1 pulse, 30 ms |
+| Continue | Affirmative but functional step-forward cue. | 1 pulse, 36 ms |
+| Start | Restrained two-pulse lift for entering a lesson or focused drill. | 2 pulses, 110 ms total |
+| Correct | Short confirmation that supports visual success feedback. | 1 pulse, 54 ms |
+| Incorrect | Brief rejection cue; clear but not punitive. | 1 pulse, 72 ms |
+| Review | Focused repair cue for review-priority actions. | 1 pulse, 58 ms |
+| Reset | Firm single cue for clearing or retrying work. | 1 pulse, 64 ms |
+| Complete | Only celebratory phrase; compact enough for daily repetition. | 3 pulses, 212 ms total |
+
 ## Current Polish State
 
 Implemented:
