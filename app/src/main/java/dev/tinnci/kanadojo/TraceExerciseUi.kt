@@ -407,12 +407,16 @@ private fun TraceGuidancePanel(guidance: TraceGuidance) {
             modifier = Modifier.padding(12.dp),
             verticalArrangement = Arrangement.spacedBy(6.dp)
         ) {
-            Text(guidance.title, style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Black)
+            Text(localizedTraceGuidanceTitle(guidance.title), style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Black)
             guidance.cues.forEach { cue ->
-                Text(cue, style = MaterialTheme.typography.bodyMedium)
+                Text(localizedTraceGuidanceCue(cue), style = MaterialTheme.typography.bodyMedium)
             }
             guidance.overlays.forEach { overlay ->
-                Text("${overlay.label}: ${overlay.cue}", style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Bold)
+                Text(
+                    "${localizedTraceOverlayLabel(overlay.label)}: ${localizedTraceGuidanceCue(overlay.cue)}",
+                    style = MaterialTheme.typography.bodyMedium,
+                    fontWeight = FontWeight.Bold
+                )
             }
         }
     }
@@ -542,4 +546,50 @@ private fun localizedTraceRemediationAction(action: String): String =
     when (action) {
         "Retry trace" -> stringResource(R.string.trace_remediation_action)
         else -> action
+    }
+
+@Composable
+private fun localizedTraceGuidanceTitle(title: String): String =
+    when (title) {
+        "Separate from ツ / ン" -> stringResource(R.string.trace_guidance_separate_tsu_n)
+        "Separate from シ" -> stringResource(R.string.trace_guidance_separate_shi)
+        "Separate from ン" -> stringResource(R.string.trace_guidance_separate_n)
+        "Separate from ソ / シ" -> stringResource(R.string.trace_guidance_separate_so_shi)
+        "Separate from ち" -> stringResource(R.string.trace_guidance_separate_chi)
+        "Separate from さ" -> stringResource(R.string.trace_guidance_separate_sa)
+        "Separate from め" -> stringResource(R.string.trace_guidance_separate_me)
+        "Separate from ぬ" -> stringResource(R.string.trace_guidance_separate_nu)
+        else -> title
+    }
+
+@Composable
+private fun localizedTraceGuidanceCue(cue: String): String =
+    when (cue) {
+        "Short strokes sit flatter." -> stringResource(R.string.trace_guidance_short_flatter)
+        "Long stroke rises from lower-left to upper-right." -> stringResource(R.string.trace_guidance_long_rises_lower_left)
+        "Rise toward upper-right." -> stringResource(R.string.trace_guidance_rise_upper_right)
+        "Short strokes stand more upright." -> stringResource(R.string.trace_guidance_short_upright)
+        "Long stroke falls from upper-left to lower-right." -> stringResource(R.string.trace_guidance_long_falls_upper_left)
+        "Fall toward lower-right." -> stringResource(R.string.trace_guidance_fall_lower_right)
+        "Starts with a short upper-left stroke." -> stringResource(R.string.trace_guidance_short_upper_left)
+        "Long stroke falls downward." -> stringResource(R.string.trace_guidance_long_falls_downward)
+        "Drop down-left." -> stringResource(R.string.trace_guidance_drop_down_left)
+        "First stroke is small and high." -> stringResource(R.string.trace_guidance_first_small_high)
+        "Long stroke rises toward the upper-right." -> stringResource(R.string.trace_guidance_long_rises_upper_right)
+        "Top stroke is separate." -> stringResource(R.string.trace_guidance_top_separate)
+        "Lower curve stays compact." -> stringResource(R.string.trace_guidance_lower_curve_compact)
+        "Starts with a top stroke." -> stringResource(R.string.trace_guidance_starts_top_stroke)
+        "Main stroke drops then curves wide." -> stringResource(R.string.trace_guidance_main_drops_curves_wide)
+        "Look for the loop and finishing tail." -> stringResource(R.string.trace_guidance_loop_tail)
+        "Keep the crossing clear." -> stringResource(R.string.trace_guidance_crossing_clear)
+        "No final loop tail." -> stringResource(R.string.trace_guidance_no_final_loop)
+        "Keep the curve simple and open." -> stringResource(R.string.trace_guidance_curve_open)
+        else -> cue
+    }
+
+@Composable
+private fun localizedTraceOverlayLabel(label: String): String =
+    when (label) {
+        "Main" -> stringResource(R.string.trace_guidance_overlay_main)
+        else -> label
     }
