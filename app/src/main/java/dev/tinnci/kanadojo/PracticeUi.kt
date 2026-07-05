@@ -177,7 +177,10 @@ fun MistakePracticeScreen(
             .padding(20.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        PracticeHeroPanel(selectedMode.title, selectedMode.subtitle)
+        PracticeHeroPanel(
+            title = localizedPracticeModeTitle(selectedMode),
+            subtitle = localizedPracticeModeSubtitle(selectedMode)
+        )
         PracticeModeTabs(
             selectedMode = selectedMode,
             recommendedMode = initialMode,
@@ -867,6 +870,51 @@ private fun localizedPracticeCompletionToneLabel(toneLabel: String): String =
     }
 
 @Composable
+private fun localizedPracticeModeLabel(mode: PracticeMode): String =
+    when (mode) {
+        PracticeMode.Weak -> stringResource(R.string.practice_mode_weak_label)
+        PracticeMode.Contrast -> stringResource(R.string.practice_mode_contrast_label)
+        PracticeMode.Sound -> stringResource(R.string.practice_mode_sound_label)
+        PracticeMode.Writing -> stringResource(R.string.practice_mode_writing_label)
+        PracticeMode.Speed -> stringResource(R.string.practice_mode_speed_label)
+        PracticeMode.Cross -> stringResource(R.string.practice_mode_cross_label)
+        PracticeMode.Mixed -> stringResource(R.string.practice_mode_mixed_label)
+    }
+
+@Composable
+private fun localizedPracticeModeTitle(mode: PracticeMode): String =
+    when (mode) {
+        PracticeMode.Weak -> stringResource(R.string.practice_mode_weak_title)
+        PracticeMode.Contrast -> stringResource(R.string.practice_mode_contrast_title)
+        PracticeMode.Sound -> stringResource(R.string.practice_mode_sound_title)
+        PracticeMode.Writing -> stringResource(R.string.practice_mode_writing_title)
+        PracticeMode.Speed -> stringResource(R.string.practice_mode_speed_title)
+        PracticeMode.Cross -> stringResource(R.string.practice_mode_cross_title)
+        PracticeMode.Mixed -> stringResource(R.string.practice_mode_mixed_title)
+    }
+
+@Composable
+private fun localizedPracticeModeSubtitle(mode: PracticeMode): String =
+    when (mode) {
+        PracticeMode.Weak -> stringResource(R.string.practice_mode_weak_subtitle)
+        PracticeMode.Contrast -> stringResource(R.string.practice_mode_contrast_subtitle)
+        PracticeMode.Sound -> stringResource(R.string.practice_mode_sound_subtitle)
+        PracticeMode.Writing -> stringResource(R.string.practice_mode_writing_subtitle)
+        PracticeMode.Speed -> stringResource(R.string.practice_mode_speed_subtitle)
+        PracticeMode.Cross -> stringResource(R.string.practice_mode_cross_subtitle)
+        PracticeMode.Mixed -> stringResource(R.string.practice_mode_mixed_subtitle)
+    }
+
+@Composable
+private fun localizedPracticeModeBadge(badge: String): String =
+    when (badge) {
+        "Now" -> stringResource(R.string.practice_badge_now)
+        "Rec" -> stringResource(R.string.practice_badge_recommended)
+        "Fallback" -> stringResource(R.string.practice_badge_fallback)
+        else -> badge
+    }
+
+@Composable
 private fun PracticeCompletionMetricTile(metric: PracticeCompletionMetric, modifier: Modifier = Modifier) {
     Surface(
         shape = RoundedCornerShape(14.dp),
@@ -993,7 +1041,7 @@ private fun PracticeCompletionModeChip(mode: PracticeMode) {
         color = MaterialTheme.colorScheme.surface.copy(alpha = 0.72f)
     ) {
         Text(
-            mode.label,
+            localizedPracticeModeLabel(mode),
             style = MaterialTheme.typography.labelSmall,
             fontWeight = FontWeight.Black,
             modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp)
@@ -1264,7 +1312,7 @@ private fun PracticeQueuePanel(
             Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Column(modifier = Modifier.weight(1f)) {
-                        Text(mode.title, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Black)
+                        Text(localizedPracticeModeTitle(mode), style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Black)
                         Text(sourceCue.title, style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     }
                     Text(queueSize.toString(), style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Black)
@@ -1426,10 +1474,10 @@ private fun PracticeModeTabs(
                     onClick = { onModeChange(mode) },
                     label = {
                         Row(horizontalArrangement = Arrangement.spacedBy(5.dp), verticalAlignment = Alignment.CenterVertically) {
-                            Text(affordance.label, fontWeight = if (selectedMode == mode) FontWeight.Bold else FontWeight.Medium)
+                            Text(localizedPracticeModeLabel(mode), fontWeight = if (selectedMode == mode) FontWeight.Bold else FontWeight.Medium)
                             affordance.badge?.let { badge ->
                                 Text(
-                                    badge,
+                                    localizedPracticeModeBadge(badge),
                                     style = MaterialTheme.typography.labelSmall,
                                     fontWeight = FontWeight.Black,
                                     color = MaterialTheme.colorScheme.primary
