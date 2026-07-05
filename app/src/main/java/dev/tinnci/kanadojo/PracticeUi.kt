@@ -609,14 +609,20 @@ private fun PracticeActionButtonLabel(label: String) {
 
 @Composable
 private fun PracticeActionRoleChip(actionButton: PracticeCompletionActionButtonMetadata) {
-    PracticeActionRoleChip(actionButton.actionRoleLabel)
+    PracticeActionRoleChip(
+        label = actionButton.actionRoleLabel,
+        tone = practiceActionRoleToneFor(actionButton)
+    )
 }
 
 @Composable
-private fun PracticeActionRoleChip(label: String) {
+private fun PracticeActionRoleChip(
+    label: String,
+    tone: PracticeActionRoleTone = practiceActionRoleToneFor(label)
+) {
     Surface(
         shape = RoundedCornerShape(999.dp),
-        color = practiceActionRoleColor(label),
+        color = practiceActionRoleColor(tone),
         modifier = Modifier.clearAndSetSemantics {}
     ) {
         Text(
@@ -633,12 +639,12 @@ private fun PracticeActionRoleChip(label: String) {
 }
 
 @Composable
-private fun practiceActionRoleColor(label: String): Color =
-    when (label) {
-        "Primary" -> Color(0xFFE2EEF8)
-        "Optional repeat" -> MaterialTheme.colorScheme.surface.copy(alpha = 0.68f)
-        "Repeat first" -> Color(0xFFFFDFD6)
-        else -> MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.78f)
+private fun practiceActionRoleColor(tone: PracticeActionRoleTone): Color =
+    when (tone) {
+        PracticeActionRoleTone.Primary -> Color(0xFFE2EEF8)
+        PracticeActionRoleTone.Optional -> MaterialTheme.colorScheme.surface.copy(alpha = 0.68f)
+        PracticeActionRoleTone.RepeatRequired -> Color(0xFFFFDFD6)
+        PracticeActionRoleTone.Neutral -> MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.78f)
     }
 
 @Composable

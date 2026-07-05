@@ -205,6 +205,13 @@ data class PracticeCompletionActionButtonMetadata(
     val accessibilityTraversalIndex: Float
 )
 
+enum class PracticeActionRoleTone {
+    Primary,
+    Optional,
+    RepeatRequired,
+    Neutral
+}
+
 data class PracticeCompletionNextStep(
     val title: String,
     val message: String
@@ -840,6 +847,17 @@ fun practiceActionRoleLabelsInDisplayOrder(action: ReviewCompletionAction): List
 
         ReviewCompletionAction.RepeatQueue -> listOf(practiceActionRoleLabelFor(action))
     }
+
+fun practiceActionRoleToneFor(roleLabel: String): PracticeActionRoleTone =
+    when (roleLabel) {
+        "Primary" -> PracticeActionRoleTone.Primary
+        "Optional repeat" -> PracticeActionRoleTone.Optional
+        "Repeat first" -> PracticeActionRoleTone.RepeatRequired
+        else -> PracticeActionRoleTone.Neutral
+    }
+
+fun practiceActionRoleToneFor(actionButton: PracticeCompletionActionButtonMetadata): PracticeActionRoleTone =
+    practiceActionRoleToneFor(actionButton.actionRoleLabel)
 
 fun practiceCompletionActionTraversalIndicesInDisplayOrder(completionAction: ReviewCompletionAction): List<Float> =
     practiceActionRoleLabelsInDisplayOrder(completionAction).indices.map { it.toFloat() }
