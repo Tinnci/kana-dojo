@@ -1356,6 +1356,54 @@ class KanaCurriculumTest {
     }
 
     @Test
+    fun practiceCompletionActionButtonSemanticsPreserveDisabledCopy() {
+        val cleanActionButtons = practiceCompletionActionButtonMetadataInDisplayOrder(
+            completionAction = ReviewCompletionAction.ReturnToPath,
+            mode = PracticeMode.Mixed
+        )
+        val repeatActionButton = practiceCompletionActionButtonMetadataInDisplayOrder(
+            completionAction = ReviewCompletionAction.RepeatQueue,
+            mode = PracticeMode.Mixed
+        ).single()
+        val pathUnavailableCopy = PracticeCompletionDisabledActionCopy(
+            title = "Path unavailable",
+            message = "Finish a clean pass before returning to the path."
+        )
+        val noRepeatQueueCopy = PracticeCompletionDisabledActionCopy(
+            title = "No repeat queue",
+            message = "There are no kana in this queue yet, so repeat is disabled."
+        )
+
+        val pathUnavailableSemantics = practiceCompletionActionButtonSemanticsFor(
+            actionButton = cleanActionButtons.first(),
+            enabled = false,
+            disabledCopy = pathUnavailableCopy
+        )
+        val noRepeatQueueSemantics = practiceCompletionActionButtonSemanticsFor(
+            actionButton = repeatActionButton,
+            enabled = false,
+            disabledCopy = noRepeatQueueCopy
+        )
+        val fallbackSemantics = practiceCompletionActionButtonSemanticsFor(
+            actionButton = repeatActionButton,
+            enabled = false
+        )
+
+        assertEquals(
+            "Unavailable: Path unavailable. Finish a clean pass before returning to the path.",
+            pathUnavailableSemantics.stateDescription
+        )
+        assertEquals("Action unavailable: Path unavailable", pathUnavailableSemantics.clickLabel)
+        assertEquals(
+            "Unavailable: No repeat queue. There are no kana in this queue yet, so repeat is disabled.",
+            noRepeatQueueSemantics.stateDescription
+        )
+        assertEquals("Action unavailable: No repeat queue", noRepeatQueueSemantics.clickLabel)
+        assertEquals("Unavailable", fallbackSemantics.stateDescription)
+        assertEquals("Action unavailable", fallbackSemantics.clickLabel)
+    }
+
+    @Test
     fun practiceCompletionActionStateDescriptionsExplainAvailability() {
         val disabledCopy = PracticeCompletionDisabledActionCopy(
             title = "No repeat queue",
