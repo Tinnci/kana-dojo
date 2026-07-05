@@ -181,7 +181,22 @@ fun LessonPathScreen(
                 snapshot = snapshot,
                 reviewCount = reviewCount,
                 dueReviewCount = dueReviewCount,
-                reduceMotion = reduceMotion
+                practiceRecommendation = practiceRecommendation,
+                layoutMode = layoutMode,
+                reduceMotion = reduceMotion,
+                onStart = {
+                    onEarcon(KanaEarcon.Start)
+                    onTaptic(KanaTaptic.Start)
+                    resumeCue = null
+                    completedLessonResult = null
+                    activeLessonIndex = nextLesson.index
+                },
+                onReview = {
+                    onEarcon(KanaEarcon.Review)
+                    onTaptic(KanaTaptic.Review)
+                    completedLessonResult = null
+                    onOpenPractice(it)
+                }
             )
         }
         completionFeedback?.let { feedback ->
@@ -722,7 +737,11 @@ private fun PathHeroPanel(
     snapshot: ProgressSnapshot,
     reviewCount: Int,
     dueReviewCount: Int,
-    reduceMotion: Boolean
+    practiceRecommendation: PracticeRecommendation,
+    layoutMode: KanaLayoutMode,
+    reduceMotion: Boolean,
+    onStart: () -> Unit,
+    onReview: (PracticeMode) -> Unit
 ) {
     val overall by animateFloatAsState(
         targetValue = snapshot.overall,
@@ -785,12 +804,61 @@ private fun PathHeroPanel(
                 }
             }
             LinearProgressIndicator(progress = { overall }, modifier = Modifier.fillMaxWidth())
+            if (layoutMode == KanaLayoutMode.Compact) {
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
+                    HeroStartButton(onStart = onStart, modifier = Modifier.fillMaxWidth())
+                    HeroPracticeButton(
+                        recommendation = practiceRecommendation,
+                        onReview = onReview,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+            } else {
+                Row(horizontalArrangement = Arrangement.spacedBy(10.dp), modifier = Modifier.fillMaxWidth()) {
+                    HeroStartButton(onStart = onStart, modifier = Modifier.weight(1.35f))
+                    HeroPracticeButton(
+                        recommendation = practiceRecommendation,
+                        onReview = onReview,
+                        modifier = Modifier.weight(1f)
+                    )
+                }
+            }
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
                 HeroMetric(stringResource(R.string.metric_due), dueReviewCount.toString(), Modifier.weight(1f))
                 HeroMetric(stringResource(R.string.metric_lesson), "${(lessonProgress * 100).toInt()}%", Modifier.weight(1f))
                 HeroMetric(stringResource(R.string.metric_fluent), "${snapshot.fluent}/${snapshot.total}", Modifier.weight(1f))
             }
         }
+    }
+}
+
+@Composable
+private fun HeroStartButton(onStart: () -> Unit, modifier: Modifier = Modifier) {
+    Button(
+        onClick = onStart,
+        shape = RoundedCornerShape(18.dp),
+        modifier = modifier.heightIn(min = 52.dp)
+    ) {
+        Icon(Icons.Outlined.PlayArrow, contentDescription = null)
+        Spacer(Modifier.width(8.dp))
+        Text(stringResource(R.string.action_start_lesson), fontWeight = FontWeight.Black)
+    }
+}
+
+@Composable
+private fun HeroPracticeButton(
+    recommendation: PracticeRecommendation,
+    onReview: (PracticeMode) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    FilledTonalButton(
+        onClick = { onReview(recommendation.mode) },
+        shape = RoundedCornerShape(18.dp),
+        modifier = modifier.heightIn(min = 52.dp)
+    ) {
+        Icon(Icons.Outlined.Replay, contentDescription = null)
+        Spacer(Modifier.width(8.dp))
+        Text(localizedPathRecommendationAction(recommendation), fontWeight = FontWeight.Bold)
     }
 }
 
