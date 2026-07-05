@@ -252,20 +252,7 @@ fun LessonPathScreen(
                 dueReviewItems = dueReviewItems,
                 dailyRhythm = dailyRhythm,
                 startGuidance = startGuidance,
-                practiceRecommendation = practiceRecommendation,
-                onStart = {
-                    onEarcon(KanaEarcon.Start)
-                    onTaptic(KanaTaptic.Start)
-                    resumeCue = null
-                    completedLessonResult = null
-                    activeLessonIndex = nextLesson.index
-                },
-                onReview = {
-                    onEarcon(KanaEarcon.Review)
-                    onTaptic(KanaTaptic.Review)
-                    completedLessonResult = null
-                    onOpenPractice(it)
-                }
+                practiceRecommendation = practiceRecommendation
             )
         }
         item {
@@ -420,9 +407,7 @@ private fun DailyFocusPanel(
     dueReviewItems: List<KanaItem>,
     dailyRhythm: DailyRhythm,
     startGuidance: PathStartGuidance?,
-    practiceRecommendation: PracticeRecommendation,
-    onStart: () -> Unit,
-    onReview: (PracticeMode) -> Unit
+    practiceRecommendation: PracticeRecommendation
 ) {
     val phaseSummary = remember(lesson) { lessonPhaseSummaryFor(lesson) }
     val startPreview = remember(lesson) { lessonStartPreviewFor(lesson) }
@@ -481,30 +466,6 @@ private fun DailyFocusPanel(
             }
             PracticeRecommendationPanel(practiceRecommendation)
             LessonStartPreviewPanel(startPreview)
-            Column(verticalArrangement = Arrangement.spacedBy(10.dp), modifier = Modifier.fillMaxWidth()) {
-                Button(
-                    onClick = onStart,
-                    shape = RoundedCornerShape(18.dp),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .heightIn(min = 54.dp)
-                ) {
-                    Icon(Icons.Outlined.PlayArrow, contentDescription = null)
-                    Spacer(Modifier.width(8.dp))
-                    Text(stringResource(R.string.action_start_lesson), fontWeight = FontWeight.Black)
-                }
-                FilledTonalButton(
-                    onClick = { onReview(practiceRecommendation.mode) },
-                    shape = RoundedCornerShape(18.dp),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .heightIn(min = 50.dp)
-                ) {
-                    Icon(Icons.Outlined.Replay, contentDescription = null)
-                    Spacer(Modifier.width(8.dp))
-                    Text(localizedPathRecommendationAction(practiceRecommendation), fontWeight = FontWeight.Bold)
-                }
-            }
         }
     }
 }

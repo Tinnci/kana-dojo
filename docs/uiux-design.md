@@ -241,7 +241,7 @@ Implemented:
 - Lesson-completion recommendations that route to repeat, mistake review, or the path.
 - Clean lesson completions preview the next unlocked lesson before returning to the path.
 - Data-driven path hero that previews the next lesson, overall progress, lesson progress, and review pressure.
-- First-screen path hero exposes the primary lesson start action and the recommended practice action before detailed daily-focus panels.
+- First-screen path hero owns the primary lesson start action and recommended practice action; daily-focus panels stay explanatory instead of repeating CTAs.
 - Material-aligned path elevation pass: active next lesson is raised while regular lesson cards stay flat, and the hero uses tone instead of decorative gradient.
 - Resource-backed English and Simplified Chinese strings for essential actions on the top path, practice, and chart entry points.
 - Android locale configuration advertises English and Simplified Chinese for system per-app language settings.
