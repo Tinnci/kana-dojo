@@ -1472,6 +1472,17 @@ class KanaCurriculumTest {
     }
 
     @Test
+    fun practiceActionTraversalIndicesCoverEveryActionRole() {
+        ReviewCompletionAction.entries.forEach { action ->
+            val roleLabels = practiceActionRoleLabelsInDisplayOrder(action)
+            val traversalIndices = practiceActionTraversalIndicesInDisplayOrder(action)
+
+            assertEquals(roleLabels.size, traversalIndices.size)
+            assertEquals(roleLabels.indices.map { it.toFloat() }, traversalIndices)
+        }
+    }
+
+    @Test
     fun practiceCompletionNextStepExplainsCleanWritingQueues() {
         val nextStep = practiceCompletionNextStepFor(
             mode = PracticeMode.Writing,

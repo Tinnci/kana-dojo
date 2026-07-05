@@ -254,9 +254,10 @@ Implemented:
 - Added compact completion action-button accessibility group summary role audit.
 - Added compact completion action-button accessibility traversal order audit.
 - Added tested compact completion action-button accessibility traversal density audit.
+- Added tested compact completion action-button accessibility traversal fallback audit.
 
 ## Next Polish Pass
 
 Implement next:
 
-- Add compact completion action-button accessibility traversal fallback audit.
+- Add compact completion action-button accessibility traversal helper naming audit.
