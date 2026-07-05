@@ -2,6 +2,9 @@ package dev.tinnci.kanadojo
 
 import kotlin.random.Random
 
+private const val PairMatchTargetSize = 4
+private const val MinimumPairMatchSize = 2
+
 fun buildLessonExercises(lesson: KanaLesson): List<Exercise> {
     val recognition = lesson.items.flatMap { item ->
         buildList {
@@ -12,7 +15,7 @@ fun buildLessonExercises(lesson: KanaLesson): List<Exercise> {
     val listening = lesson.items
         .filter { supportsAudioPrompt(it) }
         .map { Exercise(ExerciseKind.SoundToKana, listOf(it)) }
-    val pairs = lesson.items.chunked(4).map { Exercise(ExerciseKind.PairMatch, it) }
+    val pairs = pairMatchExercisesFor(lesson.items)
     val writing = lesson.items.take(writingCountFor(lesson)).map { Exercise(ExerciseKind.TraceKana, listOf(it)) }
     val contrastItems = contrastItemsFor(lesson)
     val contrast = contrastItems
@@ -92,10 +95,22 @@ fun lessonPhaseSummaryFor(lesson: KanaLesson): List<LessonPhaseCount> =
     listOf(
         LessonPhaseCount("Read", lesson.items.size * 2),
         LessonPhaseCount("Hear", lesson.items.count { supportsAudioPrompt(it) }),
-        LessonPhaseCount("Match", lesson.items.chunked(4).size),
+        LessonPhaseCount("Match", pairMatchExercisesFor(lesson.items).size),
         LessonPhaseCount("Write", writingCountFor(lesson)),
         LessonPhaseCount("Contrast", contrastItemsFor(lesson).size * 2)
     ).filter { it.count > 0 }
+
+private fun pairMatchExercisesFor(items: List<KanaItem>): List<Exercise> {
+    if (items.size < MinimumPairMatchSize) return emptyList()
+
+    val chunks = items.chunked(PairMatchTargetSize).toMutableList()
+    if (chunks.size > 1 && chunks.last().size < MinimumPairMatchSize) {
+        val tail = chunks.removeAt(chunks.lastIndex)
+        chunks[chunks.lastIndex] = chunks.last() + tail
+    }
+
+    return chunks.map { Exercise(ExerciseKind.PairMatch, it) }
+}
 
 private fun ExerciseKind.lessonStartLabel(): String =
     when (this) {

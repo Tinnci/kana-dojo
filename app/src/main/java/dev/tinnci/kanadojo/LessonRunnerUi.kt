@@ -71,7 +71,7 @@ fun LessonRunner(
     var feedbackAnswer by rememberSaveable(lessonSaveKey) { mutableStateOf<String?>(null) }
     val queue = remember(queueTokens, allItemsById) {
         exercisesFromSnapshotTokens(queueTokens, allItemsById)
-            .ifEmpty { buildLessonExercises(lesson) }
+            .filterNot { it.kind == ExerciseKind.PairMatch && it.items.size < 2 }
     }
     val sessionStats = LessonSessionStats(correct = correctCount, missed = missedCount)
     val feedback = feedbackCorrect?.let { correct ->

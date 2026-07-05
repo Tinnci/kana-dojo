@@ -893,13 +893,24 @@ class KanaCurriculumTest {
     }
 
     @Test
+    fun generatedPairMatchExercisesNeverUseSinglePairTail() {
+        val lessons = lessonsFor(Script.Hiragana) + lessonsFor(Script.Katakana)
+        val pairExercises = lessons.flatMap { buildLessonExercises(it) }.filter { it.kind == ExerciseKind.PairMatch }
+
+        assertTrue(pairExercises.isNotEmpty())
+        pairExercises.forEach { exercise ->
+            assertTrue("Single-pair match exercise generated for ${exercise.items.map { it.id }}", exercise.items.size >= 2)
+        }
+    }
+
+    @Test
     fun lessonPhaseSummaryReflectsExerciseMix() {
         val lesson = lessonsFor(Script.Hiragana).first()
         val summary = lessonPhaseSummaryFor(lesson).associate { it.label to it.count }
 
         assertEquals(lesson.items.size * 2, summary["Read"])
         assertEquals(lesson.items.size, summary["Hear"])
-        assertEquals(lesson.items.chunked(4).size, summary["Match"])
+        assertEquals(1, summary["Match"])
         assertEquals(2, summary["Write"])
     }
 

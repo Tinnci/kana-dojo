@@ -448,10 +448,12 @@ private fun PairMatchExercise(
         val romaji = selectedRomaji
         if (kana != null && romaji != null) {
             if (kana.id == romaji.id) {
-                val nextMatched = matched + kana.id
+                val nextMatched = (matched + kana.id).distinct()
                 val completesExercise = nextMatched.size == items.size
                 matched = nextMatched
-                if (!completesExercise) {
+                if (completesExercise && !answered) {
+                    onAnswer(true)
+                } else {
                     onTaptic(KanaTaptic.Correct)
                 }
             } else {
@@ -459,7 +461,6 @@ private fun PairMatchExercise(
             }
             selectedKanaId = null
             selectedRomajiId = null
-            if (kana.id == romaji.id && matched.size + 1 == items.size && !answered) onAnswer(true)
         }
     }
 
