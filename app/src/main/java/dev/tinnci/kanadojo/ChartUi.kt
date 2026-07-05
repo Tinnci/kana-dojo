@@ -4,23 +4,29 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
+import androidx.compose.foundation.lazy.grid.LazyGridScope
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.CheckCircle
 import androidx.compose.material3.AssistChip
@@ -66,6 +72,75 @@ fun KanaChartScreen(
     val rowGuidance = chartRowGuidanceCopyFor(selectedRow, items, mastery)
     val contrastSummary = chartContrastSummaryCopyFor(selectedRow, items)
     val tapFeedback = tappedItem?.let { chartTapFeedbackFor(it) }
+
+    BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
+        if (maxWidth >= 720.dp) {
+            ChartExpandedContent(
+                script = script,
+                progressCopy = progressCopy,
+                rows = rows,
+                selectedRow = selectedRow,
+                tapFeedback = tapFeedback,
+                rowGuidance = rowGuidance,
+                contrastSummary = contrastSummary,
+                visibleItems = visibleItems,
+                mastery = mastery,
+                tappedItem = tappedItem,
+                onEarcon = onEarcon,
+                onTaptic = onTaptic,
+                onRowChange = {
+                    selectedRow = it
+                    tappedItemId = null
+                },
+                onItemTap = { item ->
+                    tappedItemId = item.id
+                    onSpeak(item.kana)
+                }
+            )
+        } else {
+            ChartCompactContent(
+                script = script,
+                progressCopy = progressCopy,
+                rows = rows,
+                selectedRow = selectedRow,
+                tapFeedback = tapFeedback,
+                rowGuidance = rowGuidance,
+                contrastSummary = contrastSummary,
+                visibleItems = visibleItems,
+                mastery = mastery,
+                tappedItem = tappedItem,
+                onEarcon = onEarcon,
+                onTaptic = onTaptic,
+                onRowChange = {
+                    selectedRow = it
+                    tappedItemId = null
+                },
+                onItemTap = { item ->
+                    tappedItemId = item.id
+                    onSpeak(item.kana)
+                }
+            )
+        }
+    }
+}
+
+@Composable
+private fun ChartCompactContent(
+    script: Script,
+    progressCopy: ChartProgressCopy,
+    rows: List<String>,
+    selectedRow: String?,
+    tapFeedback: ChartTapFeedback?,
+    rowGuidance: ChartRowGuidanceCopy?,
+    contrastSummary: ChartContrastSummaryCopy?,
+    visibleItems: List<KanaItem>,
+    mastery: Map<String, Int>,
+    tappedItem: KanaItem?,
+    onEarcon: (KanaEarcon) -> Unit,
+    onTaptic: (KanaTaptic) -> Unit,
+    onRowChange: (String?) -> Unit,
+    onItemTap: (KanaItem) -> Unit
+) {
     LazyVerticalGrid(
         columns = GridCells.Adaptive(minSize = 86.dp),
         contentPadding = PaddingValues(16.dp),
@@ -82,10 +157,7 @@ fun KanaChartScreen(
                 selectedRow = selectedRow,
                 onEarcon = onEarcon,
                 onTaptic = onTaptic,
-                onRowChange = {
-                    selectedRow = it
-                    tappedItemId = null
-                }
+                onRowChange = onRowChange
             )
         }
         tapFeedback?.let { feedback ->
@@ -106,55 +178,177 @@ fun KanaChartScreen(
         item(span = { GridItemSpan(maxLineSpan) }) {
             MasteryLegend()
         }
+        chartTiles(
+            visibleItems = visibleItems,
+            mastery = mastery,
+            tappedItem = tappedItem,
+            onEarcon = onEarcon,
+            onTaptic = onTaptic,
+            onItemTap = onItemTap
+        )
+    }
+}
+
+@Composable
+private fun ChartExpandedContent(
+    script: Script,
+    progressCopy: ChartProgressCopy,
+    rows: List<String>,
+    selectedRow: String?,
+    tapFeedback: ChartTapFeedback?,
+    rowGuidance: ChartRowGuidanceCopy?,
+    contrastSummary: ChartContrastSummaryCopy?,
+    visibleItems: List<KanaItem>,
+    mastery: Map<String, Int>,
+    tappedItem: KanaItem?,
+    onEarcon: (KanaEarcon) -> Unit,
+    onTaptic: (KanaTaptic) -> Unit,
+    onRowChange: (String?) -> Unit,
+    onItemTap: (KanaItem) -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        horizontalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        ChartSupportPane(
+            script = script,
+            progressCopy = progressCopy,
+            rows = rows,
+            selectedRow = selectedRow,
+            tapFeedback = tapFeedback,
+            rowGuidance = rowGuidance,
+            contrastSummary = contrastSummary,
+            onEarcon = onEarcon,
+            onTaptic = onTaptic,
+            onRowChange = onRowChange
+        )
+        LazyVerticalGrid(
+            columns = GridCells.Adaptive(minSize = 94.dp),
+            horizontalArrangement = Arrangement.spacedBy(10.dp),
+            verticalArrangement = Arrangement.spacedBy(10.dp),
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxHeight()
+        ) {
+            chartTiles(
+                visibleItems = visibleItems,
+                mastery = mastery,
+                tappedItem = tappedItem,
+                onEarcon = onEarcon,
+                onTaptic = onTaptic,
+                onItemTap = onItemTap
+            )
+        }
+    }
+}
+
+@Composable
+private fun ChartSupportPane(
+    script: Script,
+    progressCopy: ChartProgressCopy,
+    rows: List<String>,
+    selectedRow: String?,
+    tapFeedback: ChartTapFeedback?,
+    rowGuidance: ChartRowGuidanceCopy?,
+    contrastSummary: ChartContrastSummaryCopy?,
+    onEarcon: (KanaEarcon) -> Unit,
+    onTaptic: (KanaTaptic) -> Unit,
+    onRowChange: (String?) -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .width(328.dp)
+            .fillMaxHeight()
+            .verticalScroll(rememberScrollState()),
+        verticalArrangement = Arrangement.spacedBy(10.dp)
+    ) {
+        ChartHeader(script = script, progressCopy = progressCopy)
+        ChartRowFilters(
+            rows = rows,
+            selectedRow = selectedRow,
+            onEarcon = onEarcon,
+            onTaptic = onTaptic,
+            onRowChange = onRowChange
+        )
+        tapFeedback?.let { ChartTapFeedbackPanel(it) }
+        rowGuidance?.let { ChartRowGuidancePanel(it) }
+        contrastSummary?.let { ChartContrastSummaryPanel(it) }
+        MasteryLegend()
+    }
+}
+
+private fun LazyGridScope.chartTiles(
+    visibleItems: List<KanaItem>,
+    mastery: Map<String, Int>,
+    tappedItem: KanaItem?,
+    onEarcon: (KanaEarcon) -> Unit,
+    onTaptic: (KanaTaptic) -> Unit,
+    onItemTap: (KanaItem) -> Unit
+) {
         items(visibleItems) { item ->
             val level = mastery[item.id] ?: 0
-            val cardTag = chartCardTagFor(item)
             val selected = tappedItem?.id == item.id
-            Card(
+            ChartKanaTile(
+                item = item,
+                level = level,
+                selected = selected,
                 onClick = {
                     onEarcon(KanaEarcon.Select)
                     onTaptic(KanaTaptic.Select)
-                    tappedItemId = item.id
-                    onSpeak(item.kana)
-                },
-                shape = RoundedCornerShape(20.dp),
-                colors = CardDefaults.cardColors(
-                    containerColor = chartTileColor(level, item.confusable.isNotEmpty(), selected)
-                )
-            ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .border(
-                            width = when {
-                                selected -> 2.dp
-                                item.confusable.isNotEmpty() -> 1.dp
-                                else -> 0.dp
-                            },
-                            color = when {
-                                selected -> MaterialTheme.colorScheme.primary
-                                item.confusable.isNotEmpty() -> MaterialTheme.colorScheme.tertiary
-                                else -> Color.Transparent
-                            },
-                            shape = RoundedCornerShape(20.dp)
-                        )
-                        .padding(vertical = 14.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Text(item.kana, fontSize = 42.sp, fontWeight = FontWeight.Black)
-                    Text(item.romaji, style = MaterialTheme.typography.labelLarge)
-                    Text(localizedChartRowLabel(item.row), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                    cardTag?.let { tag ->
-                        Text(localizedChartCardTag(tag.label), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Black)
-                    }
-                    if (item.confusable.isNotEmpty()) {
-                        Text(stringResource(R.string.chart_tag_contrast), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.tertiary)
-                    }
-                    Spacer(Modifier.height(8.dp))
-                    MasteryPips(level = level)
-                    Text(localizedChartMasteryLabel(level), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    onItemTap(item)
                 }
+            )
+        }
+}
+
+@Composable
+private fun ChartKanaTile(
+    item: KanaItem,
+    level: Int,
+    selected: Boolean,
+    onClick: () -> Unit
+) {
+    val cardTag = chartCardTagFor(item)
+    Card(
+        onClick = onClick,
+        shape = RoundedCornerShape(20.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = chartTileColor(level, item.confusable.isNotEmpty(), selected)
+        )
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .border(
+                    width = when {
+                        selected -> 2.dp
+                        item.confusable.isNotEmpty() -> 1.dp
+                        else -> 0.dp
+                    },
+                    color = when {
+                        selected -> MaterialTheme.colorScheme.primary
+                        item.confusable.isNotEmpty() -> MaterialTheme.colorScheme.tertiary
+                        else -> Color.Transparent
+                    },
+                    shape = RoundedCornerShape(20.dp)
+                )
+                .padding(vertical = 14.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(item.kana, fontSize = 42.sp, fontWeight = FontWeight.Black)
+            Text(item.romaji, style = MaterialTheme.typography.labelLarge)
+            Text(localizedChartRowLabel(item.row), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            cardTag?.let { tag ->
+                Text(localizedChartCardTag(tag.label), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.primary, fontWeight = FontWeight.Black)
             }
+            if (item.confusable.isNotEmpty()) {
+                Text(stringResource(R.string.chart_tag_contrast), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.tertiary)
+            }
+            Spacer(Modifier.height(8.dp))
+            MasteryPips(level = level)
+            Text(localizedChartMasteryLabel(level), style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
     }
 }

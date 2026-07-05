@@ -228,6 +228,7 @@ Implemented:
 - Shared answer option component for kana, romaji, and sound-choice prompts.
 - Extracted lesson-runner and completion shell so session flow can be polished independently from the main app scaffold.
 - Extracted chart/reference UI so kana browsing and mastery visualization can evolve separately from the app shell.
+- Expanded-width chart layout now keeps filters, feedback, guidance, and legend in a supporting pane beside the kana grid.
 - Extracted practice review UI so weak, contrast, writing, sound, speed, cross-script, and mixed queues can be refined independently.
 - Extracted lesson path UI so journey, daily focus, progress, filters, and lesson nodes can be refined independently.
 - Extracted shared exercise widgets so prompts, feedback, choices, audio, trace, and pair matching can be polished independently.
