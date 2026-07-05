@@ -273,9 +273,10 @@ Implemented:
 - Added tested compact completion action-button accessibility state-description metadata disabled-copy audit.
 - Added tested compact completion action-button accessibility state-description metadata mode audit.
 - Added tested compact completion action-button accessibility role-chip metadata audit.
+- Added tested compact completion action-button accessibility role-chip metadata mode audit.
 
 ## Next Polish Pass
 
 Implement next:
 
-- Add compact completion action-button accessibility role-chip metadata mode audit.
+- Add compact completion action-button accessibility role-chip color metadata audit.
