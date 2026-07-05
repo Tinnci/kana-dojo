@@ -44,7 +44,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
-fun KanaChartScreen(script: Script, mastery: Map<String, Int>, onSpeak: (String) -> Unit) {
+fun KanaChartScreen(
+    script: Script,
+    mastery: Map<String, Int>,
+    onSpeak: (String) -> Unit,
+    onEarcon: (KanaEarcon) -> Unit
+) {
     val items = remember(script) { itemsFor(script) }
     val rows = remember(items) { items.map { it.row }.distinct() }
     var selectedRow by remember(script) { mutableStateOf<String?>(null) }
@@ -70,6 +75,7 @@ fun KanaChartScreen(script: Script, mastery: Map<String, Int>, onSpeak: (String)
             ChartRowFilters(
                 rows = rows,
                 selectedRow = selectedRow,
+                onEarcon = onEarcon,
                 onRowChange = {
                     selectedRow = it
                     tappedItem = null
@@ -100,6 +106,7 @@ fun KanaChartScreen(script: Script, mastery: Map<String, Int>, onSpeak: (String)
             val selected = tappedItem?.id == item.id
             Card(
                 onClick = {
+                    onEarcon(KanaEarcon.Select)
                     tappedItem = item
                     onSpeak(item.kana)
                 },
@@ -239,11 +246,19 @@ private fun ChartHeader(script: Script, progressCopy: ChartProgressCopy) {
 }
 
 @Composable
-private fun ChartRowFilters(rows: List<String>, selectedRow: String?, onRowChange: (String?) -> Unit) {
+private fun ChartRowFilters(
+    rows: List<String>,
+    selectedRow: String?,
+    onEarcon: (KanaEarcon) -> Unit,
+    onRowChange: (String?) -> Unit
+) {
     LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
         item {
             AssistChip(
-                onClick = { onRowChange(null) },
+                onClick = {
+                    onEarcon(KanaEarcon.Select)
+                    onRowChange(null)
+                },
                 label = { Text(stringResource(R.string.chart_filter_all)) },
                 leadingIcon = {
                     if (selectedRow == null) Icon(Icons.Outlined.CheckCircle, contentDescription = null, modifier = Modifier.size(18.dp))
@@ -252,7 +267,10 @@ private fun ChartRowFilters(rows: List<String>, selectedRow: String?, onRowChang
         }
         items(rows) { row ->
             AssistChip(
-                onClick = { onRowChange(row) },
+                onClick = {
+                    onEarcon(KanaEarcon.Select)
+                    onRowChange(row)
+                },
                 label = { Text(localizedChartRowLabel(row)) },
                 leadingIcon = {
                     if (selectedRow == row) Icon(Icons.Outlined.CheckCircle, contentDescription = null, modifier = Modifier.size(18.dp))

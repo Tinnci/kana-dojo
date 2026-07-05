@@ -62,6 +62,7 @@ fun LessonPathScreen(
     practiceEpochDays: Set<Long>,
     currentEpochDay: Long,
     onSpeak: (String) -> Unit,
+    onEarcon: (KanaEarcon) -> Unit,
     reduceMotion: Boolean,
     onOpenPractice: (PracticeMode) -> Unit,
     onResult: (List<KanaItem>, Boolean) -> Unit
@@ -123,18 +124,22 @@ fun LessonPathScreen(
             lessons = lessons,
             mastery = mastery,
             onSpeak = onSpeak,
+            onEarcon = onEarcon,
             reduceMotion = reduceMotion,
             onResult = onResult,
             onExit = { cue ->
+                onEarcon(KanaEarcon.Navigate)
                 resumeCue = cue
                 activeLesson = null
             },
             onLessonComplete = { stats ->
+                onEarcon(KanaEarcon.Continue)
                 resumeCue = null
                 completedLessonResult = CompletedLessonResult(runningLesson, stats)
                 activeLesson = null
             },
             onReviewMistakes = {
+                onEarcon(KanaEarcon.Review)
                 resumeCue = null
                 completedLessonResult = null
                 activeLesson = null
@@ -169,10 +174,14 @@ fun LessonPathScreen(
                             PathFeedbackAction.StartLesson -> {
                                 feedback.targetLessonIndex
                                     ?.let { index -> lessons.firstOrNull { it.index == index } }
-                                    ?.let { activeLesson = it }
+                                    ?.let {
+                                        onEarcon(KanaEarcon.Start)
+                                        activeLesson = it
+                                    }
                             }
 
                             PathFeedbackAction.OpenPractice -> {
+                                onEarcon(KanaEarcon.Review)
                                 onOpenPractice(feedback.practiceMode ?: PracticeMode.Weak)
                             }
                         }
@@ -186,6 +195,7 @@ fun LessonPathScreen(
                     cue = cue,
                     onResume = {
                         lessons.firstOrNull { it.index == cue.lessonIndex }?.let { lesson ->
+                            onEarcon(KanaEarcon.Start)
                             resumeCue = null
                             completedLessonResult = null
                             activeLesson = lesson
@@ -206,11 +216,13 @@ fun LessonPathScreen(
                 startGuidance = startGuidance,
                 practiceRecommendation = practiceRecommendation,
                 onStart = {
+                    onEarcon(KanaEarcon.Start)
                     resumeCue = null
                     completedLessonResult = null
                     activeLesson = nextLesson
                 },
                 onReview = {
+                    onEarcon(KanaEarcon.Review)
                     completedLessonResult = null
                     onOpenPractice(it)
                 }
@@ -224,14 +236,20 @@ fun LessonPathScreen(
                 stages = lessonStages,
                 selectedStage = selectedStage,
                 progressCopy = stageProgressCopy,
-                onStageChange = { selectedStage = it }
+                onStageChange = {
+                    onEarcon(KanaEarcon.Select)
+                    selectedStage = it
+                }
             )
         }
         stageEmptyStateCopy?.let { copy ->
             item {
                 StageEmptyStatePanel(
                     copy = copy,
-                    onClear = { selectedStage = null }
+                    onClear = {
+                        onEarcon(KanaEarcon.Reset)
+                        selectedStage = null
+                    }
                 )
             }
         }
@@ -239,6 +257,7 @@ fun LessonPathScreen(
             val unlocked = isLessonUnlocked(lesson, lessons, mastery)
             val lockCopy = lessonLockCopyFor(lesson, lessons, mastery)
             val learned = lesson.items.count { (mastery[it.id] ?: 0) > 0 }
+            val focusedLesson = lesson.index == nextLesson.index
             LessonNode(
                 lesson = lesson,
                 learned = learned,
@@ -246,9 +265,10 @@ fun LessonPathScreen(
                 averageMastery = lessonAverageMastery(lesson, mastery),
                 unlocked = unlocked,
                 lockCopy = lockCopy,
-                focus = lesson.index == nextLesson.index,
+                focus = focusedLesson,
                 onStart = {
                     if (unlocked) {
+                        onEarcon(if (focusedLesson) KanaEarcon.Start else KanaEarcon.Select)
                         resumeCue = null
                         completedLessonResult = null
                         activeLesson = lesson

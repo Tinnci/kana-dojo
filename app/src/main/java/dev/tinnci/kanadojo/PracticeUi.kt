@@ -76,6 +76,7 @@ fun MistakePracticeScreen(
     reviewDueEpochDays: Map<String, Long>,
     currentEpochDay: Long,
     onSpeak: (String) -> Unit,
+    onEarcon: (KanaEarcon) -> Unit,
     reduceMotion: Boolean,
     onResult: (List<KanaItem>, Boolean) -> Unit,
     onReturnToPath: () -> Unit
@@ -185,7 +186,10 @@ fun MistakePracticeScreen(
             selectedMode = selectedMode,
             recommendedMode = initialMode,
             fallbackMode = fallbackMode,
-            onModeChange = { selectedMode = it }
+            onModeChange = {
+                onEarcon(KanaEarcon.Select)
+                selectedMode = it
+            }
         )
         PracticeQueueIntent(
             state = PracticeQueueIntentState(
@@ -205,11 +209,17 @@ fun MistakePracticeScreen(
                 goal = sessionGoal,
                 previewItems = practiceItems.take(8),
                 previewReasons = previewReasons,
-                onStart = { showIntro = false }
+                onStart = {
+                    onEarcon(KanaEarcon.Start)
+                    showIntro = false
+                }
             )
             return@Column
         }
         if (queueComplete) {
+            LaunchedEffect(selectedMode, queueSignature) {
+                onEarcon(KanaEarcon.Complete)
+            }
             val outcomes = reviewSessionOutcomesFor(correctCounts, missCounts)
             PracticeCompletionPanel(
                 mode = selectedMode,
@@ -222,6 +232,7 @@ fun MistakePracticeScreen(
                 reduceMotion = reduceMotion,
                 onReturnToPath = onReturnToPath,
                 onRepeat = {
+                    onEarcon(KanaEarcon.Reset)
                     currentIndex = 0
                     feedback = null
                     sessionStats = LessonSessionStats()
@@ -245,6 +256,7 @@ fun MistakePracticeScreen(
             exercise = exercise,
             allItems = optionItems,
             onSpeak = onSpeak,
+            onEarcon = onEarcon,
             reduceMotion = reduceMotion,
             feedback = feedback,
             onAnswer = { correct ->
@@ -264,6 +276,7 @@ fun MistakePracticeScreen(
                 }
             },
             onContinue = {
+                onEarcon(KanaEarcon.Continue)
                 currentIndex += 1
                 feedback = null
             }

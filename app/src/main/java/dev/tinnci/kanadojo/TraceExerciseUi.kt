@@ -64,6 +64,7 @@ import androidx.compose.ui.unit.sp
 fun TraceKanaExercise(
     item: KanaItem,
     answered: Boolean,
+    onEarcon: (KanaEarcon) -> Unit,
     reduceMotion: Boolean,
     onSpeak: (String) -> Unit,
     onAnswer: (Boolean) -> Unit
@@ -197,6 +198,7 @@ fun TraceKanaExercise(
                 TraceRemediationPanel(
                     remediation = copy,
                     onRetry = {
+                        onEarcon(KanaEarcon.Reset)
                         points = emptyList()
                         showComparison = false
                         showRemediation = false
@@ -207,6 +209,7 @@ fun TraceKanaExercise(
         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
             OutlinedButton(
                 onClick = {
+                    onEarcon(KanaEarcon.Reset)
                     points = emptyList()
                     showComparison = false
                     showRemediation = false
@@ -217,6 +220,7 @@ fun TraceKanaExercise(
             }
             OutlinedButton(
                 onClick = {
+                    onEarcon(KanaEarcon.Select)
                     val next = !showComparison
                     showComparison = next
                     if (next && points.size > 1) replayNonce += 1
@@ -237,6 +241,7 @@ fun TraceKanaExercise(
                     if (traceScore.ready) {
                         onAnswer(true)
                     } else {
+                        onEarcon(KanaEarcon.Incorrect)
                         showRemediation = true
                         showComparison = true
                         if (points.size > 1) replayNonce += 1

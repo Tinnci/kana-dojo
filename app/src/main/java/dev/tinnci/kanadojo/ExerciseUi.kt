@@ -66,6 +66,7 @@ fun ExerciseCard(
     exercise: Exercise,
     allItems: List<KanaItem>,
     onSpeak: (String) -> Unit,
+    onEarcon: (KanaEarcon) -> Unit,
     reduceMotion: Boolean,
     feedback: AnswerFeedback?,
     onAnswer: (Boolean) -> Unit,
@@ -119,6 +120,7 @@ fun ExerciseCard(
                     ExerciseKind.TraceKana -> TraceKanaExercise(
                         item = exercise.items.first(),
                         answered = feedback != null,
+                        onEarcon = onEarcon,
                         reduceMotion = reduceMotion,
                         onSpeak = onSpeak,
                         onAnswer = onAnswer

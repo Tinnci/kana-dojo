@@ -59,13 +59,19 @@ private fun KanaDojoApp() {
     }
 
     val tts = rememberKanaSpeech()
+    val earcons = rememberKanaEarcons(soundEnabled)
     val haptic = LocalHapticFeedback.current
+    val playEarcon: (KanaEarcon) -> Unit = { earcon ->
+        earcons.play(earcon)
+    }
     val speakKana: (String) -> Unit = { kana ->
         if (soundEnabled) {
+            playEarcon(KanaEarcon.Speak)
             tts.speak(kana)
         }
     }
     val markResult: (List<KanaItem>, Boolean) -> Unit = { items, correct ->
+        playEarcon(if (correct) KanaEarcon.Correct else KanaEarcon.Incorrect)
         if (hapticsEnabled) {
             haptic.performHapticFeedback(if (correct) HapticFeedbackType.Confirm else HapticFeedbackType.Reject)
         }
@@ -85,23 +91,40 @@ private fun KanaDojoApp() {
                     reduceMotion = reduceMotion,
                     soundEnabled = soundEnabled,
                     hapticsEnabled = hapticsEnabled,
-                    onScriptChange = { selectedScript = it },
+                    onScriptChange = {
+                        playEarcon(KanaEarcon.Navigate)
+                        selectedScript = it
+                    },
                     onReduceMotionChange = {
+                        playEarcon(KanaEarcon.Select)
                         reduceMotion = it
                         progressStore.setReduceMotion(it)
                     },
                     onSoundEnabledChange = {
                         soundEnabled = it
                         progressStore.setSoundEnabled(it)
+                        if (it) {
+                            earcons.enabled = true
+                            playEarcon(KanaEarcon.Select)
+                        }
                     },
                     onHapticsEnabledChange = {
+                        playEarcon(KanaEarcon.Select)
                         hapticsEnabled = it
                         progressStore.setHapticsEnabled(it)
                     }
                 )
             },
             bottomBar = {
-                KanaBottomBar(currentTab = currentTab, onTabChange = { currentTab = it })
+                KanaBottomBar(
+                    currentTab = currentTab,
+                    onTabChange = {
+                        if (currentTab != it) {
+                            playEarcon(KanaEarcon.Navigate)
+                        }
+                        currentTab = it
+                    }
+                )
             }
         ) { padding ->
             AnimatedContent(
@@ -121,8 +144,10 @@ private fun KanaDojoApp() {
                         practiceEpochDays = practiceEpochDays,
                         currentEpochDay = today,
                         onSpeak = speakKana,
+                        onEarcon = playEarcon,
                         reduceMotion = reduceMotion,
                         onOpenPractice = { mode ->
+                            playEarcon(KanaEarcon.Review)
                             requestedPracticeMode = mode
                             currentTab = ScreenTab.Mistakes
                         },
@@ -132,7 +157,8 @@ private fun KanaDojoApp() {
                     ScreenTab.Chart -> KanaChartScreen(
                         script = selectedScript,
                         mastery = mastery,
-                        onSpeak = speakKana
+                        onSpeak = speakKana,
+                        onEarcon = playEarcon
                     )
 
                     ScreenTab.Mistakes -> MistakePracticeScreen(
@@ -144,9 +170,13 @@ private fun KanaDojoApp() {
                         reviewDueEpochDays = reviewDueEpochDays,
                         currentEpochDay = today,
                         onSpeak = speakKana,
+                        onEarcon = playEarcon,
                         reduceMotion = reduceMotion,
                         onResult = markResult,
-                        onReturnToPath = { currentTab = ScreenTab.Lessons }
+                        onReturnToPath = {
+                            playEarcon(KanaEarcon.Navigate)
+                            currentTab = ScreenTab.Lessons
+                        }
                     )
                 }
             }
