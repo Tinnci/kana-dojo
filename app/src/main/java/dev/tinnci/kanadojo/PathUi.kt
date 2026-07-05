@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -359,9 +360,11 @@ private fun DailyFocusPanel(
 ) {
     val phaseSummary = remember(lesson) { lessonPhaseSummaryFor(lesson) }
     val startPreview = remember(lesson) { lessonStartPreviewFor(lesson) }
+    val primaryFocus = remember(lesson) { pathPrimaryFocusCopyFor(lesson) }
     Surface(
         shape = RoundedCornerShape(22.dp),
-        color = MaterialTheme.colorScheme.tertiaryContainer,
+        color = MaterialTheme.colorScheme.primaryContainer,
+        tonalElevation = 3.dp,
         modifier = Modifier.fillMaxWidth()
     ) {
         Column(
@@ -381,14 +384,19 @@ private fun DailyFocusPanel(
                 }
                 Spacer(Modifier.width(16.dp))
                 Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                    Text("Today's focus", style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Bold)
-                    Text(lesson.title, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Black)
+                    Text(primaryFocus.badge, style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Bold)
+                    Text(primaryFocus.title, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Black)
                     Text(
-                        "${lesson.stage.label} - ${masteryLabel(averageMastery)} - ${lesson.items.joinToString(" ") { it.kana }}",
+                        primaryFocus.message,
                         style = MaterialTheme.typography.bodyMedium
                     )
                 }
             }
+            Text(
+                "${lesson.title} - ${lesson.stage.label} - ${masteryLabel(averageMastery)}",
+                style = MaterialTheme.typography.labelLarge,
+                fontWeight = FontWeight.Bold
+            )
             startGuidance?.let { PathStartGuidancePanel(it) }
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
                 FocusMetric("Due", dueReviewCount, Modifier.weight(1f))
@@ -402,20 +410,28 @@ private fun DailyFocusPanel(
             }
             PracticeRecommendationPanel(practiceRecommendation)
             LessonStartPreviewPanel(startPreview)
-            Row(horizontalArrangement = Arrangement.spacedBy(10.dp), modifier = Modifier.fillMaxWidth()) {
-                Button(onClick = onStart, shape = RoundedCornerShape(18.dp), modifier = Modifier.weight(1f)) {
+            Column(verticalArrangement = Arrangement.spacedBy(10.dp), modifier = Modifier.fillMaxWidth()) {
+                Button(
+                    onClick = onStart,
+                    shape = RoundedCornerShape(18.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .heightIn(min = 54.dp)
+                ) {
                     Icon(Icons.Outlined.PlayArrow, contentDescription = null)
                     Spacer(Modifier.width(8.dp))
-                    Text("Start")
+                    Text(primaryFocus.primaryActionLabel, fontWeight = FontWeight.Black)
                 }
                 FilledTonalButton(
                     onClick = { onReview(practiceRecommendation.mode) },
                     shape = RoundedCornerShape(18.dp),
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .heightIn(min = 50.dp)
                 ) {
                     Icon(Icons.Outlined.Replay, contentDescription = null)
                     Spacer(Modifier.width(8.dp))
-                    Text(practiceRecommendation.actionLabel)
+                    Text("${primaryFocus.secondaryActionPrefix}: ${practiceRecommendation.actionLabel}")
                 }
             }
         }

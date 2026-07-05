@@ -60,6 +60,14 @@ data class PathStartGuidance(
     val message: String
 )
 
+data class PathPrimaryFocusCopy(
+    val badge: String,
+    val title: String,
+    val message: String,
+    val primaryActionLabel: String,
+    val secondaryActionPrefix: String
+)
+
 data class LessonStartPreview(
     val title: String,
     val message: String,
@@ -271,6 +279,15 @@ fun pathPracticeRecommendationFor(
             actionLabel = "Listen"
         )
     }
+
+fun pathPrimaryFocusCopyFor(lesson: KanaLesson): PathPrimaryFocusCopy =
+    PathPrimaryFocusCopy(
+        badge = "Focus / 重点",
+        title = "Start here / 从这里开始",
+        message = "Kana first: ${lesson.items.joinToString(" ") { it.kana }}. Short lesson, immediate feedback, then review only what needs repair.",
+        primaryActionLabel = "Start lesson / 开始课程",
+        secondaryActionPrefix = "Optional practice / 可选练习"
+    )
 
 fun dailyRhythmFor(practiceEpochDays: Set<Long>, currentEpochDay: Long): DailyRhythm {
     val days = (6 downTo 0).map { offset ->

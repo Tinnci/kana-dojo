@@ -409,6 +409,19 @@ class KanaCurriculumTest {
     }
 
     @Test
+    fun pathPrimaryFocusCopyMakesStartingPointBilingualAndConcrete() {
+        val lesson = lessonsFor(Script.Hiragana).first()
+        val copy = pathPrimaryFocusCopyFor(lesson)
+
+        assertEquals("Focus / 重点", copy.badge)
+        assertEquals("Start here / 从这里开始", copy.title)
+        assertEquals("Start lesson / 开始课程", copy.primaryActionLabel)
+        assertEquals("Optional practice / 可选练习", copy.secondaryActionPrefix)
+        assertTrue(copy.message.contains("Kana first"))
+        assertTrue(copy.message.contains(lesson.items.first().kana))
+    }
+
+    @Test
     fun dailyRhythmMarksTodayWithoutStreakPressure() {
         val rhythm = dailyRhythmFor(
             practiceEpochDays = setOf(94L, 97L, 100L),
