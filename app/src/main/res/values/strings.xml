@@ -5,6 +5,8 @@
     <string name="settings_sound">Sound</string>
     <string name="settings_reduced_motion">Reduced motion</string>
     <string name="settings_haptics">Haptics</string>
+    <string name="script_hiragana">Hiragana</string>
+    <string name="script_katakana">Katakana</string>
     <string name="script_hiragana_short">Hira</string>
     <string name="script_katakana_short">Kata</string>
     <string name="tab_lessons">Lessons</string>
@@ -15,5 +17,6 @@
     <string name="action_repair_mistakes">Repair mistakes</string>
     <string name="action_start_repair">Start repair</string>
     <string name="action_start_practice">Start practice</string>
+    <string name="path_header_title">%1$s path</string>
     <string name="chart_header_title">%1$s chart</string>
 </resources>

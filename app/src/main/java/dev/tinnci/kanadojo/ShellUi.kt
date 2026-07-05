@@ -94,12 +94,7 @@ fun KanaTopBar(
                         onClick = { onScriptChange(script) },
                         shape = SegmentedButtonDefaults.itemShape(index = index, count = Script.entries.size),
                         label = {
-                            Text(
-                                when (script) {
-                                    Script.Hiragana -> stringResource(R.string.script_hiragana_short)
-                                    Script.Katakana -> stringResource(R.string.script_katakana_short)
-                                }
-                            )
+                            Text(stringResource(script.shortNameResId))
                         }
                     )
                 }

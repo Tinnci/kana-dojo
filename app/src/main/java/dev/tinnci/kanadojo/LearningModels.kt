@@ -1,9 +1,15 @@
 package dev.tinnci.kanadojo
 
-enum class Script(val label: String) {
-    Hiragana("Hiragana"),
-    Katakana("Katakana")
+enum class Script {
+    Hiragana,
+    Katakana
 }
+
+private val Script.englishLabel: String
+    get() = when (this) {
+        Script.Hiragana -> "Hiragana"
+        Script.Katakana -> "Katakana"
+    }
 
 enum class ScreenTab {
     Lessons,
@@ -482,7 +488,7 @@ fun practicePreviewReasonFor(
         PracticeMode.Contrast -> if (item.confusable.isNotEmpty()) "look" else "m$level"
         PracticeMode.Writing -> "m$level"
         PracticeMode.Speed -> if (level >= 2) "recall" else "early"
-        PracticeMode.Cross -> if (level >= 2) item.script.label.take(4) else "early"
+        PracticeMode.Cross -> if (level >= 2) item.script.englishLabel.take(4) else "early"
         PracticeMode.Mixed -> if (level >= 2) "recall" else "m$level"
     }
 }
@@ -515,12 +521,12 @@ fun practiceQueueSourceCueFor(
         )
 
         selectedMode == recommendedMode -> PracticeQueueSourceCue(
-            title = "${script.label} recommended",
+            title = "${script.englishLabel} recommended",
             message = "This queue follows the path recommendation for the selected script."
         )
 
         else -> PracticeQueueSourceCue(
-            title = script.label,
+            title = script.englishLabel,
             message = "This queue uses the currently selected script."
         )
     }

@@ -703,7 +703,11 @@ private fun PathHeroPanel(
                 }
                 Spacer(Modifier.width(16.dp))
                 Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                    Text("${script.label} path", style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Bold)
+                    Text(
+                        stringResource(R.string.path_header_title, stringResource(script.displayNameResId)),
+                        style = MaterialTheme.typography.labelLarge,
+                        fontWeight = FontWeight.Bold
+                    )
                     Text(nextLesson.title, style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Black)
                     Text(
                         "$priorityLabel - ${nextLesson.items.joinToString(" ") { it.kana }}",

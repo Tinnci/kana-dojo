@@ -5,6 +5,8 @@
     <string name="settings_sound">声音</string>
     <string name="settings_reduced_motion">减少动态效果</string>
     <string name="settings_haptics">触感反馈</string>
+    <string name="script_hiragana">平假名</string>
+    <string name="script_katakana">片假名</string>
     <string name="script_hiragana_short">平假</string>
     <string name="script_katakana_short">片假</string>
     <string name="tab_lessons">课程</string>
@@ -15,5 +17,6 @@
     <string name="action_repair_mistakes">修复错题</string>
     <string name="action_start_repair">开始巩固</string>
     <string name="action_start_practice">开始练习</string>
+    <string name="path_header_title">%1$s路径</string>
     <string name="chart_header_title">%1$s 假名表</string>
 </resources>
