@@ -263,9 +263,10 @@ Implemented:
 - Added tested compact completion action-button accessibility traversal UI action-count audit.
 - Added tested compact completion action-button accessibility traversal UI metadata pairing audit.
 - Added compact completion action-button accessibility traversal UI metadata naming audit.
+- Added tested compact completion action-button accessibility traversal UI metadata bounds audit.
 
 ## Next Polish Pass
 
 Implement next:
 
-- Add compact completion action-button accessibility traversal UI metadata bounds audit.
+- Add compact completion action-button accessibility traversal UI metadata ordering audit.

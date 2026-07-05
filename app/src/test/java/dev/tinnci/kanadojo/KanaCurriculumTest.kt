@@ -1528,6 +1528,17 @@ class KanaCurriculumTest {
     }
 
     @Test
+    fun practiceCompletionActionButtonMetadataTraversalStaysWithinUiActionBounds() {
+        ReviewCompletionAction.entries.forEach { action ->
+            val actionButtons = practiceCompletionActionButtonMetadataInDisplayOrder(completionAction = action)
+            val upperBound = actionButtons.size.toFloat()
+
+            assertTrue(actionButtons.all { it.accessibilityTraversalIndex >= 0f })
+            assertTrue(actionButtons.all { it.accessibilityTraversalIndex < upperBound })
+        }
+    }
+
+    @Test
     fun practiceCompletionActionTraversalIndicesReturnStableOrderedValues() {
         ReviewCompletionAction.entries.forEach { action ->
             val traversalIndices = practiceCompletionActionTraversalIndicesInDisplayOrder(completionAction = action)
