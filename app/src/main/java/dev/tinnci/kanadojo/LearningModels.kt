@@ -205,6 +205,14 @@ data class PracticeCompletionActionButtonMetadata(
     val accessibilityTraversalIndex: Float
 )
 
+data class PracticeCompletionActionButtonSemantics(
+    val contentDescription: String,
+    val stateDescription: String,
+    val clickLabel: String,
+    val traversalIndex: Float,
+    val mergeDescendants: Boolean = true
+)
+
 enum class PracticeActionRoleTone {
     Primary,
     Optional,
@@ -711,6 +719,26 @@ fun practiceCompletionActionHintFor(
         actionSemanticLabel = actionButton.actionSemanticLabel,
         enabled = enabled,
         disabledCopy = disabledCopy
+    )
+
+fun practiceCompletionActionButtonSemanticsFor(
+    actionButton: PracticeCompletionActionButtonMetadata,
+    enabled: Boolean,
+    disabledCopy: PracticeCompletionDisabledActionCopy? = null
+): PracticeCompletionActionButtonSemantics =
+    PracticeCompletionActionButtonSemantics(
+        contentDescription = actionButton.accessibilitySemanticLabel,
+        stateDescription = practiceCompletionActionStateDescriptionFor(
+            actionButton = actionButton,
+            enabled = enabled,
+            disabledCopy = disabledCopy
+        ),
+        clickLabel = practiceCompletionActionHintFor(
+            actionButton = actionButton,
+            enabled = enabled,
+            disabledCopy = disabledCopy
+        ),
+        traversalIndex = actionButton.accessibilityTraversalIndex
     )
 
 fun practiceRepeatActionLabelFor(mode: PracticeMode, compact: Boolean = false): String =

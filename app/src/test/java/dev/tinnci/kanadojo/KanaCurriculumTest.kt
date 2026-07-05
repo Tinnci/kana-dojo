@@ -1292,6 +1292,45 @@ class KanaCurriculumTest {
     }
 
     @Test
+    fun practiceCompletionActionButtonSemanticsMergeMetadataIntoSingleNode() {
+        val disabledCopy = PracticeCompletionDisabledActionCopy(
+            title = "No repeat queue",
+            message = "There are no kana in this queue yet, so repeat is disabled."
+        )
+        val cleanActionButtons = practiceCompletionActionButtonMetadataInDisplayOrder(
+            completionAction = ReviewCompletionAction.ReturnToPath,
+            mode = PracticeMode.Mixed
+        )
+        val repeatActionButton = practiceCompletionActionButtonMetadataInDisplayOrder(
+            completionAction = ReviewCompletionAction.RepeatQueue,
+            mode = PracticeMode.Sound
+        ).single()
+
+        val returnSemantics = practiceCompletionActionButtonSemanticsFor(
+            actionButton = cleanActionButtons.first(),
+            enabled = true
+        )
+        val disabledRepeatSemantics = practiceCompletionActionButtonSemanticsFor(
+            actionButton = repeatActionButton,
+            enabled = false,
+            disabledCopy = disabledCopy
+        )
+
+        assertTrue(returnSemantics.mergeDescendants)
+        assertEquals("Primary action: Return to lesson path", returnSemantics.contentDescription)
+        assertEquals("Available", returnSemantics.stateDescription)
+        assertEquals("Activate Return to lesson path", returnSemantics.clickLabel)
+        assertEquals(0f, returnSemantics.traversalIndex)
+        assertTrue(disabledRepeatSemantics.mergeDescendants)
+        assertEquals("Repeat first action: Repeat sound recall queue", disabledRepeatSemantics.contentDescription)
+        assertEquals(
+            "Unavailable: No repeat queue. There are no kana in this queue yet, so repeat is disabled.",
+            disabledRepeatSemantics.stateDescription
+        )
+        assertEquals("Action unavailable: No repeat queue", disabledRepeatSemantics.clickLabel)
+    }
+
+    @Test
     fun practiceCompletionActionStateDescriptionsExplainAvailability() {
         val disabledCopy = PracticeCompletionDisabledActionCopy(
             title = "No repeat queue",

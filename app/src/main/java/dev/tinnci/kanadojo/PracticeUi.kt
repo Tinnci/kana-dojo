@@ -439,18 +439,11 @@ private fun PracticeCompletionActionGroup(
                 enabled = actionAvailability.returnToPathEnabled,
                 shape = RoundedCornerShape(18.dp),
                 modifier = Modifier.practiceCompletionActionButtonTouchTarget(
-                    actionSemanticLabel = returnActionButton.accessibilitySemanticLabel,
-                    stateDescription = practiceCompletionActionStateDescriptionFor(
+                    semantics = practiceCompletionActionButtonSemanticsFor(
                         actionButton = returnActionButton,
                         enabled = actionAvailability.returnToPathEnabled,
                         disabledCopy = disabledActionCopy
-                    ),
-                    actionHint = practiceCompletionActionHintFor(
-                        actionButton = returnActionButton,
-                        enabled = actionAvailability.returnToPathEnabled,
-                        disabledCopy = disabledActionCopy
-                    ),
-                    actionTraversalIndex = returnActionButton.accessibilityTraversalIndex
+                    )
                 )
             ) {
                 Icon(Icons.Outlined.School, contentDescription = null, modifier = Modifier.size(20.dp))
@@ -463,18 +456,11 @@ private fun PracticeCompletionActionGroup(
                 enabled = actionAvailability.repeatEnabled,
                 shape = RoundedCornerShape(18.dp),
                 modifier = Modifier.practiceCompletionActionButtonTouchTarget(
-                    actionSemanticLabel = repeatActionButton.accessibilitySemanticLabel,
-                    stateDescription = practiceCompletionActionStateDescriptionFor(
+                    semantics = practiceCompletionActionButtonSemanticsFor(
                         actionButton = repeatActionButton,
                         enabled = actionAvailability.repeatEnabled,
                         disabledCopy = disabledActionCopy
-                    ),
-                    actionHint = practiceCompletionActionHintFor(
-                        actionButton = repeatActionButton,
-                        enabled = actionAvailability.repeatEnabled,
-                        disabledCopy = disabledActionCopy
-                    ),
-                    actionTraversalIndex = repeatActionButton.accessibilityTraversalIndex
+                    )
                 )
             ) {
                 Icon(Icons.Outlined.Replay, contentDescription = null, modifier = Modifier.size(20.dp))
@@ -529,18 +515,11 @@ private fun PracticeRepeatRequiredActionGroup(
                     contentColor = MaterialTheme.colorScheme.onError
                 ),
                 modifier = Modifier.practiceCompletionActionButtonTouchTarget(
-                    actionSemanticLabel = repeatActionButton.accessibilitySemanticLabel,
-                    stateDescription = practiceCompletionActionStateDescriptionFor(
+                    semantics = practiceCompletionActionButtonSemanticsFor(
                         actionButton = repeatActionButton,
                         enabled = actionAvailability.repeatEnabled,
                         disabledCopy = disabledActionCopy
-                    ),
-                    actionHint = practiceCompletionActionHintFor(
-                        actionButton = repeatActionButton,
-                        enabled = actionAvailability.repeatEnabled,
-                        disabledCopy = disabledActionCopy
-                    ),
-                    actionTraversalIndex = repeatActionButton.accessibilityTraversalIndex
+                    )
                 )
             ) {
                 Icon(Icons.Outlined.Replay, contentDescription = null, modifier = Modifier.size(20.dp))
@@ -553,19 +532,16 @@ private fun PracticeRepeatRequiredActionGroup(
 }
 
 private fun Modifier.practiceCompletionActionButtonTouchTarget(
-    actionSemanticLabel: String,
-    stateDescription: String,
-    actionHint: String,
-    actionTraversalIndex: Float
+    semantics: PracticeCompletionActionButtonSemantics
 ): Modifier =
     fillMaxWidth()
         .heightIn(min = 48.dp)
-        .semantics(mergeDescendants = true) {
-            contentDescription = actionSemanticLabel
+        .semantics(mergeDescendants = semantics.mergeDescendants) {
+            contentDescription = semantics.contentDescription
             role = Role.Button
-            this.stateDescription = stateDescription
-            traversalIndex = actionTraversalIndex
-            onClick(label = actionHint, action = null)
+            this.stateDescription = semantics.stateDescription
+            traversalIndex = semantics.traversalIndex
+            onClick(label = semantics.clickLabel, action = null)
         }
 
 private fun Modifier.practiceCompletionActionGroupSummary(action: ReviewCompletionAction): Modifier =
