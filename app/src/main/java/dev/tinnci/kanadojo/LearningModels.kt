@@ -32,7 +32,9 @@ enum class PracticeMode(val label: String, val title: String, val subtitle: Stri
 data class PracticeIntroCopy(
     val title: String,
     val subtitle: String,
-    val actionLabel: String
+    val actionLabel: String,
+    val badge: String = "Practice focus / 练习重点",
+    val bilingualTitle: String = "Start practice / 开始练习"
 )
 
 data class PracticeRecommendation(
@@ -541,26 +543,26 @@ fun reviewIntroCopyFor(mode: PracticeMode, dueCount: Int, weakCount: Int): Pract
             dueCount > 0 -> PracticeIntroCopy(
                 title = "Due recall",
                 subtitle = "Start with kana whose spacing has matured today.",
-                actionLabel = "Review due"
+                actionLabel = "Review due / 复习到期"
             )
 
             weakCount > 0 -> PracticeIntroCopy(
                 title = "Mistake repair",
                 subtitle = "Replay missed kana before they settle into the wrong shape.",
-                actionLabel = "Repair mistakes"
+                actionLabel = "Repair mistakes / 修复错误"
             )
 
             else -> PracticeIntroCopy(
                 title = "Low-mastery repair",
                 subtitle = "Build shaky kana toward stable recall.",
-                actionLabel = "Start repair"
+                actionLabel = "Start repair / 开始巩固"
             )
         }
 
         else -> PracticeIntroCopy(
             title = mode.title,
             subtitle = mode.subtitle,
-            actionLabel = "Start"
+            actionLabel = "Start practice / 开始练习"
         )
     }
 

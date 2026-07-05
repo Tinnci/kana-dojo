@@ -783,7 +783,9 @@ class KanaCurriculumTest {
         val intro = reviewIntroCopyFor(PracticeMode.Weak, dueCount = 3, weakCount = 2)
 
         assertEquals("Due recall", intro.title)
-        assertEquals("Review due", intro.actionLabel)
+        assertEquals("Review due / 复习到期", intro.actionLabel)
+        assertEquals("Practice focus / 练习重点", intro.badge)
+        assertEquals("Start practice / 开始练习", intro.bilingualTitle)
     }
 
     @Test
@@ -792,7 +794,9 @@ class KanaCurriculumTest {
         val lowMasteryIntro = reviewIntroCopyFor(PracticeMode.Weak, dueCount = 0, weakCount = 0)
 
         assertEquals("Mistake repair", mistakeIntro.title)
+        assertEquals("Repair mistakes / 修复错误", mistakeIntro.actionLabel)
         assertEquals("Low-mastery repair", lowMasteryIntro.title)
+        assertEquals("Start repair / 开始巩固", lowMasteryIntro.actionLabel)
     }
 
     @Test
@@ -800,7 +804,7 @@ class KanaCurriculumTest {
         val intro = reviewIntroCopyFor(PracticeMode.Contrast, dueCount = 4, weakCount = 3)
 
         assertEquals(PracticeMode.Contrast.title, intro.title)
-        assertEquals("Start", intro.actionLabel)
+        assertEquals("Start practice / 开始练习", intro.actionLabel)
     }
 
     @Test

@@ -172,6 +172,7 @@ Implemented:
 - Data-driven path hero that previews the next lesson, overall progress, lesson progress, and review pressure.
 - Material-aligned path elevation pass: active next lesson is raised while regular lesson cards stay flat, and the hero uses tone instead of decorative gradient.
 - Bilingual path start focus with `Focus / 重点`, `Start here / 从这里开始`, and a full-width primary start action.
+- Bilingual practice start focus with `Practice focus / 练习重点`, full-width primary practice actions, and tone-based hero hierarchy.
 - Reduced-motion top-bar toggle that disables trace replay animation while keeping comparison available.
 - Persisted reduced-motion preference.
 - Persisted sound toggle that quiets speech playback without changing lessons.

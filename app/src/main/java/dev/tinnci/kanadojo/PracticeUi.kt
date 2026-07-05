@@ -48,7 +48,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.semantics.Role
@@ -1042,8 +1041,8 @@ private fun PracticeIntroPanel(
 ) {
     Surface(
         shape = RoundedCornerShape(22.dp),
-        color = MaterialTheme.colorScheme.surface,
-        tonalElevation = 2.dp,
+        color = MaterialTheme.colorScheme.primaryContainer,
+        tonalElevation = 3.dp,
         modifier = Modifier.fillMaxWidth()
     ) {
         Column(
@@ -1053,6 +1052,8 @@ private fun PracticeIntroPanel(
             verticalArrangement = Arrangement.spacedBy(14.dp)
         ) {
             Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                Text(intro.badge, style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Bold)
+                Text(intro.bilingualTitle, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Black)
                 Text(intro.title, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Black)
                 Text(intro.subtitle, style = MaterialTheme.typography.bodyMedium)
             }
@@ -1074,8 +1075,14 @@ private fun PracticeIntroPanel(
                     }
                 }
             }
-            Button(onClick = onStart, shape = RoundedCornerShape(18.dp), modifier = Modifier.fillMaxWidth()) {
-                Text(intro.actionLabel, fontWeight = FontWeight.Bold)
+            Button(
+                onClick = onStart,
+                shape = RoundedCornerShape(18.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .heightIn(min = 54.dp)
+            ) {
+                Text(intro.actionLabel, fontWeight = FontWeight.Black)
             }
         }
     }
@@ -1106,13 +1113,12 @@ private fun PracticeGoalLine(goal: PracticeSessionGoal, modifier: Modifier = Mod
 private fun PracticeHeroPanel(title: String, subtitle: String) {
     Surface(
         shape = RoundedCornerShape(24.dp),
-        tonalElevation = 4.dp,
+        tonalElevation = 2.dp,
         color = MaterialTheme.colorScheme.primaryContainer,
         modifier = Modifier.fillMaxWidth()
     ) {
         Row(
             modifier = Modifier
-                .background(Brush.horizontalGradient(listOf(Color(0xFFDCEBDD), Color(0xFFFFF1BC))))
                 .padding(20.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
