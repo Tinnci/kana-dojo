@@ -1821,6 +1821,20 @@ class KanaCurriculumTest {
     }
 
     @Test
+    fun practiceCompletionActionButtonMetadataExcludesRoleChipsFromAccessibilityAcrossModes() {
+        PracticeMode.entries.forEach { mode ->
+            ReviewCompletionAction.entries.forEach { action ->
+                val actionButtons = practiceCompletionActionButtonMetadataInDisplayOrder(
+                    completionAction = action,
+                    mode = mode
+                )
+
+                assertTrue(actionButtons.all { shouldExcludePracticeActionRoleChipFromAccessibility(it) })
+            }
+        }
+    }
+
+    @Test
     fun practiceCompletionActionButtonMetadataKeepsRoleChipAccessibleWhenButtonDoesNotNameRole() {
         val actionButton = PracticeCompletionActionButtonMetadata(
             actionRoleLabel = "Optional repeat",
