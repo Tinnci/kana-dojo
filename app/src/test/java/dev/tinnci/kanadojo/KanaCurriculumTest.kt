@@ -1143,6 +1143,22 @@ class KanaCurriculumTest {
     }
 
     @Test
+    fun speedAnswerOutcomeTreatsSlowCorrectAnswersAsRepeats() {
+        assertEquals(
+            SpeedAnswerOutcome(correct = true, slow = false),
+            speedAnswerOutcomeFor(correct = true, elapsedMillis = SpeedPracticeTargetMillis)
+        )
+        assertEquals(
+            SpeedAnswerOutcome(correct = false, slow = true),
+            speedAnswerOutcomeFor(correct = true, elapsedMillis = SpeedPracticeTargetMillis + 1)
+        )
+        assertEquals(
+            SpeedAnswerOutcome(correct = false, slow = false),
+            speedAnswerOutcomeFor(correct = false, elapsedMillis = 50L)
+        )
+    }
+
+    @Test
     fun crossPracticeMixesBothScripts() {
         val allItems = hiraganaItems + katakanaItems
         val mastery = mapOf(

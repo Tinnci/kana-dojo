@@ -1,5 +1,6 @@
 package dev.tinnci.kanadojo
 
+import android.os.SystemClock
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateFloatAsState
@@ -43,6 +44,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -103,12 +105,16 @@ fun MistakePracticeScreen(
     var currentIndex by rememberSaveable(selectedMode, queueSignature) { mutableIntStateOf(0) }
     var feedbackCorrect by rememberSaveable(selectedMode, queueSignature, currentIndex) { mutableStateOf<Boolean?>(null) }
     var feedbackAnswer by rememberSaveable(selectedMode, queueSignature, currentIndex) { mutableStateOf<String?>(null) }
+    var feedbackSlow by rememberSaveable(selectedMode, queueSignature, currentIndex) { mutableStateOf(false) }
+    var exerciseStartedAtMillis by rememberSaveable(selectedMode, queueSignature, currentIndex) {
+        mutableLongStateOf(SystemClock.elapsedRealtime())
+    }
     var correctTotal by rememberSaveable(selectedMode, queueSignature) { mutableIntStateOf(0) }
     var missedTotal by rememberSaveable(selectedMode, queueSignature) { mutableIntStateOf(0) }
     var correctCountTokens by rememberSaveable(selectedMode, queueSignature) { mutableStateOf(emptyList<String>()) }
     var missCountTokens by rememberSaveable(selectedMode, queueSignature) { mutableStateOf(emptyList<String>()) }
     val feedback = feedbackCorrect?.let { correct ->
-        AnswerFeedback(correct = correct, answer = feedbackAnswer.orEmpty())
+        AnswerFeedback(correct = correct, answer = feedbackAnswer.orEmpty(), slow = feedbackSlow)
     }
     val sessionStats = LessonSessionStats(correct = correctTotal, missed = missedTotal)
     val correctCounts = remember(correctCountTokens) { countMapFromSnapshotTokens(correctCountTokens) }
@@ -223,6 +229,7 @@ fun MistakePracticeScreen(
                 onStart = {
                     onEarcon(KanaEarcon.Start)
                     onTaptic(KanaTaptic.Start)
+                    exerciseStartedAtMillis = SystemClock.elapsedRealtime()
                     showIntro = false
                 }
             )
@@ -267,6 +274,7 @@ fun MistakePracticeScreen(
             completed = currentIndex,
             queueSize = practiceItems.size,
             goal = sessionGoal,
+            mode = selectedMode,
             reduceMotion = reduceMotion
         )
         ExerciseCard(
@@ -279,16 +287,25 @@ fun MistakePracticeScreen(
             feedback = feedback,
             onAnswer = { correct ->
                 if (feedback == null) {
-                    feedbackCorrect = correct
+                    val speedOutcome = if (selectedMode == PracticeMode.Speed) {
+                        speedAnswerOutcomeFor(
+                            correct = correct,
+                            elapsedMillis = SystemClock.elapsedRealtime() - exerciseStartedAtMillis
+                        )
+                    } else {
+                        SpeedAnswerOutcome(correct = correct, slow = false)
+                    }
+                    feedbackCorrect = speedOutcome.correct
                     feedbackAnswer = correctAnswerFor(exercise)
-                    if (correct) {
+                    feedbackSlow = speedOutcome.slow
+                    if (speedOutcome.correct) {
                         correctTotal += 1
                         correctCountTokens = incrementCountSnapshotToken(correctCountTokens, current.id)
                     } else {
                         missedTotal += 1
                         missCountTokens = incrementCountSnapshotToken(missCountTokens, current.id)
                     }
-                    onResult(listOf(current), correct)
+                    onResult(listOf(current), speedOutcome.correct)
                 }
             },
             onContinue = {
@@ -297,6 +314,8 @@ fun MistakePracticeScreen(
                 currentIndex += 1
                 feedbackCorrect = null
                 feedbackAnswer = null
+                feedbackSlow = false
+                exerciseStartedAtMillis = SystemClock.elapsedRealtime()
             }
         )
     }
@@ -1606,6 +1625,7 @@ private fun PracticeSessionPanel(
     completed: Int,
     queueSize: Int,
     goal: PracticeSessionGoal,
+    mode: PracticeMode,
     reduceMotion: Boolean
 ) {
     val accuracy by animateFloatAsState(
@@ -1634,12 +1654,41 @@ private fun PracticeSessionPanel(
                 )
             }
             PracticeGoalLine(goal)
+            if (mode == PracticeMode.Speed) {
+                SpeedPaceTargetRow()
+            }
             LinearProgressIndicator(progress = { accuracy }, modifier = Modifier.fillMaxWidth())
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
                 FocusMetric(stringResource(R.string.metric_correct), stats.correct, Modifier.weight(1f))
                 FocusMetric(stringResource(R.string.metric_missed), stats.missed, Modifier.weight(1f))
                 FocusMetric(stringResource(R.string.metric_accuracy_short), (accuracy * 100).toInt(), Modifier.weight(1f))
             }
+        }
+    }
+}
+
+@Composable
+private fun SpeedPaceTargetRow() {
+    Surface(
+        shape = RoundedCornerShape(14.dp),
+        color = practiceModeColor(PracticeMode.Speed).copy(alpha = 0.42f),
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Row(
+            modifier = Modifier.padding(horizontal = 10.dp, vertical = 7.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Text(
+                stringResource(R.string.practice_speed_target_title),
+                style = MaterialTheme.typography.labelLarge,
+                fontWeight = FontWeight.Black
+            )
+            Text(
+                stringResource(R.string.practice_speed_target_message, (SpeedPracticeTargetMillis / 1000L).toInt()),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
         }
     }
 }

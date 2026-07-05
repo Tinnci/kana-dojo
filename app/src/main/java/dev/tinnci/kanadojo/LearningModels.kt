@@ -602,8 +602,26 @@ data class Exercise(
 
 data class AnswerFeedback(
     val correct: Boolean,
-    val answer: String
+    val answer: String,
+    val slow: Boolean = false
 )
+
+data class SpeedAnswerOutcome(
+    val correct: Boolean,
+    val slow: Boolean
+)
+
+const val SpeedPracticeTargetMillis: Long = 3_000L
+
+fun speedAnswerOutcomeFor(
+    correct: Boolean,
+    elapsedMillis: Long,
+    targetMillis: Long = SpeedPracticeTargetMillis
+): SpeedAnswerOutcome =
+    SpeedAnswerOutcome(
+        correct = correct && elapsedMillis <= targetMillis,
+        slow = correct && elapsedMillis > targetMillis
+    )
 
 data class ProgressSnapshot(
     val seen: Int,

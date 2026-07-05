@@ -222,14 +222,21 @@ private fun FeedbackBanner(feedback: AnswerFeedback) {
             Spacer(Modifier.width(10.dp))
             Column {
                 Text(
-                    if (feedback.correct) {
+                    if (feedback.slow) {
+                        stringResource(R.string.exercise_feedback_slow)
+                    } else if (feedback.correct) {
                         stringResource(R.string.exercise_feedback_correct)
                     } else {
                         stringResource(R.string.exercise_feedback_answer, feedback.answer)
                     },
                     fontWeight = FontWeight.Bold
                 )
-                if (!feedback.correct) {
+                if (feedback.slow) {
+                    Text(
+                        stringResource(R.string.exercise_feedback_speed_target, (SpeedPracticeTargetMillis / 1000L).toInt()),
+                        style = MaterialTheme.typography.bodySmall
+                    )
+                } else if (!feedback.correct) {
                     Text(stringResource(R.string.exercise_feedback_retry), style = MaterialTheme.typography.bodySmall)
                 }
             }

@@ -263,6 +263,8 @@
     <string name="practice_goal_writing_message">Trace each kana only after the stroke path feels deliberate.</string>
     <string name="practice_goal_speed_title">Keep recall fast</string>
     <string name="practice_goal_speed_message">Answer familiar kana without slowing down for labels.</string>
+    <string name="practice_speed_target_title">Pace target</string>
+    <string name="practice_speed_target_message">Under %1$d seconds. Slow correct answers repeat.</string>
     <string name="practice_goal_cross_title">Switch scripts cleanly</string>
     <string name="practice_goal_cross_message">Read hiragana and katakana in one rhythm.</string>
     <string name="practice_goal_mixed_title">Stay flexible</string>
@@ -359,6 +361,8 @@
     <string name="exercise_trace_title">Write it</string>
     <string name="exercise_trace_subtitle">Trace the kana and check your stroke shape.</string>
     <string name="exercise_feedback_correct">Nice. Keep going.</string>
+    <string name="exercise_feedback_slow">Right answer, but too slow.</string>
+    <string name="exercise_feedback_speed_target">Target: under %1$d seconds.</string>
     <string name="exercise_feedback_answer">Correct answer: %1$s</string>
     <string name="exercise_feedback_retry">This will come back soon.</string>
     <string name="exercise_hear_action">Hear it</string>

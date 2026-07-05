@@ -203,6 +203,7 @@ Implemented:
 - Animated answer feedback color and scale for choice exercises.
 - Feedback banner and continue button enter/exit motion.
 - Mode-aware practice queue panel for weak, contrast, writing, sound, speed, cross-script, and mixed review.
+- Speed rounds now show a pace target and distinguish slow-correct answers from ordinary misses.
 - Animated trace pad guide, border, background, stroke, and score-panel states.
 - Trace comparison panel with model-vs-yours view and replayed learner stroke path.
 - Stroke guidance cues for confusable kana in trace comparison.

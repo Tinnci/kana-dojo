@@ -263,6 +263,8 @@
     <string name="practice_goal_writing_message">确认笔路清楚后，再描写每个假名。</string>
     <string name="practice_goal_speed_title">保持快速回想</string>
     <string name="practice_goal_speed_message">回答熟悉假名时，不要被标签拖慢。</string>
+    <string name="practice_speed_target_title">节奏目标</string>
+    <string name="practice_speed_target_message">%1$d 秒内作答。答对但太慢也会重练。</string>
     <string name="practice_goal_cross_title">干净切换假名表</string>
     <string name="practice_goal_cross_message">用同一节奏阅读平假名和片假名。</string>
     <string name="practice_goal_mixed_title">保持灵活</string>
@@ -359,6 +361,8 @@
     <string name="exercise_trace_title">写出来</string>
     <string name="exercise_trace_subtitle">描写假名，并检查笔画形状。</string>
     <string name="exercise_feedback_correct">很好，继续。</string>
+    <string name="exercise_feedback_slow">答对了，但太慢。</string>
+    <string name="exercise_feedback_speed_target">目标：%1$d 秒内。</string>
     <string name="exercise_feedback_answer">正确答案：%1$s</string>
     <string name="exercise_feedback_retry">它很快会再次出现。</string>
     <string name="exercise_hear_action">听一下</string>
