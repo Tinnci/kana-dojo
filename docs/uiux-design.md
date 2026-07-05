@@ -92,6 +92,17 @@ Use these mechanics:
 - Mastery labels: new, familiar, recall, contrast, fluent, mastered.
 - Small wins: completion screen shows the kana just learned.
 
+## Audio Cue Strategy
+
+Audio should reinforce memory without giving away the answer.
+
+- Listening-first exercises should auto-play the target kana when the question appears, then keep a visible replay control.
+- Romaji-to-kana exercises may auto-play on entry because the sound helps map a known reading to the written symbol.
+- Kana-to-romaji exercises should not auto-play on entry because it gives away the reading. They can replay after a correct answer and still offer a manual hint.
+- Matching exercises should play the kana when either side of a pair tile is tapped, mirroring Duolingo's word-tile feedback.
+- Writing exercises should auto-play once on entry so stroke shape, symbol, and sound bind together.
+- Auto-play should not trigger haptics. Haptics belong to deliberate controls, answer feedback, and completion.
+
 Avoid these:
 
 - Streak pressure before the core learning loop is good.

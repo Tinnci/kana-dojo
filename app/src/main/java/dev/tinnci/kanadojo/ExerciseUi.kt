@@ -94,7 +94,11 @@ fun ExerciseCard(
                         options = romajiOptions(exercise.items.first(), allItems),
                         correct = exercise.items.first().romaji,
                         reduceMotion = reduceMotion,
-                        onSpeak = {
+                        autoSpeakOnEnter = false,
+                        onAutoSpeak = {
+                            onSpeak(exercise.items.first().kana)
+                        },
+                        onManualSpeak = {
                             onTaptic(KanaTaptic.Speak)
                             onSpeak(exercise.items.first().kana)
                         },
@@ -107,7 +111,11 @@ fun ExerciseCard(
                         options = kanaOptions(exercise.items.first(), allItems),
                         correct = exercise.items.first().kana,
                         reduceMotion = reduceMotion,
-                        onSpeak = {
+                        autoSpeakOnEnter = true,
+                        onAutoSpeak = {
+                            onSpeak(exercise.items.first().kana)
+                        },
+                        onManualSpeak = {
                             onTaptic(KanaTaptic.Speak)
                             onSpeak(exercise.items.first().kana)
                         },
@@ -126,6 +134,7 @@ fun ExerciseCard(
                     ExerciseKind.PairMatch -> PairMatchExercise(
                         items = exercise.items,
                         answered = feedback != null,
+                        onSpeak = onSpeak,
                         onTaptic = onTaptic,
                         onAnswer = onAnswer
                     )
@@ -250,10 +259,19 @@ private fun ChoiceExercise(
     options: List<String>,
     correct: String,
     reduceMotion: Boolean,
-    onSpeak: () -> Unit,
+    autoSpeakOnEnter: Boolean,
+    onAutoSpeak: () -> Unit,
+    onManualSpeak: () -> Unit,
     onAnswer: (Boolean) -> Unit
 ) {
     var selectedOption by rememberSaveable(prompt, correct) { mutableStateOf<String?>(null) }
+
+    LaunchedEffect(prompt, correct, autoSpeakOnEnter) {
+        if (autoSpeakOnEnter) {
+            onAutoSpeak()
+        }
+    }
+
     Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.SpaceBetween) {
         Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxWidth()) {
             Text(
@@ -263,7 +281,7 @@ private fun ChoiceExercise(
                 textAlign = TextAlign.Center,
                 modifier = Modifier.fillMaxWidth()
             )
-            FilledTonalButton(onClick = onSpeak) {
+            FilledTonalButton(onClick = onManualSpeak) {
                 Icon(Icons.Outlined.PlayArrow, contentDescription = null)
                 Spacer(Modifier.width(8.dp))
                 Text(stringResource(R.string.exercise_hear_action))
@@ -287,6 +305,9 @@ private fun ChoiceExercise(
                     onClick = {
                         if (selectedOption == null) {
                             selectedOption = option
+                            if (!autoSpeakOnEnter && option == correct) {
+                                onAutoSpeak()
+                            }
                             onAnswer(option == correct)
                         }
                     }
@@ -407,6 +428,7 @@ private fun AnswerOptionButton(
 private fun PairMatchExercise(
     items: List<KanaItem>,
     answered: Boolean,
+    onSpeak: (String) -> Unit,
     onTaptic: (KanaTaptic) -> Unit,
     onAnswer: (Boolean) -> Unit
 ) {
@@ -419,6 +441,7 @@ private fun PairMatchExercise(
     val selectedRomaji = selectedRomajiId?.let { itemsById[it] }
     val kanaColumn = remember(items) { items.shuffled(Random(lessonSeed(items))) }
     val romajiColumn = remember(items) { items.shuffled(Random(lessonSeed(items) + 9)) }
+    val pairsLeft = (items.size - matched.size).coerceAtLeast(0)
 
     LaunchedEffect(selectedKana, selectedRomaji) {
         val kana = selectedKana
@@ -440,23 +463,49 @@ private fun PairMatchExercise(
         }
     }
 
-    Row(modifier = Modifier.fillMaxSize(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-        MatchColumn(
-            entries = kanaColumn,
-            matched = matched,
-            selected = selectedKana,
-            label = { it.kana },
-            onSelect = { if (!answered) selectedKanaId = it.id },
-            modifier = Modifier.weight(1f)
-        )
-        MatchColumn(
-            entries = romajiColumn,
-            matched = matched,
-            selected = selectedRomaji,
-            label = { it.romaji },
-            onSelect = { if (!answered) selectedRomajiId = it.id },
-            modifier = Modifier.weight(1f)
-        )
+    Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+        Surface(
+            shape = RoundedCornerShape(16.dp),
+            color = MaterialTheme.colorScheme.tertiaryContainer.copy(alpha = 0.56f),
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            Row(
+                modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(stringResource(R.string.exercise_pair_match_pick_both), style = MaterialTheme.typography.labelMedium, fontWeight = FontWeight.Bold)
+                Text(stringResource(R.string.exercise_pair_match_progress, pairsLeft), style = MaterialTheme.typography.labelMedium)
+            }
+        }
+        Row(modifier = Modifier.weight(1f), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+            MatchColumn(
+                entries = kanaColumn,
+                matched = matched,
+                selected = selectedKana,
+                label = { it.kana },
+                onSelect = {
+                    if (!answered) {
+                        onSpeak(it.kana)
+                        selectedKanaId = it.id
+                    }
+                },
+                modifier = Modifier.weight(1f)
+            )
+            MatchColumn(
+                entries = romajiColumn,
+                matched = matched,
+                selected = selectedRomaji,
+                label = { it.romaji },
+                onSelect = {
+                    if (!answered) {
+                        onSpeak(it.kana)
+                        selectedRomajiId = it.id
+                    }
+                },
+                modifier = Modifier.weight(1f)
+            )
+        }
     }
 }
 

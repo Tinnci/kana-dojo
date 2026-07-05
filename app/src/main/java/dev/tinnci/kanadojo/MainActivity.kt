@@ -53,6 +53,7 @@ private fun KanaDojoApp() {
     var reduceMotion by rememberSaveable { mutableStateOf(progressStore.loadReduceMotion()) }
     var soundEnabled by rememberSaveable { mutableStateOf(progressStore.loadSoundEnabled()) }
     var hapticsEnabled by rememberSaveable { mutableStateOf(progressStore.loadHapticsEnabled()) }
+    var shellNavigationHidden by rememberSaveable { mutableStateOf(false) }
     val today = currentEpochDay()
 
     LaunchedEffect(today) {
@@ -100,53 +101,56 @@ private fun KanaDojoApp() {
                     playTaptic(KanaTaptic.Navigate)
                 }
                 currentTab = tab
+                shellNavigationHidden = false
             }
 
             Scaffold(
                 topBar = {
-                    KanaTopBar(
-                        selectedScript = selectedScript,
-                        reduceMotion = reduceMotion,
-                        soundEnabled = soundEnabled,
-                        hapticsEnabled = hapticsEnabled,
-                        onSettingsOpen = {
-                            playEarcon(KanaEarcon.Select)
-                            playTaptic(KanaTaptic.Select)
-                        },
-                        onScriptChange = {
-                            playEarcon(KanaEarcon.Navigate)
-                            playTaptic(KanaTaptic.Navigate)
-                            selectedScript = it
-                        },
-                        onReduceMotionChange = {
-                            playEarcon(KanaEarcon.Select)
-                            playTaptic(if (it) KanaTaptic.ToggleOn else KanaTaptic.ToggleOff)
-                            reduceMotion = it
-                            progressStore.setReduceMotion(it)
-                        },
-                        onSoundEnabledChange = {
-                            playTaptic(if (it) KanaTaptic.ToggleOn else KanaTaptic.ToggleOff)
-                            soundEnabled = it
-                            progressStore.setSoundEnabled(it)
-                            if (it) {
-                                earcons.enabled = true
+                    if (!shellNavigationHidden) {
+                        KanaTopBar(
+                            selectedScript = selectedScript,
+                            reduceMotion = reduceMotion,
+                            soundEnabled = soundEnabled,
+                            hapticsEnabled = hapticsEnabled,
+                            onSettingsOpen = {
                                 playEarcon(KanaEarcon.Select)
+                                playTaptic(KanaTaptic.Select)
+                            },
+                            onScriptChange = {
+                                playEarcon(KanaEarcon.Navigate)
+                                playTaptic(KanaTaptic.Navigate)
+                                selectedScript = it
+                            },
+                            onReduceMotionChange = {
+                                playEarcon(KanaEarcon.Select)
+                                playTaptic(if (it) KanaTaptic.ToggleOn else KanaTaptic.ToggleOff)
+                                reduceMotion = it
+                                progressStore.setReduceMotion(it)
+                            },
+                            onSoundEnabledChange = {
+                                playTaptic(if (it) KanaTaptic.ToggleOn else KanaTaptic.ToggleOff)
+                                soundEnabled = it
+                                progressStore.setSoundEnabled(it)
+                                if (it) {
+                                    earcons.enabled = true
+                                    playEarcon(KanaEarcon.Select)
+                                }
+                            },
+                            onHapticsEnabledChange = {
+                                playEarcon(KanaEarcon.Select)
+                                if (it) {
+                                    performKanaTaptic(haptic, KanaTaptic.ToggleOn)
+                                } else {
+                                    playTaptic(KanaTaptic.ToggleOff)
+                                }
+                                hapticsEnabled = it
+                                progressStore.setHapticsEnabled(it)
                             }
-                        },
-                        onHapticsEnabledChange = {
-                            playEarcon(KanaEarcon.Select)
-                            if (it) {
-                                performKanaTaptic(haptic, KanaTaptic.ToggleOn)
-                            } else {
-                                playTaptic(KanaTaptic.ToggleOff)
-                            }
-                            hapticsEnabled = it
-                            progressStore.setHapticsEnabled(it)
-                        }
-                    )
+                        )
+                    }
                 },
                 bottomBar = {
-                    if (layoutMode == KanaLayoutMode.Compact) {
+                    if (layoutMode == KanaLayoutMode.Compact && !shellNavigationHidden) {
                         KanaBottomBar(currentTab = currentTab, onTabChange = onTabChange)
                     }
                 }
@@ -157,7 +161,7 @@ private fun KanaDojoApp() {
                         .padding(padding)
                         .background(MaterialTheme.colorScheme.background)
                 ) {
-                    if (layoutMode != KanaLayoutMode.Compact) {
+                    if (layoutMode != KanaLayoutMode.Compact && !shellNavigationHidden) {
                         KanaNavigationRail(currentTab = currentTab, onTabChange = onTabChange)
                     }
                     AnimatedContent(
@@ -185,9 +189,11 @@ private fun KanaDojoApp() {
                                 onEarcon = playEarcon,
                                 onTaptic = playTaptic,
                                 reduceMotion = reduceMotion,
+                                onShellNavigationHiddenChange = { shellNavigationHidden = it },
                                 onOpenPractice = { mode ->
                                     playEarcon(KanaEarcon.Review)
                                     playTaptic(KanaTaptic.Review)
+                                    shellNavigationHidden = false
                                     requestedPracticeMode = mode
                                     currentTab = ScreenTab.Mistakes
                                 },
@@ -216,10 +222,12 @@ private fun KanaDojoApp() {
                                 onEarcon = playEarcon,
                                 onTaptic = playTaptic,
                                 reduceMotion = reduceMotion,
+                                onShellNavigationHiddenChange = { shellNavigationHidden = it },
                                 onResult = markResult,
                                 onReturnToPath = {
                                     playEarcon(KanaEarcon.Navigate)
                                     playTaptic(KanaTaptic.Navigate)
+                                    shellNavigationHidden = false
                                     currentTab = ScreenTab.Lessons
                                 }
                             )

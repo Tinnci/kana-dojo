@@ -358,6 +358,8 @@
     <string name="exercise_sound_to_kana_subtitle">Choose the kana you heard.</string>
     <string name="exercise_pair_match_title">Match pairs</string>
     <string name="exercise_pair_match_subtitle">Pair each kana with its sound.</string>
+    <string name="exercise_pair_match_pick_both">Tap a kana, then tap its sound.</string>
+    <string name="exercise_pair_match_progress">%1$d left</string>
     <string name="exercise_trace_title">Write it</string>
     <string name="exercise_trace_subtitle">Trace the kana and check your stroke shape.</string>
     <string name="exercise_feedback_correct">Nice. Keep going.</string>

@@ -41,6 +41,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -83,6 +84,7 @@ fun MistakePracticeScreen(
     onEarcon: (KanaEarcon) -> Unit,
     onTaptic: (KanaTaptic) -> Unit,
     reduceMotion: Boolean,
+    onShellNavigationHiddenChange: (Boolean) -> Unit = {},
     onResult: (List<KanaItem>, Boolean) -> Unit,
     onReturnToPath: () -> Unit
 ) {
@@ -181,6 +183,14 @@ fun MistakePracticeScreen(
         }
     }
     val outerPadding = if (layoutMode == KanaLayoutMode.Expanded) 24.dp else 20.dp
+    val sessionInProgress = !showIntro && !queueComplete && current != null && exercise != null
+
+    LaunchedEffect(sessionInProgress) {
+        onShellNavigationHiddenChange(sessionInProgress)
+    }
+    DisposableEffect(Unit) {
+        onDispose { onShellNavigationHiddenChange(false) }
+    }
 
     if (practiceItems.isEmpty()) {
         Box(modifier = Modifier.fillMaxSize().padding(outerPadding), contentAlignment = Alignment.Center) {

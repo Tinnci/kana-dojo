@@ -358,6 +358,8 @@
     <string name="exercise_sound_to_kana_subtitle">选择你听到的假名。</string>
     <string name="exercise_pair_match_title">配对练习</string>
     <string name="exercise_pair_match_subtitle">把每个假名和它的读音配对。</string>
+    <string name="exercise_pair_match_pick_both">先点假名，再点读音。</string>
+    <string name="exercise_pair_match_progress">还剩 %1$d 组</string>
     <string name="exercise_trace_title">写出来</string>
     <string name="exercise_trace_subtitle">描写假名，并检查笔画形状。</string>
     <string name="exercise_feedback_correct">很好，继续。</string>

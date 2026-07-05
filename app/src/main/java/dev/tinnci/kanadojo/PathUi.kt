@@ -40,6 +40,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -67,6 +69,7 @@ fun LessonPathScreen(
     onEarcon: (KanaEarcon) -> Unit,
     onTaptic: (KanaTaptic) -> Unit,
     reduceMotion: Boolean,
+    onShellNavigationHiddenChange: (Boolean) -> Unit = {},
     onOpenPractice: (PracticeMode) -> Unit,
     onResult: (List<KanaItem>, Boolean) -> Unit
 ) {
@@ -118,6 +121,14 @@ fun LessonPathScreen(
                 practiceRecommendation = practiceRecommendation
             )
         }
+    }
+    val sessionInProgress = activeLesson != null
+
+    LaunchedEffect(sessionInProgress) {
+        onShellNavigationHiddenChange(sessionInProgress)
+    }
+    DisposableEffect(Unit) {
+        onDispose { onShellNavigationHiddenChange(false) }
     }
 
     if (activeLesson != null) {

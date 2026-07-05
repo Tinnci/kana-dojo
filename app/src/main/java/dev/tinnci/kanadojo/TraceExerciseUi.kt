@@ -131,6 +131,10 @@ fun TraceKanaExercise(
         replayProgress.snapTo(1f)
     }
 
+    LaunchedEffect(item.id) {
+        onSpeak(item.kana)
+    }
+
     LaunchedEffect(replayNonce, reduceMotion) {
         if (replayNonce > 0 && points.size > 1) {
             replayProgress.snapTo(0f)
