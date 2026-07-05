@@ -42,6 +42,7 @@ fun KanaTopBar(
     reduceMotion: Boolean,
     soundEnabled: Boolean,
     hapticsEnabled: Boolean,
+    onSettingsOpen: () -> Unit,
     onScriptChange: (Script) -> Unit,
     onReduceMotionChange: (Boolean) -> Unit,
     onSoundEnabledChange: (Boolean) -> Unit,
@@ -59,7 +60,10 @@ fun KanaTopBar(
         },
         actions = {
             Row(modifier = Modifier.padding(end = 8.dp)) {
-                IconButton(onClick = { settingsOpen = true }) {
+                IconButton(onClick = {
+                    onSettingsOpen()
+                    settingsOpen = true
+                }) {
                     Icon(Icons.Outlined.Settings, contentDescription = stringResource(R.string.settings_content_description))
                 }
                 DropdownMenu(expanded = settingsOpen, onDismissRequest = { settingsOpen = false }) {

@@ -63,6 +63,7 @@ fun LessonPathScreen(
     currentEpochDay: Long,
     onSpeak: (String) -> Unit,
     onEarcon: (KanaEarcon) -> Unit,
+    onTaptic: (KanaTaptic) -> Unit,
     reduceMotion: Boolean,
     onOpenPractice: (PracticeMode) -> Unit,
     onResult: (List<KanaItem>, Boolean) -> Unit
@@ -125,21 +126,25 @@ fun LessonPathScreen(
             mastery = mastery,
             onSpeak = onSpeak,
             onEarcon = onEarcon,
+            onTaptic = onTaptic,
             reduceMotion = reduceMotion,
             onResult = onResult,
             onExit = { cue ->
                 onEarcon(KanaEarcon.Navigate)
+                onTaptic(KanaTaptic.Navigate)
                 resumeCue = cue
                 activeLesson = null
             },
             onLessonComplete = { stats ->
                 onEarcon(KanaEarcon.Continue)
+                onTaptic(KanaTaptic.Continue)
                 resumeCue = null
                 completedLessonResult = CompletedLessonResult(runningLesson, stats)
                 activeLesson = null
             },
             onReviewMistakes = {
                 onEarcon(KanaEarcon.Review)
+                onTaptic(KanaTaptic.Review)
                 resumeCue = null
                 completedLessonResult = null
                 activeLesson = null
@@ -176,12 +181,14 @@ fun LessonPathScreen(
                                     ?.let { index -> lessons.firstOrNull { it.index == index } }
                                     ?.let {
                                         onEarcon(KanaEarcon.Start)
+                                        onTaptic(KanaTaptic.Start)
                                         activeLesson = it
                                     }
                             }
 
                             PathFeedbackAction.OpenPractice -> {
                                 onEarcon(KanaEarcon.Review)
+                                onTaptic(KanaTaptic.Review)
                                 onOpenPractice(feedback.practiceMode ?: PracticeMode.Weak)
                             }
                         }
@@ -196,6 +203,7 @@ fun LessonPathScreen(
                     onResume = {
                         lessons.firstOrNull { it.index == cue.lessonIndex }?.let { lesson ->
                             onEarcon(KanaEarcon.Start)
+                            onTaptic(KanaTaptic.Start)
                             resumeCue = null
                             completedLessonResult = null
                             activeLesson = lesson
@@ -217,12 +225,14 @@ fun LessonPathScreen(
                 practiceRecommendation = practiceRecommendation,
                 onStart = {
                     onEarcon(KanaEarcon.Start)
+                    onTaptic(KanaTaptic.Start)
                     resumeCue = null
                     completedLessonResult = null
                     activeLesson = nextLesson
                 },
                 onReview = {
                     onEarcon(KanaEarcon.Review)
+                    onTaptic(KanaTaptic.Review)
                     completedLessonResult = null
                     onOpenPractice(it)
                 }
@@ -238,6 +248,7 @@ fun LessonPathScreen(
                 progressCopy = stageProgressCopy,
                 onStageChange = {
                     onEarcon(KanaEarcon.Select)
+                    onTaptic(KanaTaptic.Select)
                     selectedStage = it
                 }
             )
@@ -248,6 +259,7 @@ fun LessonPathScreen(
                     copy = copy,
                     onClear = {
                         onEarcon(KanaEarcon.Reset)
+                        onTaptic(KanaTaptic.Reset)
                         selectedStage = null
                     }
                 )
@@ -269,6 +281,7 @@ fun LessonPathScreen(
                 onStart = {
                     if (unlocked) {
                         onEarcon(if (focusedLesson) KanaEarcon.Start else KanaEarcon.Select)
+                        onTaptic(if (focusedLesson) KanaTaptic.Start else KanaTaptic.Select)
                         resumeCue = null
                         completedLessonResult = null
                         activeLesson = lesson

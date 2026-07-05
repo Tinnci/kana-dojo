@@ -67,6 +67,7 @@ fun ExerciseCard(
     allItems: List<KanaItem>,
     onSpeak: (String) -> Unit,
     onEarcon: (KanaEarcon) -> Unit,
+    onTaptic: (KanaTaptic) -> Unit,
     reduceMotion: Boolean,
     feedback: AnswerFeedback?,
     onAnswer: (Boolean) -> Unit,
@@ -91,7 +92,10 @@ fun ExerciseCard(
                         promptIsKana = true,
                         options = romajiOptions(exercise.items.first(), allItems),
                         correct = exercise.items.first().romaji,
-                        onSpeak = { onSpeak(exercise.items.first().kana) },
+                        onSpeak = {
+                            onTaptic(KanaTaptic.Speak)
+                            onSpeak(exercise.items.first().kana)
+                        },
                         onAnswer = onAnswer
                     )
 
@@ -100,7 +104,10 @@ fun ExerciseCard(
                         promptIsKana = false,
                         options = kanaOptions(exercise.items.first(), allItems),
                         correct = exercise.items.first().kana,
-                        onSpeak = { onSpeak(exercise.items.first().kana) },
+                        onSpeak = {
+                            onTaptic(KanaTaptic.Speak)
+                            onSpeak(exercise.items.first().kana)
+                        },
                         onAnswer = onAnswer
                     )
 
@@ -108,12 +115,14 @@ fun ExerciseCard(
                         item = exercise.items.first(),
                         options = kanaOptions(exercise.items.first(), allItems),
                         onSpeak = onSpeak,
+                        onTaptic = onTaptic,
                         onAnswer = onAnswer
                     )
 
                     ExerciseKind.PairMatch -> PairMatchExercise(
                         items = exercise.items,
                         answered = feedback != null,
+                        onTaptic = onTaptic,
                         onAnswer = onAnswer
                     )
 
@@ -121,6 +130,7 @@ fun ExerciseCard(
                         item = exercise.items.first(),
                         answered = feedback != null,
                         onEarcon = onEarcon,
+                        onTaptic = onTaptic,
                         reduceMotion = reduceMotion,
                         onSpeak = onSpeak,
                         onAnswer = onAnswer
@@ -270,6 +280,7 @@ private fun SoundChoiceExercise(
     item: KanaItem,
     options: List<String>,
     onSpeak: (String) -> Unit,
+    onTaptic: (KanaTaptic) -> Unit,
     onAnswer: (Boolean) -> Unit
 ) {
     var selectedOption by remember(item.id) { mutableStateOf<String?>(null) }
@@ -281,7 +292,10 @@ private fun SoundChoiceExercise(
     Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.SpaceBetween) {
         Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxWidth()) {
             FilledTonalButton(
-                onClick = { onSpeak(item.kana) },
+                onClick = {
+                    onTaptic(KanaTaptic.Speak)
+                    onSpeak(item.kana)
+                },
                 shape = CircleShape,
                 modifier = Modifier.size(116.dp)
             ) {
@@ -361,7 +375,12 @@ private fun AnswerOptionButton(
 }
 
 @Composable
-private fun PairMatchExercise(items: List<KanaItem>, answered: Boolean, onAnswer: (Boolean) -> Unit) {
+private fun PairMatchExercise(
+    items: List<KanaItem>,
+    answered: Boolean,
+    onTaptic: (KanaTaptic) -> Unit,
+    onAnswer: (Boolean) -> Unit
+) {
     var selectedKana by remember { mutableStateOf<KanaItem?>(null) }
     var selectedRomaji by remember { mutableStateOf<KanaItem?>(null) }
     val matched = remember { mutableStateListOf<String>() }
@@ -372,7 +391,15 @@ private fun PairMatchExercise(items: List<KanaItem>, answered: Boolean, onAnswer
         val kana = selectedKana
         val romaji = selectedRomaji
         if (kana != null && romaji != null) {
-            if (kana.id == romaji.id) matched.add(kana.id)
+            if (kana.id == romaji.id) {
+                val completesExercise = matched.size + 1 == items.size
+                matched.add(kana.id)
+                if (!completesExercise) {
+                    onTaptic(KanaTaptic.Correct)
+                }
+            } else {
+                onTaptic(KanaTaptic.Incorrect)
+            }
             selectedKana = null
             selectedRomaji = null
             if (matched.size == items.size && !answered) onAnswer(true)

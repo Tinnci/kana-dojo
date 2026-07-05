@@ -53,6 +53,7 @@ fun LessonRunner(
     mastery: Map<String, Int>,
     onSpeak: (String) -> Unit,
     onEarcon: (KanaEarcon) -> Unit,
+    onTaptic: (KanaTaptic) -> Unit,
     reduceMotion: Boolean,
     onResult: (List<KanaItem>, Boolean) -> Unit,
     onExit: (LessonResumeCue?) -> Unit,
@@ -101,10 +102,12 @@ fun LessonRunner(
                 nextLesson = nextPreview,
                 stats = sessionStats,
                 onEarcon = onEarcon,
+                onTaptic = onTaptic,
                 reduceMotion = reduceMotion,
                 onContinue = { onLessonComplete(sessionStats) },
                 onRepeat = {
                     onEarcon(KanaEarcon.Reset)
+                    onTaptic(KanaTaptic.Reset)
                     queue.clear()
                     queue.addAll(buildLessonExercises(lesson))
                     completed = 0
@@ -119,6 +122,7 @@ fun LessonRunner(
                 allItems = allItems,
                 onSpeak = onSpeak,
                 onEarcon = onEarcon,
+                onTaptic = onTaptic,
                 reduceMotion = reduceMotion,
                 feedback = feedback,
                 onAnswer = { correct ->
@@ -134,6 +138,7 @@ fun LessonRunner(
                 },
                 onContinue = {
                     onEarcon(KanaEarcon.Continue)
+                    onTaptic(KanaTaptic.Continue)
                     feedback?.let { result ->
                         queue.removeAt(0)
                         completed += 1
@@ -154,6 +159,7 @@ private fun LessonComplete(
     nextLesson: KanaLesson?,
     stats: LessonSessionStats,
     onEarcon: (KanaEarcon) -> Unit,
+    onTaptic: (KanaTaptic) -> Unit,
     reduceMotion: Boolean,
     onContinue: () -> Unit,
     onRepeat: () -> Unit,
@@ -164,6 +170,7 @@ private fun LessonComplete(
     LaunchedEffect(lesson.index) {
         entered = true
         onEarcon(KanaEarcon.Complete)
+        onTaptic(KanaTaptic.Complete)
     }
     val celebrationColor by animateColorAsState(
         targetValue = when {

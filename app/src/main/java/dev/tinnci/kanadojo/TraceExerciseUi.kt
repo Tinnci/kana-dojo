@@ -65,6 +65,7 @@ fun TraceKanaExercise(
     item: KanaItem,
     answered: Boolean,
     onEarcon: (KanaEarcon) -> Unit,
+    onTaptic: (KanaTaptic) -> Unit,
     reduceMotion: Boolean,
     onSpeak: (String) -> Unit,
     onAnswer: (Boolean) -> Unit
@@ -130,7 +131,10 @@ fun TraceKanaExercise(
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(item.romaji, style = MaterialTheme.typography.headlineMedium, fontWeight = FontWeight.Black)
             Spacer(Modifier.weight(1f))
-            IconButton(onClick = { onSpeak(item.kana) }) {
+            IconButton(onClick = {
+                onTaptic(KanaTaptic.Speak)
+                onSpeak(item.kana)
+            }) {
                 Icon(Icons.Outlined.PlayArrow, contentDescription = stringResource(R.string.trace_hear_content_description))
             }
         }
@@ -199,6 +203,7 @@ fun TraceKanaExercise(
                     remediation = copy,
                     onRetry = {
                         onEarcon(KanaEarcon.Reset)
+                        onTaptic(KanaTaptic.Reset)
                         points = emptyList()
                         showComparison = false
                         showRemediation = false
@@ -210,6 +215,7 @@ fun TraceKanaExercise(
             OutlinedButton(
                 onClick = {
                     onEarcon(KanaEarcon.Reset)
+                    onTaptic(KanaTaptic.Reset)
                     points = emptyList()
                     showComparison = false
                     showRemediation = false
@@ -221,6 +227,7 @@ fun TraceKanaExercise(
             OutlinedButton(
                 onClick = {
                     onEarcon(KanaEarcon.Select)
+                    onTaptic(KanaTaptic.Select)
                     val next = !showComparison
                     showComparison = next
                     if (next && points.size > 1) replayNonce += 1
@@ -242,6 +249,7 @@ fun TraceKanaExercise(
                         onAnswer(true)
                     } else {
                         onEarcon(KanaEarcon.Incorrect)
+                        onTaptic(KanaTaptic.Incorrect)
                         showRemediation = true
                         showComparison = true
                         if (points.size > 1) replayNonce += 1

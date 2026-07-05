@@ -150,6 +150,24 @@ The chart is a reference surface:
 - Avoid looping decorative animation during exercises.
 - Respect future reduced-motion settings.
 
+## Earcon And Taptic Rules
+
+Source check:
+
+- Material sound guidance: https://m3.material.io/styles/sound/overview
+- Material interaction guidance: https://m3.material.io/foundations/interaction/gestures
+- Android haptics guidance: https://developer.android.com/develop/ui/views/haptics
+- Android Compose haptics API: https://developer.android.com/develop/ui/compose/touch-input/keyboard-input/indirect-touch#haptic-feedback
+
+Sensory feedback should support the same hierarchy as layout, color, elevation, and motion:
+
+- Use semantic feedback at meaningful boundaries: navigation, selection, lesson start, continue, correct, incorrect, completion, review, reset, and explicit listen actions.
+- Keep haptics brief and predictable. Do not vibrate on every trace drag point, scroll, animation frame, or passive auto-play event.
+- Pair tactile, audio, and visual feedback by meaning. Correct answers get affirmative feedback; incorrect checks get rejection feedback; completion is the only multi-pulse celebration.
+- Respect user control. Sound and haptics remain separate persisted settings, and turning haptics back on provides an immediate toggle confirmation.
+- Prefer one tactile cue per user action. When an action both selects and plays sound, use the selection cue instead of stacking multiple pulses.
+- Keep earcons short and non-musical. They are state markers, not rewards that should interrupt repeated study.
+
 ## Current Polish State
 
 Implemented:
@@ -258,6 +276,8 @@ Implemented:
 - Audited practice completion panel density and added vertical scrolling for compact screens.
 - Added compact completion section dividers for long practice summaries.
 - Added compact kana-group count labels to practice completion groups.
+- Added semantic earcons for navigation, selection, lesson start, continue, answers, completion, review, reset, and listen actions.
+- Added semantic taptic feedback matching the earcon vocabulary, with toggle-specific haptics and no per-point handwriting vibration.
 - Added overflow hint copy when practice completion groups preview only part of a long kana list.
 - Added tested compact kana-group tone chips for clean, repaired, and shaky groups.
 - Added compact section tones to practice completion dividers.

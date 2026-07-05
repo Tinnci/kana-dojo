@@ -19,7 +19,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
 
@@ -64,6 +63,11 @@ private fun KanaDojoApp() {
     val playEarcon: (KanaEarcon) -> Unit = { earcon ->
         earcons.play(earcon)
     }
+    val playTaptic: (KanaTaptic) -> Unit = { taptic ->
+        if (hapticsEnabled) {
+            performKanaTaptic(haptic, taptic)
+        }
+    }
     val speakKana: (String) -> Unit = { kana ->
         if (soundEnabled) {
             playEarcon(KanaEarcon.Speak)
@@ -72,9 +76,7 @@ private fun KanaDojoApp() {
     }
     val markResult: (List<KanaItem>, Boolean) -> Unit = { items, correct ->
         playEarcon(if (correct) KanaEarcon.Correct else KanaEarcon.Incorrect)
-        if (hapticsEnabled) {
-            haptic.performHapticFeedback(if (correct) HapticFeedbackType.Confirm else HapticFeedbackType.Reject)
-        }
+        playTaptic(if (correct) KanaTaptic.Correct else KanaTaptic.Incorrect)
         progressStore.mark(items, correct)
         mastery.putAll(progressStore.loadMastery(allItems))
         mistakes.clear()
@@ -91,16 +93,23 @@ private fun KanaDojoApp() {
                     reduceMotion = reduceMotion,
                     soundEnabled = soundEnabled,
                     hapticsEnabled = hapticsEnabled,
+                    onSettingsOpen = {
+                        playEarcon(KanaEarcon.Select)
+                        playTaptic(KanaTaptic.Select)
+                    },
                     onScriptChange = {
                         playEarcon(KanaEarcon.Navigate)
+                        playTaptic(KanaTaptic.Navigate)
                         selectedScript = it
                     },
                     onReduceMotionChange = {
                         playEarcon(KanaEarcon.Select)
+                        playTaptic(if (it) KanaTaptic.ToggleOn else KanaTaptic.ToggleOff)
                         reduceMotion = it
                         progressStore.setReduceMotion(it)
                     },
                     onSoundEnabledChange = {
+                        playTaptic(if (it) KanaTaptic.ToggleOn else KanaTaptic.ToggleOff)
                         soundEnabled = it
                         progressStore.setSoundEnabled(it)
                         if (it) {
@@ -110,6 +119,11 @@ private fun KanaDojoApp() {
                     },
                     onHapticsEnabledChange = {
                         playEarcon(KanaEarcon.Select)
+                        if (it) {
+                            performKanaTaptic(haptic, KanaTaptic.ToggleOn)
+                        } else {
+                            playTaptic(KanaTaptic.ToggleOff)
+                        }
                         hapticsEnabled = it
                         progressStore.setHapticsEnabled(it)
                     }
@@ -121,6 +135,7 @@ private fun KanaDojoApp() {
                     onTabChange = {
                         if (currentTab != it) {
                             playEarcon(KanaEarcon.Navigate)
+                            playTaptic(KanaTaptic.Navigate)
                         }
                         currentTab = it
                     }
@@ -145,9 +160,11 @@ private fun KanaDojoApp() {
                         currentEpochDay = today,
                         onSpeak = speakKana,
                         onEarcon = playEarcon,
+                        onTaptic = playTaptic,
                         reduceMotion = reduceMotion,
                         onOpenPractice = { mode ->
                             playEarcon(KanaEarcon.Review)
+                            playTaptic(KanaTaptic.Review)
                             requestedPracticeMode = mode
                             currentTab = ScreenTab.Mistakes
                         },
@@ -158,7 +175,8 @@ private fun KanaDojoApp() {
                         script = selectedScript,
                         mastery = mastery,
                         onSpeak = speakKana,
-                        onEarcon = playEarcon
+                        onEarcon = playEarcon,
+                        onTaptic = playTaptic
                     )
 
                     ScreenTab.Mistakes -> MistakePracticeScreen(
@@ -171,10 +189,12 @@ private fun KanaDojoApp() {
                         currentEpochDay = today,
                         onSpeak = speakKana,
                         onEarcon = playEarcon,
+                        onTaptic = playTaptic,
                         reduceMotion = reduceMotion,
                         onResult = markResult,
                         onReturnToPath = {
                             playEarcon(KanaEarcon.Navigate)
+                            playTaptic(KanaTaptic.Navigate)
                             currentTab = ScreenTab.Lessons
                         }
                     )

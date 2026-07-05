@@ -48,7 +48,8 @@ fun KanaChartScreen(
     script: Script,
     mastery: Map<String, Int>,
     onSpeak: (String) -> Unit,
-    onEarcon: (KanaEarcon) -> Unit
+    onEarcon: (KanaEarcon) -> Unit,
+    onTaptic: (KanaTaptic) -> Unit
 ) {
     val items = remember(script) { itemsFor(script) }
     val rows = remember(items) { items.map { it.row }.distinct() }
@@ -76,6 +77,7 @@ fun KanaChartScreen(
                 rows = rows,
                 selectedRow = selectedRow,
                 onEarcon = onEarcon,
+                onTaptic = onTaptic,
                 onRowChange = {
                     selectedRow = it
                     tappedItem = null
@@ -107,6 +109,7 @@ fun KanaChartScreen(
             Card(
                 onClick = {
                     onEarcon(KanaEarcon.Select)
+                    onTaptic(KanaTaptic.Select)
                     tappedItem = item
                     onSpeak(item.kana)
                 },
@@ -250,6 +253,7 @@ private fun ChartRowFilters(
     rows: List<String>,
     selectedRow: String?,
     onEarcon: (KanaEarcon) -> Unit,
+    onTaptic: (KanaTaptic) -> Unit,
     onRowChange: (String?) -> Unit
 ) {
     LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp), modifier = Modifier.fillMaxWidth()) {
@@ -257,6 +261,7 @@ private fun ChartRowFilters(
             AssistChip(
                 onClick = {
                     onEarcon(KanaEarcon.Select)
+                    onTaptic(KanaTaptic.Select)
                     onRowChange(null)
                 },
                 label = { Text(stringResource(R.string.chart_filter_all)) },
@@ -269,6 +274,7 @@ private fun ChartRowFilters(
             AssistChip(
                 onClick = {
                     onEarcon(KanaEarcon.Select)
+                    onTaptic(KanaTaptic.Select)
                     onRowChange(row)
                 },
                 label = { Text(localizedChartRowLabel(row)) },

@@ -77,6 +77,7 @@ fun MistakePracticeScreen(
     currentEpochDay: Long,
     onSpeak: (String) -> Unit,
     onEarcon: (KanaEarcon) -> Unit,
+    onTaptic: (KanaTaptic) -> Unit,
     reduceMotion: Boolean,
     onResult: (List<KanaItem>, Boolean) -> Unit,
     onReturnToPath: () -> Unit
@@ -188,6 +189,7 @@ fun MistakePracticeScreen(
             fallbackMode = fallbackMode,
             onModeChange = {
                 onEarcon(KanaEarcon.Select)
+                onTaptic(KanaTaptic.Select)
                 selectedMode = it
             }
         )
@@ -211,6 +213,7 @@ fun MistakePracticeScreen(
                 previewReasons = previewReasons,
                 onStart = {
                     onEarcon(KanaEarcon.Start)
+                    onTaptic(KanaTaptic.Start)
                     showIntro = false
                 }
             )
@@ -219,6 +222,7 @@ fun MistakePracticeScreen(
         if (queueComplete) {
             LaunchedEffect(selectedMode, queueSignature) {
                 onEarcon(KanaEarcon.Complete)
+                onTaptic(KanaTaptic.Complete)
             }
             val outcomes = reviewSessionOutcomesFor(correctCounts, missCounts)
             PracticeCompletionPanel(
@@ -233,6 +237,7 @@ fun MistakePracticeScreen(
                 onReturnToPath = onReturnToPath,
                 onRepeat = {
                     onEarcon(KanaEarcon.Reset)
+                    onTaptic(KanaTaptic.Reset)
                     currentIndex = 0
                     feedback = null
                     sessionStats = LessonSessionStats()
@@ -257,6 +262,7 @@ fun MistakePracticeScreen(
             allItems = optionItems,
             onSpeak = onSpeak,
             onEarcon = onEarcon,
+            onTaptic = onTaptic,
             reduceMotion = reduceMotion,
             feedback = feedback,
             onAnswer = { correct ->
@@ -277,6 +283,7 @@ fun MistakePracticeScreen(
             },
             onContinue = {
                 onEarcon(KanaEarcon.Continue)
+                onTaptic(KanaTaptic.Continue)
                 currentIndex += 1
                 feedback = null
             }
