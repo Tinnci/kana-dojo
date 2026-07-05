@@ -70,7 +70,6 @@ private fun KanaDojoApp() {
     }
     val speakKana: (String) -> Unit = { kana ->
         if (soundEnabled) {
-            playEarcon(KanaEarcon.Speak)
             tts.speak(kana)
         }
     }

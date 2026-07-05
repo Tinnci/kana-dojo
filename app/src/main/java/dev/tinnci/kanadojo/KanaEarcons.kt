@@ -17,10 +17,15 @@ enum class KanaEarcon {
     Incorrect,
     Complete,
     Review,
-    Reset,
-    Speak
+    Reset
 }
 
+/*
+ * Kana Dojo earcons are intentionally compact UI sounds, not reward jingles.
+ * Keep frequent controls under 40 ms, answer/result cues under 80 ms, and save
+ * multi-pulse phrasing for lesson or review completion. Spoken kana is the
+ * learning audio, so listen actions use the TTS itself rather than a prep tone.
+ */
 class KanaEarcons {
     private val handler = Handler(Looper.getMainLooper())
     private val toneGenerator = runCatching {
@@ -58,37 +63,30 @@ class KanaEarcons {
 
     private val KanaEarcon.pattern: List<EarconTone>
         get() = when (this) {
-            KanaEarcon.Navigate -> listOf(EarconTone(ToneGenerator.TONE_PROP_BEEP, 32))
-            KanaEarcon.Select -> listOf(EarconTone(ToneGenerator.TONE_PROP_PROMPT, 36))
+            KanaEarcon.Navigate -> listOf(EarconTone(ToneGenerator.TONE_PROP_BEEP, 28))
+            KanaEarcon.Select -> listOf(EarconTone(ToneGenerator.TONE_PROP_PROMPT, 30))
             KanaEarcon.Start -> listOf(
-                EarconTone(ToneGenerator.TONE_PROP_PROMPT, 42),
-                EarconTone(ToneGenerator.TONE_PROP_ACK, 52, delayMs = 70L)
+                EarconTone(ToneGenerator.TONE_PROP_PROMPT, 38),
+                EarconTone(ToneGenerator.TONE_PROP_ACK, 46, delayMs = 64L)
             )
 
-            KanaEarcon.Continue -> listOf(EarconTone(ToneGenerator.TONE_PROP_ACK, 42))
-            KanaEarcon.Correct -> listOf(
-                EarconTone(ToneGenerator.TONE_PROP_ACK, 48),
-                EarconTone(ToneGenerator.TONE_PROP_ACK, 56, delayMs = 78L)
-            )
+            KanaEarcon.Continue -> listOf(EarconTone(ToneGenerator.TONE_PROP_ACK, 36))
+            KanaEarcon.Correct -> listOf(EarconTone(ToneGenerator.TONE_PROP_ACK, 54))
 
-            KanaEarcon.Incorrect -> listOf(EarconTone(ToneGenerator.TONE_PROP_NACK, 86))
+            KanaEarcon.Incorrect -> listOf(EarconTone(ToneGenerator.TONE_PROP_NACK, 72))
             KanaEarcon.Complete -> listOf(
-                EarconTone(ToneGenerator.TONE_PROP_ACK, 54),
-                EarconTone(ToneGenerator.TONE_PROP_ACK, 54, delayMs = 82L),
-                EarconTone(ToneGenerator.TONE_PROP_PROMPT, 68, delayMs = 164L)
+                EarconTone(ToneGenerator.TONE_PROP_ACK, 48),
+                EarconTone(ToneGenerator.TONE_PROP_ACK, 48, delayMs = 76L),
+                EarconTone(ToneGenerator.TONE_PROP_PROMPT, 60, delayMs = 152L)
             )
 
-            KanaEarcon.Review -> listOf(
-                EarconTone(ToneGenerator.TONE_PROP_BEEP2, 50),
-                EarconTone(ToneGenerator.TONE_PROP_PROMPT, 54, delayMs = 88L)
-            )
+            KanaEarcon.Review -> listOf(EarconTone(ToneGenerator.TONE_PROP_BEEP2, 58))
 
-            KanaEarcon.Reset -> listOf(EarconTone(ToneGenerator.TONE_PROP_BEEP2, 80))
-            KanaEarcon.Speak -> listOf(EarconTone(ToneGenerator.TONE_PROP_PROMPT, 28))
+            KanaEarcon.Reset -> listOf(EarconTone(ToneGenerator.TONE_PROP_BEEP2, 64))
         }
 
     private companion object {
-        const val EARCON_VOLUME = 42
+        const val EARCON_VOLUME = 38
     }
 }
 

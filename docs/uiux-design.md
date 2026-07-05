@@ -167,6 +167,15 @@ Sensory feedback should support the same hierarchy as layout, color, elevation, 
 - Respect user control. Sound and haptics remain separate persisted settings, and turning haptics back on provides an immediate toggle confirmation.
 - Prefer one tactile cue per user action. When an action both selects and plays sound, use the selection cue instead of stacking multiple pulses.
 - Keep earcons short and non-musical. They are state markers, not rewards that should interrupt repeated study.
+- Treat spoken kana as content audio, not an earcon. Listen buttons may use taptic feedback, but the ear should stay clear for pronunciation.
+
+Earcon style for Kana Dojo:
+
+- Calm study-tool palette: Android system prop tones at low volume, no melody, no long reward stingers.
+- Frequent controls: 28 to 36 ms, enough to acknowledge taps without tiring repeated drills.
+- Result cues: 54 to 72 ms, affirmative for correct answers and brief rejection for misses without making mistakes feel punitive.
+- Flow transitions: start may use a short two-pulse rise; review and reset stay single-pulse so repair work feels focused.
+- Completion: the only celebratory multi-pulse cue, landing around 212 ms so it feels distinct while staying below a quarter second.
 
 ## Current Polish State
 
@@ -276,7 +285,8 @@ Implemented:
 - Audited practice completion panel density and added vertical scrolling for compact screens.
 - Added compact completion section dividers for long practice summaries.
 - Added compact kana-group count labels to practice completion groups.
-- Added semantic earcons for navigation, selection, lesson start, continue, answers, completion, review, reset, and listen actions.
+- Added semantic earcons for navigation, selection, lesson start, continue, answers, completion, review, and reset actions.
+- Tuned earcon durations so frequent controls stay under 40 ms, answer cues stay under 80 ms, and completion is the only celebratory multi-pulse cue.
 - Added semantic taptic feedback matching the earcon vocabulary, with toggle-specific haptics and no per-point handwriting vibration.
 - Added overflow hint copy when practice completion groups preview only part of a long kana list.
 - Added tested compact kana-group tone chips for clean, repaired, and shaky groups.
