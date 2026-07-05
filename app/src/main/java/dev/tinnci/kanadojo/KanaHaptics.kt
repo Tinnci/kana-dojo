@@ -21,7 +21,17 @@ enum class KanaTaptic {
 }
 
 fun performKanaTaptic(haptic: HapticFeedback, taptic: KanaTaptic) {
-    val pattern = when (taptic) {
+    val handler = Handler(Looper.getMainLooper())
+    kanaTapticPatternFor(taptic).forEach { pulse ->
+        handler.postDelayed(
+            { haptic.performHapticFeedback(pulse.type) },
+            pulse.delayMs
+        )
+    }
+}
+
+private fun kanaTapticPatternFor(taptic: KanaTaptic): List<HapticPulse> =
+    when (taptic) {
         KanaTaptic.Navigate -> listOf(HapticPulse(HapticFeedbackType.SegmentTick))
         KanaTaptic.Select -> listOf(HapticPulse(HapticFeedbackType.SegmentTick))
         KanaTaptic.Start -> listOf(HapticPulse(HapticFeedbackType.GestureThresholdActivate))
@@ -41,13 +51,17 @@ fun performKanaTaptic(haptic: HapticFeedback, taptic: KanaTaptic) {
         KanaTaptic.ToggleOff -> listOf(HapticPulse(HapticFeedbackType.ToggleOff))
     }
 
-    val handler = Handler(Looper.getMainLooper())
-    pattern.forEach { pulse ->
-        handler.postDelayed(
-            { haptic.performHapticFeedback(pulse.type) },
-            pulse.delayMs
-        )
-    }
+internal data class KanaTapticTiming(
+    val pulseCount: Int,
+    val lastDelayMs: Long
+)
+
+internal fun kanaTapticTimingFor(taptic: KanaTaptic): KanaTapticTiming {
+    val pattern = kanaTapticPatternFor(taptic)
+    return KanaTapticTiming(
+        pulseCount = pattern.size,
+        lastDelayMs = pattern.maxOf { it.delayMs }
+    )
 }
 
 private data class HapticPulse(

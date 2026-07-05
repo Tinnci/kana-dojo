@@ -192,6 +192,12 @@ Earcon style for Kana Dojo:
 - Flow transitions: start may use a short two-pulse rise; review and reset stay single-pulse so repair work feels focused.
 - Completion: the only celebratory multi-pulse cue, landing around 212 ms so it feels distinct while staying below a quarter second.
 
+Taptic style for Kana Dojo:
+
+- Frequent controls, answer feedback, review, reset, start, listen, and toggles stay single-pulse so repeated drills do not feel noisy.
+- Use Android semantic haptic types instead of custom vibration waveforms: segment ticks for navigation/selection, confirm/reject for answers, toggle types for settings, and context click for explicit listen actions.
+- Completion is the only multi-pulse tactile phrase: two confirm pulses followed by a gesture-end pulse, with the last scheduled pulse at 180 ms so it feels celebratory without becoming a long vibration.
+
 Current timing characterization:
 
 | Earcon | Style | Timing |
@@ -205,6 +211,12 @@ Current timing characterization:
 | Review | Focused repair cue for review-priority actions. | 1 pulse, 58 ms |
 | Reset | Firm single cue for clearing or retrying work. | 1 pulse, 64 ms |
 | Complete | Only celebratory phrase; compact enough for daily repetition. | 3 pulses, 212 ms total |
+
+| Taptic | Style | Timing |
+| --- | --- | --- |
+| Navigate / Select / Continue / Speak / Toggle | Single tactile acknowledgment for repeated controls. | 1 pulse, no delayed follow-up |
+| Correct / Incorrect / Review / Reset / Start | Single semantic tactile boundary for result or flow changes. | 1 pulse, no delayed follow-up |
+| Complete | Only celebratory tactile phrase. | 3 pulses, last pulse at 180 ms |
 
 ## Current Polish State
 
@@ -322,6 +334,7 @@ Implemented:
 - Added semantic earcons for navigation, selection, lesson start, continue, answers, completion, review, and reset actions.
 - Tuned earcon durations so frequent controls stay under 40 ms, answer cues stay under 80 ms, and completion is the only celebratory multi-pulse cue.
 - Added semantic taptic feedback matching the earcon vocabulary, with toggle-specific haptics and no per-point handwriting vibration.
+- Added tested taptic timing characterization so all non-completion haptics stay single-pulse and completion stays below a 220 ms final pulse.
 - Added overflow hint copy when practice completion groups preview only part of a long kana list.
 - Added tested compact kana-group tone chips for clean, repaired, and shaky groups.
 - Added compact section tones to practice completion dividers.
