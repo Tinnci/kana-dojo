@@ -1356,6 +1356,25 @@ class KanaCurriculumTest {
     }
 
     @Test
+    fun practiceCompletionActionButtonSemanticsKeepTraversalOrder() {
+        ReviewCompletionAction.entries.forEach { action ->
+            val semantics = practiceCompletionActionButtonMetadataInDisplayOrder(
+                completionAction = action,
+                mode = PracticeMode.Mixed
+            ).map { actionButton ->
+                practiceCompletionActionButtonSemanticsFor(actionButton = actionButton, enabled = true)
+            }
+            val traversalIndices = semantics.map { it.traversalIndex }
+            val upperBound = semantics.size.toFloat()
+
+            assertEquals(traversalIndices.sorted(), traversalIndices)
+            assertEquals(traversalIndices.distinct(), traversalIndices)
+            assertTrue(traversalIndices.all { it >= 0f })
+            assertTrue(traversalIndices.all { it < upperBound })
+        }
+    }
+
+    @Test
     fun practiceCompletionActionButtonSemanticsPreserveDisabledCopy() {
         val cleanActionButtons = practiceCompletionActionButtonMetadataInDisplayOrder(
             completionAction = ReviewCompletionAction.ReturnToPath,
