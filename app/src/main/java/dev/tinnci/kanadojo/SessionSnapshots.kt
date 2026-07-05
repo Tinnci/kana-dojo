@@ -1,7 +1,10 @@
 package dev.tinnci.kanadojo
 
+import kotlin.math.roundToInt
+
 private const val TOKEN_SEPARATOR = "|"
 private const val ITEM_SEPARATOR = ","
+private const val POINT_SEPARATOR = ":"
 
 fun exerciseSnapshotToken(exercise: Exercise): String =
     listOf(
@@ -46,3 +49,19 @@ fun incrementCountSnapshotToken(tokens: List<String>, id: String): List<String> 
     counts[id] = (counts[id] ?: 0) + 1
     return countSnapshotTokens(counts)
 }
+
+fun tracePointSnapshotToken(point: TracePoint): String =
+    "${point.x.roundToInt()}$POINT_SEPARATOR${point.y.roundToInt()}"
+
+fun tracePointFromSnapshotToken(token: String): TracePoint? {
+    val parts = token.split(POINT_SEPARATOR, limit = 2)
+    val x = parts.getOrNull(0)?.toFloatOrNull() ?: return null
+    val y = parts.getOrNull(1)?.toFloatOrNull() ?: return null
+    return TracePoint(x, y)
+}
+
+fun tracePointSnapshotTokens(points: List<TracePoint>): List<String> =
+    points.map(::tracePointSnapshotToken)
+
+fun tracePointsFromSnapshotTokens(tokens: List<String>): List<TracePoint> =
+    tokens.mapNotNull(::tracePointFromSnapshotToken)

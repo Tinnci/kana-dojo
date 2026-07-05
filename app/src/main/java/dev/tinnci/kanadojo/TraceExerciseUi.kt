@@ -46,6 +46,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -70,13 +71,15 @@ fun TraceKanaExercise(
     onSpeak: (String) -> Unit,
     onAnswer: (Boolean) -> Unit
 ) {
-    var points by remember(item.id) { mutableStateOf<List<Offset>>(emptyList()) }
-    var showComparison by remember(item.id) { mutableStateOf(false) }
-    var showRemediation by remember(item.id) { mutableStateOf(false) }
-    var replayNonce by remember(item.id) { mutableIntStateOf(0) }
+    var pointTokens by rememberSaveable(item.id) { mutableStateOf(emptyList<String>()) }
+    var showComparison by rememberSaveable(item.id) { mutableStateOf(false) }
+    var showRemediation by rememberSaveable(item.id) { mutableStateOf(false) }
+    var replayNonce by rememberSaveable(item.id) { mutableIntStateOf(0) }
     val replayProgress = remember(item.id) { Animatable(1f) }
-    val traceScore = remember(points) { traceScoreFor(points.map { TracePoint(it.x, it.y) }) }
-    val traceCues = remember(points, traceScore) { traceFeedbackCuesFor(points.map { TracePoint(it.x, it.y) }, traceScore) }
+    val tracePoints = remember(pointTokens) { tracePointsFromSnapshotTokens(pointTokens) }
+    val points = remember(tracePoints) { tracePoints.map { Offset(it.x, it.y) } }
+    val traceScore = remember(tracePoints) { traceScoreFor(tracePoints) }
+    val traceCues = remember(tracePoints, traceScore) { traceFeedbackCuesFor(tracePoints, traceScore) }
     val remediation = remember(traceScore) { traceRemediationFor(traceScore) }
     val animatedScore by animateFloatAsState(targetValue = traceScore.progress, label = "traceScore")
     val guideAlpha by animateFloatAsState(
@@ -150,8 +153,12 @@ fun TraceKanaExercise(
                 )
                 .pointerInput(item.id) {
                     detectDragGestures(
-                        onDragStart = { points = points + it },
-                        onDrag = { change, _ -> points = points + change.position }
+                        onDragStart = {
+                            pointTokens = pointTokens + tracePointSnapshotToken(TracePoint(it.x, it.y))
+                        },
+                        onDrag = { change, _ ->
+                            pointTokens = pointTokens + tracePointSnapshotToken(TracePoint(change.position.x, change.position.y))
+                        }
                     )
                 },
             contentAlignment = Alignment.Center
@@ -204,7 +211,7 @@ fun TraceKanaExercise(
                     onRetry = {
                         onEarcon(KanaEarcon.Reset)
                         onTaptic(KanaTaptic.Reset)
-                        points = emptyList()
+                        pointTokens = emptyList()
                         showComparison = false
                         showRemediation = false
                     }
@@ -216,7 +223,7 @@ fun TraceKanaExercise(
                 onClick = {
                     onEarcon(KanaEarcon.Reset)
                     onTaptic(KanaTaptic.Reset)
-                    points = emptyList()
+                    pointTokens = emptyList()
                     showComparison = false
                     showRemediation = false
                 },

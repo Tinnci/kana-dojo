@@ -7,6 +7,27 @@ import org.junit.Test
 
 class TraceScoringTest {
     @Test
+    fun tracePointSnapshotTokensRoundTripCompactStrokePoints() {
+        val points = listOf(
+            TracePoint(12.2f, 18.7f),
+            TracePoint(40.5f, 72.4f),
+            TracePoint(88.9f, 101.1f)
+        )
+
+        val restored = tracePointsFromSnapshotTokens(tracePointSnapshotTokens(points))
+
+        assertEquals(listOf(12f, 41f, 89f), restored.map { it.x })
+        assertEquals(listOf(19f, 72f, 101f), restored.map { it.y })
+    }
+
+    @Test
+    fun tracePointSnapshotTokensIgnoreInvalidEntries() {
+        val restored = tracePointsFromSnapshotTokens(listOf("10:20", "bad", "30:", "42:51"))
+
+        assertEquals(listOf(TracePoint(10f, 20f), TracePoint(42f, 51f)), restored)
+    }
+
+    @Test
     fun emptyTraceStartsAtZero() {
         val score = traceScoreFor(emptyList())
 
