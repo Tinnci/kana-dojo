@@ -441,6 +441,7 @@ private fun PracticeCompletionActionGroup(
                 modifier = Modifier.practiceCompletionActionButtonTouchTarget(
                     actionSemanticLabel = returnActionButton.accessibilitySemanticLabel,
                     stateDescription = practiceCompletionActionStateDescriptionFor(
+                        actionButton = returnActionButton,
                         enabled = actionAvailability.returnToPathEnabled,
                         disabledCopy = disabledActionCopy
                     ),
@@ -464,6 +465,7 @@ private fun PracticeCompletionActionGroup(
                 modifier = Modifier.practiceCompletionActionButtonTouchTarget(
                     actionSemanticLabel = repeatActionButton.accessibilitySemanticLabel,
                     stateDescription = practiceCompletionActionStateDescriptionFor(
+                        actionButton = repeatActionButton,
                         enabled = actionAvailability.repeatEnabled,
                         disabledCopy = disabledActionCopy
                     ),
@@ -529,6 +531,7 @@ private fun PracticeRepeatRequiredActionGroup(
                 modifier = Modifier.practiceCompletionActionButtonTouchTarget(
                     actionSemanticLabel = repeatActionButton.accessibilitySemanticLabel,
                     stateDescription = practiceCompletionActionStateDescriptionFor(
+                        actionButton = repeatActionButton,
                         enabled = actionAvailability.repeatEnabled,
                         disabledCopy = disabledActionCopy
                     ),

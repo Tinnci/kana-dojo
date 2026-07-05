@@ -657,6 +657,17 @@ fun practiceCompletionActionStateDescriptionFor(
         disabledCopy?.let { "Unavailable: ${it.title}. ${it.message}" } ?: "Unavailable"
     }
 
+@Suppress("UNUSED_PARAMETER")
+fun practiceCompletionActionStateDescriptionFor(
+    actionButton: PracticeCompletionActionButtonMetadata,
+    enabled: Boolean,
+    disabledCopy: PracticeCompletionDisabledActionCopy? = null
+): String =
+    practiceCompletionActionStateDescriptionFor(
+        enabled = enabled,
+        disabledCopy = disabledCopy
+    )
+
 fun practiceCompletionDisabledActionVisibleMessageFor(copy: PracticeCompletionDisabledActionCopy): String =
     when (copy.title) {
         "No repeat queue" -> "No kana to repeat yet."
