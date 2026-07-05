@@ -245,6 +245,7 @@ Implemented:
 - Material-aligned path elevation pass: active next lesson is raised while regular lesson cards stay flat, and the hero uses tone instead of decorative gradient.
 - Resource-backed English and Simplified Chinese strings for essential actions on the top path, practice, and chart entry points.
 - Android locale configuration advertises English and Simplified Chinese for system per-app language settings.
+- English and Simplified Chinese string resources are covered by tests for key parity and format-placeholder parity.
 - Script names in the shell, path hero, and chart header are resource-backed instead of stored as English enum labels.
 - First-screen path headings, metrics, priority badges, and lesson-card status labels are resource-backed in English and Simplified Chinese.
 - Starting priority is communicated through layout hierarchy: raised primary panels, large kana anchors, prominent titles, and full-width primary actions.
