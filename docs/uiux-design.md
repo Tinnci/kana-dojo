@@ -170,6 +170,7 @@ Implemented:
 - Lesson-completion recommendations that route to repeat, mistake review, or the path.
 - Clean lesson completions preview the next unlocked lesson before returning to the path.
 - Data-driven path hero that previews the next lesson, overall progress, lesson progress, and review pressure.
+- Material-aligned path elevation pass: active next lesson is raised while regular lesson cards stay flat, and the hero uses tone instead of decorative gradient.
 - Reduced-motion top-bar toggle that disables trace replay animation while keeping comparison available.
 - Persisted reduced-motion preference.
 - Persisted sound toggle that quiets speech playback without changing lessons.

@@ -45,7 +45,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.font.FontWeight
@@ -667,13 +666,12 @@ private fun PathHeroPanel(
     }
     Surface(
         shape = RoundedCornerShape(24.dp),
-        tonalElevation = 4.dp,
+        tonalElevation = 2.dp,
         color = heroColor,
         modifier = Modifier.fillMaxWidth()
     ) {
         Column(
             modifier = Modifier
-                .background(Brush.horizontalGradient(listOf(heroColor, Color(0xFFE2EEF8))))
                 .padding(20.dp),
             verticalArrangement = Arrangement.spacedBy(14.dp)
         ) {
@@ -837,7 +835,7 @@ private fun LessonNode(
         label = "lessonCardColor"
     )
     val cardElevation by animateDpAsState(
-        targetValue = if (active) 5.dp else 2.dp,
+        targetValue = if (active) 4.dp else 0.dp,
         label = "lessonCardElevation"
     )
     val nodeScale by animateFloatAsState(
