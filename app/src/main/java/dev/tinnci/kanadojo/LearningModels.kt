@@ -198,6 +198,11 @@ data class PracticeCompletionDisabledActionCopy(
     val message: String
 )
 
+data class PracticeCompletionActionButtonMetadata(
+    val roleLabel: String,
+    val traversalIndex: Float
+)
+
 data class PracticeCompletionNextStep(
     val title: String,
     val message: String
@@ -814,6 +819,17 @@ fun practiceActionRoleLabelsInDisplayOrder(action: ReviewCompletionAction): List
 
 fun practiceCompletionActionTraversalIndicesInDisplayOrder(completionAction: ReviewCompletionAction): List<Float> =
     practiceActionRoleLabelsInDisplayOrder(completionAction).indices.map { it.toFloat() }
+
+fun practiceCompletionActionButtonMetadataInDisplayOrder(
+    completionAction: ReviewCompletionAction
+): List<PracticeCompletionActionButtonMetadata> =
+    practiceActionRoleLabelsInDisplayOrder(completionAction)
+        .zip(practiceCompletionActionTraversalIndicesInDisplayOrder(completionAction)) { roleLabel, traversalIndex ->
+            PracticeCompletionActionButtonMetadata(
+                roleLabel = roleLabel,
+                traversalIndex = traversalIndex
+            )
+        }
 
 fun practiceCompletionNextStepFor(mode: PracticeMode, stats: LessonSessionStats): PracticeCompletionNextStep =
     when {

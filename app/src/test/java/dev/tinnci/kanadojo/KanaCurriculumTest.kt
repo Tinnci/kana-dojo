@@ -1501,6 +1501,33 @@ class KanaCurriculumTest {
     }
 
     @Test
+    fun practiceCompletionActionButtonMetadataMatchesExpectedUiActionCounts() {
+        val expectedUiActionCounts = mapOf(
+            ReviewCompletionAction.ReturnToPath to 2,
+            ReviewCompletionAction.RepeatQueue to 1
+        )
+
+        ReviewCompletionAction.entries.forEach { action ->
+            assertEquals(
+                expectedUiActionCounts.getValue(action),
+                practiceCompletionActionButtonMetadataInDisplayOrder(completionAction = action).size
+            )
+        }
+    }
+
+    @Test
+    fun practiceCompletionActionButtonMetadataKeepsRolesAndTraversalTogether() {
+        ReviewCompletionAction.entries.forEach { action ->
+            val roleLabels = practiceActionRoleLabelsInDisplayOrder(action)
+            val traversalIndices = practiceCompletionActionTraversalIndicesInDisplayOrder(completionAction = action)
+            val actionButtons = practiceCompletionActionButtonMetadataInDisplayOrder(completionAction = action)
+
+            assertEquals(roleLabels, actionButtons.map { it.roleLabel })
+            assertEquals(traversalIndices, actionButtons.map { it.traversalIndex })
+        }
+    }
+
+    @Test
     fun practiceCompletionActionTraversalIndicesReturnStableOrderedValues() {
         ReviewCompletionAction.entries.forEach { action ->
             val traversalIndices = practiceCompletionActionTraversalIndicesInDisplayOrder(completionAction = action)

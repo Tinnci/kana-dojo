@@ -260,9 +260,11 @@ Implemented:
 - Added tested compact completion action-button accessibility traversal helper return audit.
 - Added tested compact completion action-button accessibility traversal helper bounds audit.
 - Added tested compact completion action-button accessibility traversal helper role-count audit.
+- Added tested compact completion action-button accessibility traversal UI action-count audit.
+- Added tested compact completion action-button accessibility traversal UI metadata pairing audit.
 
 ## Next Polish Pass
 
 Implement next:
 
-- Add compact completion action-button accessibility traversal UI action-count audit.
+- Add compact completion action-button accessibility traversal UI metadata naming audit.

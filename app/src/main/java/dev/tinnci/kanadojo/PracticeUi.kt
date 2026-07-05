@@ -416,10 +416,11 @@ private fun PracticeCompletionActionGroup(
         key = "clean-$repeatActionLabel",
         reduceMotion = reduceMotion
     )
-    val roleLabels = practiceActionRoleLabelsInDisplayOrder(ReviewCompletionAction.ReturnToPath)
-    val traversalIndices = practiceCompletionActionTraversalIndicesInDisplayOrder(
+    val actionButtons = practiceCompletionActionButtonMetadataInDisplayOrder(
         completionAction = ReviewCompletionAction.ReturnToPath
     )
+    val returnActionButton = actionButtons[0]
+    val repeatActionButton = actionButtons[1]
     Surface(
         shape = RoundedCornerShape(20.dp),
         color = MaterialTheme.colorScheme.secondaryContainer,
@@ -435,13 +436,16 @@ private fun PracticeCompletionActionGroup(
                 .fillMaxWidth()
                 .padding(8.dp)
         ) {
-            PracticeActionRoleChip(roleLabels[0])
+            PracticeActionRoleChip(returnActionButton.roleLabel)
             Button(
                 onClick = onReturnToPath,
                 enabled = actionAvailability.returnToPathEnabled,
                 shape = RoundedCornerShape(18.dp),
                 modifier = Modifier.practiceCompletionActionButtonTouchTarget(
-                    actionSemanticLabel = practiceActionSemanticLabelWithRoleFor(roleLabels[0], returnActionSemanticLabel),
+                    actionSemanticLabel = practiceActionSemanticLabelWithRoleFor(
+                        returnActionButton.roleLabel,
+                        returnActionSemanticLabel
+                    ),
                     stateDescription = practiceCompletionActionStateDescriptionFor(
                         enabled = actionAvailability.returnToPathEnabled,
                         disabledCopy = disabledActionCopy
@@ -451,20 +455,23 @@ private fun PracticeCompletionActionGroup(
                         enabled = actionAvailability.returnToPathEnabled,
                         disabledCopy = disabledActionCopy
                     ),
-                    actionTraversalIndex = traversalIndices[0]
+                    actionTraversalIndex = returnActionButton.traversalIndex
                 )
             ) {
                 Icon(Icons.Outlined.School, contentDescription = null, modifier = Modifier.size(20.dp))
                 Spacer(Modifier.width(6.dp))
                 PracticeActionButtonLabel(practiceReturnActionLabelFor(compact = true))
             }
-            PracticeActionRoleChip(roleLabels[1])
+            PracticeActionRoleChip(repeatActionButton.roleLabel)
             FilledTonalButton(
                 onClick = onRepeat,
                 enabled = actionAvailability.repeatEnabled,
                 shape = RoundedCornerShape(18.dp),
                 modifier = Modifier.practiceCompletionActionButtonTouchTarget(
-                    actionSemanticLabel = practiceActionSemanticLabelWithRoleFor(roleLabels[1], repeatActionSemanticLabel),
+                    actionSemanticLabel = practiceActionSemanticLabelWithRoleFor(
+                        repeatActionButton.roleLabel,
+                        repeatActionSemanticLabel
+                    ),
                     stateDescription = practiceCompletionActionStateDescriptionFor(
                         enabled = actionAvailability.repeatEnabled,
                         disabledCopy = disabledActionCopy
@@ -474,7 +481,7 @@ private fun PracticeCompletionActionGroup(
                         enabled = actionAvailability.repeatEnabled,
                         disabledCopy = disabledActionCopy
                     ),
-                    actionTraversalIndex = traversalIndices[1]
+                    actionTraversalIndex = repeatActionButton.traversalIndex
                 )
             ) {
                 Icon(Icons.Outlined.Replay, contentDescription = null, modifier = Modifier.size(20.dp))
@@ -500,10 +507,9 @@ private fun PracticeRepeatRequiredActionGroup(
         key = "repeat-$repeatActionLabel",
         reduceMotion = reduceMotion
     )
-    val roleLabels = practiceActionRoleLabelsInDisplayOrder(ReviewCompletionAction.RepeatQueue)
-    val traversalIndices = practiceCompletionActionTraversalIndicesInDisplayOrder(
+    val repeatActionButton = practiceCompletionActionButtonMetadataInDisplayOrder(
         completionAction = ReviewCompletionAction.RepeatQueue
-    )
+    ).single()
     Surface(
         shape = RoundedCornerShape(20.dp),
         color = MaterialTheme.colorScheme.errorContainer,
@@ -519,7 +525,7 @@ private fun PracticeRepeatRequiredActionGroup(
                 .fillMaxWidth()
                 .padding(8.dp)
         ) {
-            PracticeActionRoleChip(roleLabels.single())
+            PracticeActionRoleChip(repeatActionButton.roleLabel)
             Button(
                 onClick = onRepeat,
                 enabled = actionAvailability.repeatEnabled,
@@ -529,7 +535,10 @@ private fun PracticeRepeatRequiredActionGroup(
                     contentColor = MaterialTheme.colorScheme.onError
                 ),
                 modifier = Modifier.practiceCompletionActionButtonTouchTarget(
-                    actionSemanticLabel = practiceActionSemanticLabelWithRoleFor(roleLabels.single(), repeatActionSemanticLabel),
+                    actionSemanticLabel = practiceActionSemanticLabelWithRoleFor(
+                        repeatActionButton.roleLabel,
+                        repeatActionSemanticLabel
+                    ),
                     stateDescription = practiceCompletionActionStateDescriptionFor(
                         enabled = actionAvailability.repeatEnabled,
                         disabledCopy = disabledActionCopy
@@ -539,7 +548,7 @@ private fun PracticeRepeatRequiredActionGroup(
                         enabled = actionAvailability.repeatEnabled,
                         disabledCopy = disabledActionCopy
                     ),
-                    actionTraversalIndex = traversalIndices.single()
+                    actionTraversalIndex = repeatActionButton.traversalIndex
                 )
             ) {
                 Icon(Icons.Outlined.Replay, contentDescription = null, modifier = Modifier.size(20.dp))
