@@ -28,6 +28,35 @@ class KanaCurriculumTest {
     }
 
     @Test
+    fun exerciseSnapshotTokensRestoreLessonQueuesIncludingMistakeDrills() {
+        val lesson = lessonsFor(Script.Hiragana).first()
+        val baseQueue = buildLessonExercises(lesson)
+        val mistakeDrill = buildMistakeExercise(lesson.items.first())
+        val queue = baseQueue.drop(2) + mistakeDrill
+        val itemsById = (hiraganaItems + katakanaItems).associateBy { it.id }
+
+        val restored = exercisesFromSnapshotTokens(exerciseSnapshotTokens(queue), itemsById)
+
+        assertEquals(queue.map { it.kind }, restored.map { it.kind })
+        assertEquals(
+            queue.map { exercise -> exercise.items.map { it.id } },
+            restored.map { exercise -> exercise.items.map { it.id } }
+        )
+    }
+
+    @Test
+    fun countSnapshotTokensRoundTripAndIncrementStableCounts() {
+        val tokens = countSnapshotTokens(mapOf("h-a" to 2, "h-i" to 1))
+        val incremented = incrementCountSnapshotToken(tokens, "h-a")
+        val withNewItem = incrementCountSnapshotToken(incremented, "h-u")
+
+        assertEquals(
+            mapOf("h-a" to 3, "h-i" to 1, "h-u" to 1),
+            countMapFromSnapshotTokens(withNewItem)
+        )
+    }
+
+    @Test
     fun kanaIdsAreUniqueAcrossDuplicateRomaji() {
         val allItems = hiraganaItems + katakanaItems
 

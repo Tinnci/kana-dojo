@@ -100,11 +100,19 @@ fun MistakePracticeScreen(
         )
     }
     val queueSignature = remember(practiceItems) { practiceItems.joinToString("|") { it.id } }
-    var currentIndex by remember(selectedMode, queueSignature) { mutableIntStateOf(0) }
-    var feedback by remember(selectedMode, practiceItems, currentIndex) { mutableStateOf<AnswerFeedback?>(null) }
-    var sessionStats by remember(selectedMode, queueSignature) { mutableStateOf(LessonSessionStats()) }
-    var correctCounts by remember(selectedMode, queueSignature) { mutableStateOf(emptyMap<String, Int>()) }
-    var missCounts by remember(selectedMode, queueSignature) { mutableStateOf(emptyMap<String, Int>()) }
+    var currentIndex by rememberSaveable(selectedMode, queueSignature) { mutableIntStateOf(0) }
+    var feedbackCorrect by rememberSaveable(selectedMode, queueSignature, currentIndex) { mutableStateOf<Boolean?>(null) }
+    var feedbackAnswer by rememberSaveable(selectedMode, queueSignature, currentIndex) { mutableStateOf<String?>(null) }
+    var correctTotal by rememberSaveable(selectedMode, queueSignature) { mutableIntStateOf(0) }
+    var missedTotal by rememberSaveable(selectedMode, queueSignature) { mutableIntStateOf(0) }
+    var correctCountTokens by rememberSaveable(selectedMode, queueSignature) { mutableStateOf(emptyList<String>()) }
+    var missCountTokens by rememberSaveable(selectedMode, queueSignature) { mutableStateOf(emptyList<String>()) }
+    val feedback = feedbackCorrect?.let { correct ->
+        AnswerFeedback(correct = correct, answer = feedbackAnswer.orEmpty())
+    }
+    val sessionStats = LessonSessionStats(correct = correctTotal, missed = missedTotal)
+    val correctCounts = remember(correctCountTokens) { countMapFromSnapshotTokens(correctCountTokens) }
+    val missCounts = remember(missCountTokens) { countMapFromSnapshotTokens(missCountTokens) }
     val queueComplete = currentIndex >= practiceItems.size
     val current = if (practiceItems.isEmpty() || queueComplete) null else practiceItems[currentIndex]
     val exercise = current?.let { practiceExerciseFor(it, selectedMode, currentIndex) }
@@ -240,10 +248,12 @@ fun MistakePracticeScreen(
                     onEarcon(KanaEarcon.Reset)
                     onTaptic(KanaTaptic.Reset)
                     currentIndex = 0
-                    feedback = null
-                    sessionStats = LessonSessionStats()
-                    correctCounts = emptyMap()
-                    missCounts = emptyMap()
+                    feedbackCorrect = null
+                    feedbackAnswer = null
+                    correctTotal = 0
+                    missedTotal = 0
+                    correctCountTokens = emptyList()
+                    missCountTokens = emptyList()
                     showIntro = true
                 }
             )
@@ -268,16 +278,14 @@ fun MistakePracticeScreen(
             feedback = feedback,
             onAnswer = { correct ->
                 if (feedback == null) {
-                    feedback = AnswerFeedback(correct = correct, answer = correctAnswerFor(exercise))
-                    sessionStats = if (correct) {
-                        sessionStats.copy(correct = sessionStats.correct + 1)
-                    } else {
-                        sessionStats.copy(missed = sessionStats.missed + 1)
-                    }
+                    feedbackCorrect = correct
+                    feedbackAnswer = correctAnswerFor(exercise)
                     if (correct) {
-                        correctCounts = correctCounts + (current.id to ((correctCounts[current.id] ?: 0) + 1))
+                        correctTotal += 1
+                        correctCountTokens = incrementCountSnapshotToken(correctCountTokens, current.id)
                     } else {
-                        missCounts = missCounts + (current.id to ((missCounts[current.id] ?: 0) + 1))
+                        missedTotal += 1
+                        missCountTokens = incrementCountSnapshotToken(missCountTokens, current.id)
                     }
                     onResult(listOf(current), correct)
                 }
@@ -286,7 +294,8 @@ fun MistakePracticeScreen(
                 onEarcon(KanaEarcon.Continue)
                 onTaptic(KanaTaptic.Continue)
                 currentIndex += 1
-                feedback = null
+                feedbackCorrect = null
+                feedbackAnswer = null
             }
         )
     }

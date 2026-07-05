@@ -31,9 +31,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -60,10 +60,23 @@ fun LessonRunner(
     onLessonComplete: (LessonSessionStats) -> Unit,
     onReviewMistakes: () -> Unit
 ) {
-    val queue = remember(lesson) { mutableStateListOf<Exercise>().apply { addAll(buildLessonExercises(lesson)) } }
-    var completed by remember(lesson) { mutableIntStateOf(0) }
-    var sessionStats by remember(lesson) { mutableStateOf(LessonSessionStats()) }
-    var feedback by remember(lesson) { mutableStateOf<AnswerFeedback?>(null) }
+    val allItemsById = remember(allItems) { allItems.associateBy { it.id } }
+    val initialQueueTokens = remember(lesson) { exerciseSnapshotTokens(buildLessonExercises(lesson)) }
+    val lessonSaveKey = lesson.items.firstOrNull()?.id ?: lesson.index.toString()
+    var queueTokens by rememberSaveable(lessonSaveKey) { mutableStateOf(initialQueueTokens) }
+    var completed by rememberSaveable(lessonSaveKey) { mutableIntStateOf(0) }
+    var correctCount by rememberSaveable(lessonSaveKey) { mutableIntStateOf(0) }
+    var missedCount by rememberSaveable(lessonSaveKey) { mutableIntStateOf(0) }
+    var feedbackCorrect by rememberSaveable(lessonSaveKey) { mutableStateOf<Boolean?>(null) }
+    var feedbackAnswer by rememberSaveable(lessonSaveKey) { mutableStateOf<String?>(null) }
+    val queue = remember(queueTokens, allItemsById) {
+        exercisesFromSnapshotTokens(queueTokens, allItemsById)
+            .ifEmpty { buildLessonExercises(lesson) }
+    }
+    val sessionStats = LessonSessionStats(correct = correctCount, missed = missedCount)
+    val feedback = feedbackCorrect?.let { correct ->
+        AnswerFeedback(correct = correct, answer = feedbackAnswer.orEmpty())
+    }
     val current = queue.firstOrNull()
     val total = (completed + queue.size).coerceAtLeast(1)
     val masterySnapshot = mastery.toMap()
@@ -108,11 +121,12 @@ fun LessonRunner(
                 onRepeat = {
                     onEarcon(KanaEarcon.Reset)
                     onTaptic(KanaTaptic.Reset)
-                    queue.clear()
-                    queue.addAll(buildLessonExercises(lesson))
+                    queueTokens = initialQueueTokens
                     completed = 0
-                    sessionStats = LessonSessionStats()
-                    feedback = null
+                    correctCount = 0
+                    missedCount = 0
+                    feedbackCorrect = null
+                    feedbackAnswer = null
                 },
                 onReviewMistakes = onReviewMistakes
             )
@@ -127,11 +141,12 @@ fun LessonRunner(
                 feedback = feedback,
                 onAnswer = { correct ->
                     if (feedback == null) {
-                        feedback = AnswerFeedback(correct = correct, answer = correctAnswerFor(current))
-                        sessionStats = if (correct) {
-                            sessionStats.copy(correct = sessionStats.correct + 1)
+                        feedbackCorrect = correct
+                        feedbackAnswer = correctAnswerFor(current)
+                        if (correct) {
+                            correctCount += 1
                         } else {
-                            sessionStats.copy(missed = sessionStats.missed + 1)
+                            missedCount += 1
                         }
                         onResult(current.items, correct)
                     }
@@ -140,12 +155,13 @@ fun LessonRunner(
                     onEarcon(KanaEarcon.Continue)
                     onTaptic(KanaTaptic.Continue)
                     feedback?.let { result ->
-                        queue.removeAt(0)
+                        queueTokens = queueTokens.drop(1)
                         completed += 1
                         if (!result.correct) {
-                            queue.add(buildMistakeExercise(current.items.first()))
+                            queueTokens = queueTokens + exerciseSnapshotToken(buildMistakeExercise(current.items.first()))
                         }
-                        feedback = null
+                        feedbackCorrect = null
+                        feedbackAnswer = null
                     }
                 }
             )
