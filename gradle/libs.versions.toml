@@ -1,6 +1,6 @@
 [versions]
 activityCompose = "1.13.0"
-agp = "9.4.0-alpha08"
+agp = "9.6.0-alpha03"
 androidBuildTools = "37.0.0"
 androidCompileSdk = "37"
 androidCompileSdkMinor = "1"
